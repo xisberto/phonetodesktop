@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Welcome to PhoneToDesktop</string>
+    <string name="app_name">PhoneToDesktop</string>
+    <string name="title_select_account">Select a Google account</string>
+    <string name="btn_how_it_works">How it works</string>
+    <string name="txt_authorize">We need your authorization to send links to your Google account.</string>
+    <string name="txt_authorized_to">Authorized to</string>
+    <string name="btn_authorize">Authorize access</string>
+    <string name="btn_authorize_again">Authorize other account</string>
+    <string name="btn_waiting_authorization">Waiting authorization</string>
+    <string name="txt_sending">Sending links</string>
+    <string name="txt_error_sending">Error sending link</string>
+    <string name="txt_error_credentials">There was an error with Google credentials. Please authorize PhoneToDesktop again.</string>
+    <string name="txt_need_authorize">Your need first authorize PhoneToDesktop.</string>
+    <string name="txt_timeout">Could not access server. Try again later.</string>
+    <string name="btn_back">Back</string>
+    <string name="btn_next">Next</string>
+    <string name="txt_tutorial1">PhoneToDesktop sends links and text from your Android device to your desktop computer</string>
+    <string name="txt_tutorial2">From any application which shares text, choose “share” option.</string>
+    <string name="txt_tutorial3">A list of applications which can receive text will be shown. Choose PhoneToDesktop.</string>
+    <string name="txt_tutorial4">You will see a notification while PhoneToDesktop sends the text.
+When the text is successfully sent, the notification goes away.</string>
+	<string name="txt_tutorial5">To see your sent texts in your desktop or notebook, choose Tasks in Gmail.</string>
+	<string name="txt_tutorial6">You can see the list of sent texts under the "PhoneToDesktop" list.</string>
+	<string name="about">About</string>
+	<string name="link_about_message">https://code.google.com/p/phone-to-desktop/</string>
+	<string name="txt_about_message">PhoneToDesktop is free software (as in freedom).
+	    The source code is in https://code.google.com/p/phone-to-desktop/ (touch and hold to share this link).</string>
+    <string name="img_about">PhoneToDesktop logo</string>
+    <string name="send_to">Send link to&#8230;</string>
+    
+</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:id="@+id/item_how_works" android:title="@string/btn_how_it_works" android:showAsAction="never"></item>
+    <item android:id="@+id/item_about" android:title="@string/about" android:showAsAction="never"></item>
+    
+
+</menu>

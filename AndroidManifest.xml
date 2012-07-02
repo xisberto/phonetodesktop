@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="net.xisberto.phonetodesktop"
+    android:versionCode="104"
+    android:versionName="1.0.4" android:installLocation="preferExternal">
+
+    <uses-sdk android:minSdkVersion="7"  android:targetSdkVersion="11"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+	<uses-permission android:name="android.permission.USE_CREDENTIALS" />
+	<uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
+
+    <application
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name" android:theme="@style/Theme.Sherlock.Light.ForceOverflow">
+
+       <activity
+            android:name=".PhoneToDesktopActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".GoogleTasksActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            <intent-filter android:label="@string/app_name" >
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+        <activity android:name="SelectAccountsActivity"></activity>
+        <activity android:name="TutorialActivity"></activity>
+        <activity android:name="Preferences"></activity>
+        <activity android:name="AboutActivity"></activity>
+    </application>
+
+</manifest>
