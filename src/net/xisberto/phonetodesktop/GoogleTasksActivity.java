@@ -90,7 +90,7 @@ public class GoogleTasksActivity extends SherlockActivity {
         tasksService = Tasks.builder(transport, jsonFactory)
 			.setApplicationName("PhoneToDesktop")
 			.setHttpRequestInitializer(credential)
-			.setJsonHttpRequestInitializer(new GoogleKeyInitializer(GoogleTasksCredentials.APIKey))
+			.setJsonHttpRequestInitializer(new GoogleKeyInitializer(GoogleTasksCredentialsDevelopment.APIKey))
 			.build();
         
         if (getIntent().getAction().equals(ACTION_AUTHENTICATE)) {
