@@ -29,5 +29,8 @@ When the text is successfully sent, the notification goes away.</string>
 	    The source code is in https://code.google.com/p/phone-to-desktop/ (touch and hold to share this link).</string>
     <string name="img_about">PhoneToDesktop logo</string>
     <string name="send_to">Send link to&#8230;</string>
-    
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_link_list">Link List</string>
+
 </resources>

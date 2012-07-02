@@ -2,6 +2,7 @@ package net.xisberto.phonetodesktop;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
+import java.util.ArrayList;
 import java.util.List;
 
 import android.accounts.Account;
@@ -45,9 +46,9 @@ public class GoogleTasksActivity extends SherlockActivity {
 		PREF_LIST_ID = "listId";
 	
 	public static final String
-		ACTION_SEND_TEXT = "net.xisberto.phonetodesktop.send_link",
-		ACTION_AUTHENTICATE = "net.xisberto.phonetodesktop.authenticate";
-
+		ACTION_AUTHENTICATE = "net.xisberto.phonetodesktop.authenticate",
+		ACTION_LIST_LINKS = "net.xisberto.phonetodesktop.list_links";
+	
 	private static final int
 		NOTIFICATION_SENDING = 0,
 		NOTIFICATION_ERROR = 1,
@@ -94,11 +95,14 @@ public class GoogleTasksActivity extends SherlockActivity {
 			.build();
         
         if (getIntent().getAction().equals(ACTION_AUTHENTICATE)) {
-			broadcastUpdatingStatus(true);
+			broadcastUpdatingStatus(ACTION_AUTHENTICATE, true);
 			authorize();
 		} else if(getIntent().getAction().equals(Intent.ACTION_SEND)) {
 			showNotification(NOTIFICATION_SENDING);
 			addTask(getIntent().getStringExtra(Intent.EXTRA_TEXT));
+		} else if(getIntent().getAction().equals(ACTION_LIST_LINKS)) {
+			broadcastUpdatingStatus(ACTION_LIST_LINKS, true);
+			getTaskList();
 		}
 
 		finish();
@@ -188,9 +192,9 @@ public class GoogleTasksActivity extends SherlockActivity {
 					callback.run();
 				} catch (OperationCanceledException canceledException) {
 					//User has canceled operation
-					broadcastUpdatingStatus(false);
+					broadcastUpdatingStatus(ACTION_AUTHENTICATE, false);
 				} catch (SocketTimeoutException e) {
-					broadcastUpdatingStatus(false);
+					broadcastUpdatingStatus(ACTION_AUTHENTICATE, false);
 					log("Timeout");
 					dismissNotification(NOTIFICATION_SENDING);
 					showNotification(NOTIFICATION_TIMEOUT);
@@ -206,7 +210,7 @@ public class GoogleTasksActivity extends SherlockActivity {
 				} catch (AuthenticatorException e) {
 					e.printStackTrace();
 				} catch (Exception e) {
-					broadcastUpdatingStatus(false);
+					broadcastUpdatingStatus(ACTION_AUTHENTICATE, false);
 					dismissNotification(NOTIFICATION_SENDING);
 					e.printStackTrace();
 				}
@@ -275,7 +279,7 @@ public class GoogleTasksActivity extends SherlockActivity {
 				//nothing to do here
 			}
 		}
-		broadcastUpdatingStatus(false);
+		broadcastUpdatingStatus(ACTION_AUTHENTICATE, false);
 	}
 	
 	private void createAndSaveList() throws IOException{
@@ -311,6 +315,36 @@ public class GoogleTasksActivity extends SherlockActivity {
 		dismissNotification(NOTIFICATION_SENDING);
 	}
 
+	private void getTaskList() {
+		Account acc = accountManager.getAccountByName(loadAccountName());
+		if (acc == null) {
+			log("Tried to get task list without authorization.");
+			requestSelectAccount();
+		} else {
+			log("Getting task list");
+			getAuthToken(acc, new GoogleTasksCallback() {
+				@Override
+				public void run() throws IOException {
+					loadTaskList();
+				}
+			});
+		}
+	}
+	
+	private void loadTaskList() throws IOException {
+		com.google.api.services.tasks.model.Tasks tasks = tasksService.tasks().list(loadListId()).execute();
+		ArrayList<String> 
+			ids = new ArrayList<String>(),
+			titles = new ArrayList<String>();
+		
+		List<Task> list = tasks.getItems();
+		for (Task task : list) {
+			ids.add(task.getId());
+			titles.add(task.getTitle());
+		}
+		broadcastTaskList(ids, titles);
+	}
+
 	private void clearCredential() {
 		accountManager.invalidateAuthToken(credential.getAccessToken());
 		credential.setAccessToken(null);
@@ -338,7 +372,7 @@ public class GoogleTasksActivity extends SherlockActivity {
 				return true;
 			case 404:
 				dismissNotification(NOTIFICATION_SENDING);
-				broadcastUpdatingStatus(false);
+				broadcastUpdatingStatus(ACTION_AUTHENTICATE, false);
 				clearCredential();
 				showNotification(NOTIFICATION_ERROR);
 				Log.e(getPackageName(), e.getMessage());
@@ -380,10 +414,19 @@ public class GoogleTasksActivity extends SherlockActivity {
 		editor.commit();
 	}
 	
-	public void broadcastUpdatingStatus(boolean updating) {
+	public void broadcastUpdatingStatus(String action, boolean updating) {
 		Intent intent = new Intent();
-		intent.setAction(ACTION_AUTHENTICATE);
+		intent.setAction(action);
 		intent.putExtra("updating", updating);
+		sendBroadcast(intent);
+	}
+	
+	public void broadcastTaskList(ArrayList<String> ids, ArrayList<String> titles) {
+		Intent intent = new Intent();
+		intent.setAction(ACTION_LIST_LINKS);
+		intent.putStringArrayListExtra("ids", ids);
+		intent.putStringArrayListExtra("titles", titles);
+		intent.putExtra("done", true);
 		sendBroadcast(intent);
 	}
 	

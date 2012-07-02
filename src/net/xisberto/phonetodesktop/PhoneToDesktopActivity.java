@@ -124,6 +124,10 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements 
 			i = new Intent(getApplicationContext(), AboutActivity.class);
 			startActivity(i);
 			break;
+		case R.id.item_list_links:
+			i = new Intent(getApplicationContext(), LinkListActivity.class);
+			startActivity(i);
+			break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
