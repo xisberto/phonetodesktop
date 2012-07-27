@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Bem-vindo ao PhoneToDesktop</string>
-    <string name="app_name">PhoneToDesktop</string>
+
+    <string name="hello">Bem-vindo ao Phone To Desktop</string>
+    <string name="app_name">Phone To Desktop</string>
     <string name="title_select_account">Selecione uma conta Google</string>
     <string name="btn_how_it_works">Como funciona</string>
     <string name="txt_authorize">Precisamos da sua autorização para enviar links para a sua conta Google.</string>
@@ -11,22 +12,26 @@
     <string name="btn_waiting_authorization">Esperando autorização</string>
     <string name="txt_sending">Enviando link</string>
     <string name="txt_error_sending">Erro enviando link</string>
-    <string name="txt_error_credentials">Houve um erro ao enviar o link. Por favor, autorize o PhoneToDesktop novamente.</string>
-    <string name="txt_need_authorize">Você precisa primeiro autorizar o PhoneToDesktop.</string>
-	<string name="txt_timeout">Não foi possível acessar o servidor. Tente novamente.</string>
+    <string name="txt_error_credentials">Houve um erro ao enviar o link. Por favor, autorize o Phone To Desktop novamente.</string>
+    <string name="txt_need_authorize">Você precisa primeiro autorizar o Phone To Desktop.</string>
+    <string name="txt_timeout">Não foi possível acessar o servidor. Tente novamente.</string>
     <string name="btn_back">Voltar</string>
     <string name="btn_next">Avançar</string>
-    <string name="txt_tutorial1">PhoneToDesktop envia links e texto do seu aparelho Android para seu computador.</string>
+    <string name="txt_tutorial1">Phone To Desktop envia links e texto do seu aparelho Android para seu computador.</string>
     <string name="txt_tutorial2">A partir de uma aplicação que compartilhe texto, escolha a opção de compartilhar ou enviar.</string>
-    <string name="txt_tutorial3">Você verá uma lista de aplicativos que podem receber texto. Escolha o PhoneToDesktop.</string>
-    <string name="txt_tutorial4">Você verá uma notificação enquanto o PhoneToDesktop envia o texto.
+    <string name="txt_tutorial3">Você verá uma lista de aplicativos que podem receber texto. Escolha o Phone To Desktop.</string>
+    <string name="txt_tutorial4">Você verá uma notificação enquanto o Phone To Desktop envia o texto.
         Quando o texto for enviado, a notificação vai embora.</string>
-	<string name="txt_tutorial5">Para ver seus textos enviados no seu desktop ou notebook, escolha Tarefas no Gmail.</string>
-	<string name="txt_tutorial6">Você pode ver os textos enviados na lista "PhoneToDesktop".</string>
-	<string name="about">Sobre</string>
-	<string name="link_about_message">https://code.google.com/p/phone-to-desktop/</string>
-	<string name="txt_about_message">PhoneToDesktop é um software livre.
-	    O código fonte pode ser encontrado em https://code.google.com/p/phone-to-desktop/ (toque e segure para compartilhar o link).</string>
-    <string name="img_about">Logomarca do PhoneToDesktop</string>
-    <string name="send_to">Enviar link para&#8230;</string>    
+    <string name="txt_tutorial5">Para ver seus textos enviados no seu desktop ou notebook, escolha Tarefas no Gmail.</string>
+    <string name="txt_tutorial6">Você pode ver os textos enviados na lista "Phone To Desktop".</string>
+    <string name="about">Sobre</string>
+    <string name="txt_about_message">Phone To Desktop é um software livre.
+	    O código fonte pode ser encontrado no GitHub.</string>
+    <string name="txt_chrome_extension">Experimente nossa extensão para o Google Chrome</string>
+    <string name="txt_google_java_api">Phone To Desktop usa as Google APIs Client for Java 1.8.0-beta e Google Tasks API 1.5.0-beta.</string>
+    <string name="txt_actionbarsherlock">Phone To Desktop usa a ActionBarSherlock</string>
+    <string name="btn_share_this">Clique para compartilhar o link</string>
+    <string name="img_about">Logomarca do Phone To Desktop</string>
+    <string name="send_to">Enviar link para&#8230;</string>
+
 </resources>
