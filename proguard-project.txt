@@ -31,11 +31,11 @@
 -libraryjars libs/httpcore-4.0.1.jar
 -libraryjars libs/httpclient-4.0.3.jar
 -libraryjars libs/protobuf-java-2.2.0.jar
--libraryjars libs/google-api-client-1.8.0-beta.jar
--libraryjars libs/google-http-client-1.8.3-beta.jar
--libraryjars libs/google-oauth-client-1.8.0-beta.jar
--libraryjars libs/google-api-client-android2-1.8.0-beta.jar
--libraryjars libs/google-api-tasks-v1-rev2-java-1.5.0-beta.jar
+-libraryjars libs/google-api-client-1.10.1-beta.jar
+-libraryjars libs/google-http-client-1.10.2-beta.jar
+-libraryjars libs/google-oauth-client-1.10.0-beta.jar
+-libraryjars libs/google-api-client-android2-1.10.1-beta.jar
+-libraryjars libs/google-api-tasks-v1-rev3-java-1.7.0-beta.jar
 -libraryjars ../../lib/android-sdk-linux/platforms/android-14/android.jar
 
 -keepattributes *Annotation*,Signature
