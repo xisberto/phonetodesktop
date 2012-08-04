@@ -48,7 +48,6 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements 
 			updating = false;
 		} else
 			updating = ((Boolean) last_config).booleanValue();
-		updateMainLayout();
 		
 		findViewById(R.id.btn_authorize).setOnClickListener(this);
 		
@@ -58,6 +57,7 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements 
 	protected void onStart() {
 		super.onStart();
         registerReceiver(receiver, new IntentFilter(GoogleTasksActivity.ACTION_AUTHENTICATE));
+		updateMainLayout();
 	}
 
 	@Override
@@ -153,6 +153,10 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements 
 				txt_authorize.setText(R.string.txt_authorize);
 				btn_authorize.setText(R.string.btn_authorize);
 			}
+		}
+		
+		if (GoogleTasksActivity.my_credentials.getClass().equals(GoogleTasksCredentialsDevelopment.class)) {
+			getSherlock().getActionBar().setSubtitle("Development version");
 		}
 	}
 	

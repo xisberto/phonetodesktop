@@ -1,9 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/text_task_title"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/task_list_item"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:minHeight="20dip"
-    android:textColor="@android:color/primary_text_light"
-    android:text="MMMMMM" />
+    android:minHeight="42dip"
+    android:paddingBottom="6dip"
+    android:paddingTop="6dip" >
 
+    <TextView
+        android:id="@+id/text_task_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textColor="@android:color/primary_text_light" />
+
+    <ImageButton
+        android:id="@+id/btn_remove_task"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:onClick="onClick"
+        android:src="@drawable/ic_menu_delete" />
+
+</LinearLayout>

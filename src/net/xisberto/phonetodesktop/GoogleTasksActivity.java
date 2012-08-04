@@ -47,7 +47,8 @@ public class GoogleTasksActivity extends SherlockActivity {
 	
 	public static final String
 		ACTION_AUTHENTICATE = "net.xisberto.phonetodesktop.authenticate",
-		ACTION_LIST_LINKS = "net.xisberto.phonetodesktop.list_links";
+		ACTION_LIST_TASKS = "net.xisberto.phonetodesktop.list_tasks",
+		ACTION_REMOVE_TASKS = "net.xisberto.phonetodesktop.remove_task";
 	
 	private static final int
 		NOTIFICATION_SENDING = 0,
@@ -58,6 +59,8 @@ public class GoogleTasksActivity extends SherlockActivity {
 	private SharedPreferences settings;
 	private GoogleAccountManager accountManager;
 	private GoogleCredential credential;
+	public static GoogleTasksCredentials my_credentials = new GoogleTasksCredentialsDevelopment();
+	
 	final HttpTransport transport = new NetHttpTransport();
 	final JsonFactory jsonFactory = new JacksonFactory();
 	private Tasks tasksService;
@@ -65,13 +68,9 @@ public class GoogleTasksActivity extends SherlockActivity {
 	private Looper looper;
 	private Handler handler;
 	
-	private boolean debug = false;
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		debug = true;
 		
 		//Configure a background thread
 		HandlerThread thread = new HandlerThread("PhoneToDesktopThread", Process.THREAD_PRIORITY_BACKGROUND);
@@ -88,10 +87,9 @@ public class GoogleTasksActivity extends SherlockActivity {
         log("Current saved token: "+loadAuthToken());
         
         //Configure and build the Tasks object
-        tasksService = Tasks.builder(transport, jsonFactory)
+        tasksService = new Tasks.Builder(transport, jsonFactory, credential)
 			.setApplicationName("PhoneToDesktop")
-			.setHttpRequestInitializer(credential)
-			.setJsonHttpRequestInitializer(new GoogleKeyInitializer(GoogleTasksCredentialsDevelopment.APIKey))
+			.setJsonHttpRequestInitializer(new GoogleKeyInitializer(my_credentials.getAPIKey()))
 			.build();
         
         if (getIntent().getAction().equals(ACTION_AUTHENTICATE)) {
@@ -100,16 +98,18 @@ public class GoogleTasksActivity extends SherlockActivity {
 		} else if(getIntent().getAction().equals(Intent.ACTION_SEND)) {
 			showNotification(NOTIFICATION_SENDING);
 			addTask(getIntent().getStringExtra(Intent.EXTRA_TEXT));
-		} else if(getIntent().getAction().equals(ACTION_LIST_LINKS)) {
-			broadcastUpdatingStatus(ACTION_LIST_LINKS, true);
+		} else if(getIntent().getAction().equals(ACTION_LIST_TASKS)) {
+			broadcastUpdatingStatus(ACTION_LIST_TASKS, true);
 			getTaskList();
+		} else if(getIntent().getAction().equals(ACTION_REMOVE_TASKS)) {
+			removeTask(getIntent().getStringExtra("task_id"));
 		}
 
 		finish();
 	}
-	
+
 	private void log(String msg) {
-		if (debug) {
+		if (my_credentials.getClass().equals(GoogleTasksCredentialsDevelopment.class)) {
 			Log.i("PhoneToDesktop debug", msg);
 		}
 	}
@@ -254,7 +254,7 @@ public class GoogleTasksActivity extends SherlockActivity {
 				if (serverListId == null) {
 					//The server doesn't have any list named PhoneToDesktop
 					//We create it and save its id
-					createAndSaveList();
+					doInitList();
 				} else {
 					//The server has a list named PhoneToDesktop
 					//We save its id
@@ -272,7 +272,7 @@ public class GoogleTasksActivity extends SherlockActivity {
 				if (!serverHasList) {
 					//The server has no list with this id
 					//We create a new list and save its id
-					createAndSaveList();
+					doInitList();
 				}
 				//else
 				//We have the list id and found the same id in server
@@ -282,7 +282,7 @@ public class GoogleTasksActivity extends SherlockActivity {
 		broadcastUpdatingStatus(ACTION_AUTHENTICATE, false);
 	}
 	
-	private void createAndSaveList() throws IOException{
+	private void doInitList() throws IOException{
 		TaskList newList = new TaskList();
 		newList.setTitle(LIST_TITLE);
 		TaskList createdList = tasksService.tasklists().insert(newList).execute();
@@ -299,20 +299,44 @@ public class GoogleTasksActivity extends SherlockActivity {
 			getAuthToken(acc, new GoogleTasksCallback() {
 				@Override
 				public void run() throws IOException {
-					createAndPostTask(text);
+					doAddTask(text);
 				}
 			});
 		}
 	}
 
-	public void createAndPostTask(String text) throws IOException {
+	public void doAddTask(String text) throws IOException {
 		Task task = new Task();
 		task.setTitle(text);
 		Insert ins = null;
 		ins = tasksService.tasks().insert(loadListId(), task);
 		ins.execute();
-		log("Text sended");
+		log("Text sent");
 		dismissNotification(NOTIFICATION_SENDING);
+	}
+
+	
+	private void removeTask(final String task_id) {
+		Account acc = accountManager.getAccountByName(loadAccountName());
+		if (acc == null) {
+			log("Tried to remove task without authorization.");
+			requestSelectAccount();
+		} else {
+			log("Removing task "+task_id);
+			getAuthToken(acc, new GoogleTasksCallback() {
+				@Override
+				public void run() throws IOException {
+					doRemoveTask(task_id);
+				}
+			});
+		}
+	}
+	
+	private void doRemoveTask(String task_id) throws IOException {
+		com.google.api.services.tasks.Tasks.TasksOperations.Delete del = null;
+		del = tasksService.tasks().delete(loadListId(), task_id);
+		del.execute();
+		log("Task removed");
 	}
 
 	private void getTaskList() {
@@ -325,13 +349,13 @@ public class GoogleTasksActivity extends SherlockActivity {
 			getAuthToken(acc, new GoogleTasksCallback() {
 				@Override
 				public void run() throws IOException {
-					loadTaskList();
+					doGetTaskList();
 				}
 			});
 		}
 	}
 	
-	private void loadTaskList() throws IOException {
+	private void doGetTaskList() throws IOException {
 		com.google.api.services.tasks.model.Tasks tasks = tasksService.tasks().list(loadListId()).execute();
 		ArrayList<String> 
 			ids = new ArrayList<String>(),
@@ -423,7 +447,7 @@ public class GoogleTasksActivity extends SherlockActivity {
 	
 	public void broadcastTaskList(ArrayList<String> ids, ArrayList<String> titles) {
 		Intent intent = new Intent();
-		intent.setAction(ACTION_LIST_LINKS);
+		intent.setAction(ACTION_LIST_TASKS);
 		intent.putStringArrayListExtra("ids", ids);
 		intent.putStringArrayListExtra("titles", titles);
 		intent.putExtra("done", true);
