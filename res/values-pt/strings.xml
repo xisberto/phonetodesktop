@@ -38,4 +38,10 @@
     <string name="title_confirm">Confirmar deleção</string>
     <string name="txt_confirm">Você deseja apagar este item?</string>
 
+    <string name="title_what_to_send">Selecione o que enviar</string>
+    <string-array name="what_to_send">
+        <item>Enviar todo o texto</item>
+        <item>Enviar apenas os links</item>
+    </string-array>
+    <string name="check_save_option">Salvar esta escolha</string>
 </resources>

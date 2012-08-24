@@ -17,7 +17,7 @@ This repository doesn't contains some files that are included or used on the fin
 
 		package net.xisberto.phonetodesktop;
 		public class GoogleTasksCredentials {
-				private String APIKey = "API key";
+			private String APIKey = "API key";
 			public String getAPIKey() {
 				return APIKey;
 			}		
@@ -27,7 +27,7 @@ and
 
 		package net.xisberto.phonetodesktop;
 		public class GoogleTasksCredentialsDevelopment extends GoogleTasksCredentials {
-				private String APIKey = "API key";
+			private String APIKey = "API key";
 			@Override
 			public String getAPIKey() {
 				return APIKey;

@@ -5,7 +5,6 @@ import java.util.Vector;
 import android.accounts.Account;
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +13,9 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-public class AccountListFragment extends DialogFragment {
+import com.actionbarsherlock.app.SherlockDialogFragment;
+
+public class AccountListFragment extends SherlockDialogFragment {
 	private Account[] accounts;
 	private AccountSelector selector;
 
@@ -43,7 +44,7 @@ public class AccountListFragment extends DialogFragment {
 			names.add(accounts[i].name);
 		}
 		
-		View v = inflater.inflate(R.layout.layout_list, container, false);
+		View v = inflater.inflate(R.layout.layout_account_list, container, false);
 		ListView list = (ListView) v.findViewById(R.id.list_accounts);
 		list.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, names));
 		list.setOnItemClickListener(new OnItemClickListener() {

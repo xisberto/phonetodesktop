@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 
@@ -52,7 +51,7 @@ public class AboutActivity extends SherlockFragmentActivity implements OnClickLi
 		default:
 			return;
 		}
-		Toast.makeText(getApplicationContext(), i.getStringExtra(Intent.EXTRA_TEXT), Toast.LENGTH_SHORT).show();
+		//Toast.makeText(getApplicationContext(), i.getStringExtra(Intent.EXTRA_TEXT), Toast.LENGTH_SHORT).show();
 		startActivity(Intent.createChooser(i, getResources().getString(R.string.send_to)));
 	}
 

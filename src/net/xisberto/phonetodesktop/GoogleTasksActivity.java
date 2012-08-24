@@ -1,7 +1,9 @@
 package net.xisberto.phonetodesktop;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,11 +13,14 @@ import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
+import android.annotation.SuppressLint;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -23,8 +28,16 @@ import android.os.Looper;
 import android.os.Process;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.CheckBox;
+import android.widget.ListView;
 
-import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockDialogFragment;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.extensions.android2.auth.GoogleAccountManager;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
@@ -38,12 +51,13 @@ import com.google.api.services.tasks.Tasks.TasksOperations.Insert;
 import com.google.api.services.tasks.model.Task;
 import com.google.api.services.tasks.model.TaskList;
 
-public class GoogleTasksActivity extends SherlockActivity {
+public class GoogleTasksActivity extends SherlockFragmentActivity implements OnItemClickListener {
 	public static final String
 		LIST_TITLE = "PhoneToDesktop",
 		PREF_ACCOUNT_NAME = "accountName",
 		PREF_AUTH_TOKEN = "authToken",
-		PREF_LIST_ID = "listId";
+		PREF_LIST_ID = "listId",
+		PREF_WHAT_TO_SEND = "whatToSend";
 	
 	public static final String
 		ACTION_AUTHENTICATE = "net.xisberto.phonetodesktop.authenticate",
@@ -54,7 +68,10 @@ public class GoogleTasksActivity extends SherlockActivity {
 		NOTIFICATION_SENDING = 0,
 		NOTIFICATION_ERROR = 1,
 		NOTIFICATION_NEED_AUTHORIZE = 2,
-		NOTIFICATION_TIMEOUT = 3;
+		NOTIFICATION_TIMEOUT = 3,
+		PREF_SEND_ASK = -1,
+		PREF_SEND_ALL = 0,
+		PREF_SEND_LINKS = 1;
 	
 	private SharedPreferences settings;
 	private GoogleAccountManager accountManager;
@@ -67,6 +84,8 @@ public class GoogleTasksActivity extends SherlockActivity {
 	
 	private Looper looper;
 	private Handler handler;
+
+	private WhatToSendDialog dialog;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -96,8 +115,7 @@ public class GoogleTasksActivity extends SherlockActivity {
 			broadcastUpdatingStatus(ACTION_AUTHENTICATE, true);
 			authorize();
 		} else if(getIntent().getAction().equals(Intent.ACTION_SEND)) {
-			showNotification(NOTIFICATION_SENDING);
-			addTask(getIntent().getStringExtra(Intent.EXTRA_TEXT));
+			addTask(loadWhatToSend(), getIntent().getStringExtra(Intent.EXTRA_TEXT));
 		} else if(getIntent().getAction().equals(ACTION_LIST_TASKS)) {
 			broadcastUpdatingStatus(ACTION_LIST_TASKS, true);
 			getTaskList();
@@ -105,7 +123,6 @@ public class GoogleTasksActivity extends SherlockActivity {
 			removeTask(getIntent().getStringExtra("task_id"));
 		}
 
-		finish();
 	}
 
 	private void log(String msg) {
@@ -280,6 +297,7 @@ public class GoogleTasksActivity extends SherlockActivity {
 			}
 		}
 		broadcastUpdatingStatus(ACTION_AUTHENTICATE, false);
+		finish();
 	}
 	
 	private void doInitList() throws IOException{
@@ -289,25 +307,75 @@ public class GoogleTasksActivity extends SherlockActivity {
 		saveListId(createdList.getId());
 	}
 	
-	private void addTask(final String text) {
+	private void addTask(final int what_to_send, final String text) {
 		Account acc = accountManager.getAccountByName(loadAccountName());
 		if (acc == null) {
 			log("Tried to send text without authorization");
 			requestSelectAccount();
 		} else {
-			log("Sending text");
-			getAuthToken(acc, new GoogleTasksCallback() {
-				@Override
-				public void run() throws IOException {
-					doAddTask(text);
-				}
-			});
+			switch (what_to_send) {
+			case PREF_SEND_ALL:
+			case PREF_SEND_LINKS:
+				showNotification(NOTIFICATION_SENDING);
+				getAuthToken(acc, new GoogleTasksCallback() {
+					@Override
+					public void run() throws IOException {
+						doAddTask(what_to_send, text);
+					}
+				});
+				finish();
+				break;
+			default:
+				log("Asking what to send");
+				dialog = WhatToSendDialog.newInstance();
+				dialog.show(getSupportFragmentManager(), "what_to_send_dialog");
+				break;
+			}
 		}
 	}
+	
+	private String filterLinks(String text) {
+		String[] parts = text.split("\\s");
+		String result = "";
+		for (int i = 0; i < parts.length; i++) {
+			try {
+				URL u = new URL(parts[i]);
+				result += parts[i]+" ";
+			} catch (MalformedURLException e) {
+				//do nothing
+			}
+		}
+		return result;
+	}
 
-	public void doAddTask(String text) throws IOException {
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		log("Selected item on WhatToSendDialog: "+position);
+		CheckBox check_save_option = (CheckBox) dialog.getView().findViewById(R.id.check_save_option);
+		if (check_save_option.isChecked()) {
+			saveWhatToSend(position);
+		}
+		addTask(position, getIntent().getStringExtra(Intent.EXTRA_TEXT));
+		finish();
+	}
+
+	public void doAddTask(int what_to_send, String text) throws IOException {
 		Task task = new Task();
-		task.setTitle(text);
+		switch (what_to_send) {
+		case PREF_SEND_ALL:
+			log("Entire text");
+			task.setTitle(text);
+			break;
+		case PREF_SEND_LINKS:
+			log("Only links");
+			task.setTitle(filterLinks(text));
+			break;
+		default:
+			saveWhatToSend(PREF_SEND_ASK);
+			dismissNotification(NOTIFICATION_SENDING);
+			break;
+		}
+		
 		Insert ins = null;
 		ins = tasksService.tasks().insert(loadListId(), task);
 		ins.execute();
@@ -330,6 +398,7 @@ public class GoogleTasksActivity extends SherlockActivity {
 				}
 			});
 		}
+		finish();
 	}
 	
 	private void doRemoveTask(String task_id) throws IOException {
@@ -353,6 +422,7 @@ public class GoogleTasksActivity extends SherlockActivity {
 				}
 			});
 		}
+		finish();
 	}
 	
 	private void doGetTaskList() throws IOException {
@@ -419,25 +489,52 @@ public class GoogleTasksActivity extends SherlockActivity {
 		return settings.getString(PREF_LIST_ID, null);
 	}
 	
+	private int loadWhatToSend() {
+		return settings.getInt(PREF_WHAT_TO_SEND, PREF_SEND_ASK);
+	}
+	
 	private void saveAccountName(String accountName) {
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putString(PREF_ACCOUNT_NAME, accountName);
-		editor.commit();
+		apply(editor);
 	}
 
 	private  void saveAuthToken(String authToken) {
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putString(PREF_AUTH_TOKEN, authToken);
-		editor.commit();
+		apply(editor);
 	}
 	
 	private void saveListId(String listId) {
 		log("Saving list id: "+listId);
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putString(PREF_LIST_ID, listId);
-		editor.commit();
+		apply(editor);
 	}
 	
+	private void saveWhatToSend(int value) {
+		SharedPreferences.Editor editor = settings.edit();
+		switch (value) {
+		case PREF_SEND_ALL:
+		case PREF_SEND_LINKS:
+			editor.putInt(PREF_WHAT_TO_SEND, value);
+			break;
+		default:
+			editor.putInt(PREF_WHAT_TO_SEND, PREF_SEND_ASK);
+			break;
+		}
+		apply(editor);
+	}
+	
+	@SuppressLint("NewApi")
+	private void apply(Editor editor) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+			editor.apply();
+		} else {
+			editor.commit();
+		}
+	}
+
 	public void broadcastUpdatingStatus(String action, boolean updating) {
 		Intent intent = new Intent();
 		intent.setAction(action);
@@ -456,5 +553,43 @@ public class GoogleTasksActivity extends SherlockActivity {
 	
 	public interface GoogleTasksCallback {
 		public void run() throws IOException;
+	}
+	
+	public static class WhatToSendDialog extends SherlockDialogFragment {
+		public static WhatToSendDialog newInstance() {
+			WhatToSendDialog dialog = new WhatToSendDialog();
+			return dialog;
+		}
+		
+		@Override
+		public void onCreate(Bundle savedInstanceState) {
+			super.onCreate(savedInstanceState);
+			setStyle(STYLE_NORMAL, R.style.Theme_Sherlock_Light_Dialog_Titlebar);
+		}
+
+		@Override
+		public void onDestroy() {
+			super.onDestroy();
+			if (getActivity() instanceof GoogleTasksActivity) {
+				((GoogleTasksActivity) getActivity()).log("Finishing activity");
+			}
+			getActivity().finish();
+		}
+
+		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+			
+			View v = inflater.inflate(R.layout.layout_what_to_send, container, false);
+			ListView list = (ListView) v.findViewById(R.id.list_what_to_send);
+			if (getActivity() instanceof OnItemClickListener) {
+				list.setOnItemClickListener((OnItemClickListener) getActivity());
+			}
+			if (getShowsDialog()) {
+				getDialog().setTitle(R.string.title_what_to_send);
+			}
+			
+			return v;
+			
+		}
 	}
 }
