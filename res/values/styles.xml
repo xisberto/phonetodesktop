@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.Sherlock.Light.Dialog.Titlebar" parent="Theme.Sherlock.Light.Dialog">
+    <style name="AppTheme.Sherlock.Light.Dialog.Titlebar" parent="Theme.Sherlock.Light.Dialog">
         <item name="android:windowNoTitle">false</item>
+    </style>
+    <style name="AppTheme.Translucent.NoTitlebar" parent="Theme.Sherlock.NoActionBar">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowContentOverlay">@null</item>
     </style>
 </resources>

@@ -28,15 +28,11 @@ import android.os.Looper;
 import android.os.Process;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.CheckBox;
-import android.widget.ListView;
 
-import com.actionbarsherlock.app.SherlockDialogFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.extensions.android2.auth.GoogleAccountManager;
@@ -553,43 +549,5 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements OnI
 	
 	public interface GoogleTasksCallback {
 		public void run() throws IOException;
-	}
-	
-	public static class WhatToSendDialog extends SherlockDialogFragment {
-		public static WhatToSendDialog newInstance() {
-			WhatToSendDialog dialog = new WhatToSendDialog();
-			return dialog;
-		}
-		
-		@Override
-		public void onCreate(Bundle savedInstanceState) {
-			super.onCreate(savedInstanceState);
-			setStyle(STYLE_NORMAL, R.style.Theme_Sherlock_Light_Dialog_Titlebar);
-		}
-
-		@Override
-		public void onDestroy() {
-			super.onDestroy();
-			if (getActivity() instanceof GoogleTasksActivity) {
-				((GoogleTasksActivity) getActivity()).log("Finishing activity");
-			}
-			getActivity().finish();
-		}
-
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-			
-			View v = inflater.inflate(R.layout.layout_what_to_send, container, false);
-			ListView list = (ListView) v.findViewById(R.id.list_what_to_send);
-			if (getActivity() instanceof OnItemClickListener) {
-				list.setOnItemClickListener((OnItemClickListener) getActivity());
-			}
-			if (getShowsDialog()) {
-				getDialog().setTitle(R.string.title_what_to_send);
-			}
-			
-			return v;
-			
-		}
 	}
 }

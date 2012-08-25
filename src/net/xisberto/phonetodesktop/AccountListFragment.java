@@ -32,7 +32,7 @@ public class AccountListFragment extends SherlockDialogFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setStyle(STYLE_NORMAL, R.style.Theme_Sherlock_Light_Dialog_Titlebar);
+		setStyle(STYLE_NORMAL, R.style.AppTheme_Sherlock_Light_Dialog_Titlebar);
 	}
 
 	@Override
