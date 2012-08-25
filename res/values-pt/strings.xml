@@ -17,7 +17,7 @@
     <string name="btn_how_it_works">Como funciona</string>
     <string name="txt_authorize">Precisamos da sua autorização para enviar links para a sua conta Google.</string>
     <string name="txt_authorized_to">Autorizado para</string>
-    <string name="btn_authorize">Autorizar accesso</string>
+    <string name="btn_authorize">Preferências</string>
     <string name="btn_authorize_again">Autorizar outra conta</string>
     <string name="btn_waiting_authorization">Esperando autorização</string>
     <string name="txt_sending">Enviando link</string>

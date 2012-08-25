@@ -22,7 +22,6 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -59,7 +58,7 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements 
 		} else
 			updating = ((Boolean) last_config).booleanValue();
 		
-		findViewById(R.id.btn_authorize).setOnClickListener(this);
+		findViewById(R.id.btn_preferences).setOnClickListener(this);
 		
 	}
 
@@ -84,7 +83,7 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements 
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
-		case R.id.btn_authorize:
+		case R.id.btn_preferences:
 			//Let's choose an account to authorize the app
 			//First, list the google.com accounts
 			AccountManager accountManager = AccountManager.get(this);
@@ -144,24 +143,24 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements 
 
 	private void updateMainLayout() {
 		getSherlock().setProgressBarIndeterminateVisibility(updating);
-		Button btn_authorize = (Button) findViewById(R.id.btn_authorize);
+		//Button btn_authorize = (Button) findViewById(R.id.btn_authorize);
 		TextView txt_authorize = (TextView) findViewById(R.id.txt_authorize);
-		btn_authorize.setEnabled(!updating);
+		//btn_authorize.setEnabled(!updating);
 		
 		if (updating) {
-			btn_authorize.setText(R.string.btn_waiting_authorization);
+			//btn_authorize.setText(R.string.btn_waiting_authorization);
 			txt_authorize.setText(R.string.txt_authorize);
 		} else {
 			SharedPreferences prefs = getSharedPreferences(GoogleTasksActivity.class.getSimpleName(), MODE_PRIVATE);
-			String account_name = prefs.getString(GoogleTasksActivity.PREF_ACCOUNT_NAME, null);
+			String account_name = prefs.getString(getResources().getString(R.string.pref_account_name), null);
 			if (account_name != null) {
 				txt_authorize.setText(
 						getResources().getString(R.string.txt_authorized_to)+
 						" "+account_name);
-				btn_authorize.setText(R.string.btn_authorize_again);
+				//btn_authorize.setText(R.string.btn_authorize_again);
 			} else {
 				txt_authorize.setText(R.string.txt_authorize);
-				btn_authorize.setText(R.string.btn_authorize);
+				//btn_authorize.setText(R.string.btn_authorize);
 			}
 		}
 		

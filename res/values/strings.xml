@@ -17,7 +17,7 @@
     <string name="btn_how_it_works">How it works</string>
     <string name="txt_authorize">We need your authorization to send links to your Google account.</string>
     <string name="txt_authorized_to">Authorized to</string>
-    <string name="btn_authorize">Authorize access</string>
+    <string name="btn_authorize">Preferences</string>
     <string name="btn_authorize_again">Authorize other account</string>
     <string name="btn_waiting_authorization">Waiting authorization</string>
     <string name="txt_sending">Sending links</string>
@@ -52,6 +52,7 @@ When the text is successfully sent, the notification goes away.</string>
     <string name="txt_empty_list">Empty list</string>
     <string name="title_confirm">Confirm delete</string>
     <string name="txt_confirm">Do you want to delete this item?</string>
+    
     <string name="title_what_to_send">Select what to send</string>
 
     <string-array name="what_to_send">

@@ -59,11 +59,7 @@ import com.google.api.services.tasks.model.TaskList;
 
 public class GoogleTasksActivity extends SherlockFragmentActivity implements OnItemClickListener {
 	public static final String
-		LIST_TITLE = "PhoneToDesktop",
-		PREF_ACCOUNT_NAME = "accountName",
-		PREF_AUTH_TOKEN = "authToken",
-		PREF_LIST_ID = "listId",
-		PREF_WHAT_TO_SEND = "whatToSend";
+		LIST_TITLE = "PhoneToDesktop";
 	
 	public static final String
 		ACTION_AUTHENTICATE = "net.xisberto.phonetodesktop.authenticate",
@@ -74,11 +70,8 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements OnI
 		NOTIFICATION_SENDING = 0,
 		NOTIFICATION_ERROR = 1,
 		NOTIFICATION_NEED_AUTHORIZE = 2,
-		NOTIFICATION_TIMEOUT = 3,
-		PREF_SEND_ASK = -1,
-		PREF_SEND_ALL = 0,
-		PREF_SEND_LINKS = 1;
-	
+		NOTIFICATION_TIMEOUT = 3;
+
 	private SharedPreferences settings;
 	private GoogleAccountManager accountManager;
 	private GoogleCredential credential;
@@ -313,15 +306,15 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements OnI
 		saveListId(createdList.getId());
 	}
 	
-	private void addTask(final int what_to_send, final String text) {
+	private void addTask(final String what_to_send, final String text) {
 		Account acc = accountManager.getAccountByName(loadAccountName());
 		if (acc == null) {
 			log("Tried to send text without authorization");
 			requestSelectAccount();
 		} else {
-			switch (what_to_send) {
-			case PREF_SEND_ALL:
-			case PREF_SEND_LINKS:
+			String[] entryvalues_what_to_send = getResources().getStringArray(R.array.entryvalues_what_to_send);
+			if ((what_to_send.equals(entryvalues_what_to_send[0]))
+					|| what_to_send.equals(entryvalues_what_to_send[1])) {
 				showNotification(NOTIFICATION_SENDING);
 				getAuthToken(acc, new GoogleTasksCallback() {
 					@Override
@@ -330,12 +323,10 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements OnI
 					}
 				});
 				finish();
-				break;
-			default:
+			} else {
 				log("Asking what to send");
 				dialog = WhatToSendDialog.newInstance();
 				dialog.show(getSupportFragmentManager(), "what_to_send_dialog");
-				break;
 			}
 		}
 	}
@@ -361,24 +352,26 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements OnI
 		if (check_save_option.isChecked()) {
 			saveWhatToSend(position);
 		}
-		addTask(position, getIntent().getStringExtra(Intent.EXTRA_TEXT));
+		addTask(
+				getResources().getStringArray(R.array.entryvalues_what_to_send)[position],
+				getIntent().getStringExtra(Intent.EXTRA_TEXT));
 	}
 
-	public void doAddTask(int what_to_send, String text) throws IOException {
+	public void doAddTask(String what_to_send, String text) throws IOException {
 		Task task = new Task();
-		switch (what_to_send) {
-		case PREF_SEND_ALL:
+		String[] entryvalues_what_to_send = getResources().getStringArray(R.array.entryvalues_what_to_send);
+		if (what_to_send.equals(entryvalues_what_to_send[0])) {
 			log("Entire text");
 			task.setTitle(text);
-			break;
-		case PREF_SEND_LINKS:
+		} else if (what_to_send.equals(entryvalues_what_to_send[1])) {
 			log("Only links");
 			task.setTitle(filterLinks(text));
-			break;
-		default:
-			saveWhatToSend(PREF_SEND_ASK);
-			dismissNotification(NOTIFICATION_SENDING);
-			break;
+		} else {
+			//Any other value to what_to_send will be ignored
+			//The entire text will be sent, and next time we will ask the user what to send
+			log("Reverting to default");
+			task.setTitle(text);
+			saveWhatToSend(2);
 		}
 		
 		Insert ins = null;
@@ -451,10 +444,10 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements OnI
 		accountManager.invalidateAuthToken(credential.getAccessToken());
 		credential.setAccessToken(null);
 		SharedPreferences.Editor editor = settings.edit();
-		editor.remove(PREF_AUTH_TOKEN);
-		editor.remove(PREF_ACCOUNT_NAME);
-		editor.remove(PREF_LIST_ID);
-		editor.commit();
+		editor.remove(getResources().getString(R.string.pref_auth_token));
+		editor.remove(getResources().getString(R.string.pref_account_name));
+		editor.remove(getResources().getString(R.string.pref_list_id));
+		apply(editor);
 	}
 	
 	private void requestSelectAccount() {
@@ -486,51 +479,47 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements OnI
 	}
 
 	private String loadAccountName() {
-		return settings.getString(PREF_ACCOUNT_NAME, null);
+		return settings.getString(getResources().getString(R.string.pref_account_name), null);
 	}
 	
 	private String loadAuthToken() {
-		return settings.getString(PREF_AUTH_TOKEN, null);
+		return settings.getString(getResources().getString(R.string.pref_auth_token), null);
 	}
 	
 	private String loadListId() {
-		return settings.getString(PREF_LIST_ID, null);
+		return settings.getString(getResources().getString(R.string.pref_list_id), null);
 	}
 	
-	private int loadWhatToSend() {
-		return settings.getInt(PREF_WHAT_TO_SEND, PREF_SEND_ASK);
+	private String loadWhatToSend() {
+		return settings.getString(
+				getResources().getString(R.string.pref_what_to_send), 
+				getResources().getStringArray(R.array.entryvalues_what_to_send)[2]);
 	}
 	
 	private void saveAccountName(String accountName) {
 		SharedPreferences.Editor editor = settings.edit();
-		editor.putString(PREF_ACCOUNT_NAME, accountName);
+		editor.putString(getResources().getString(R.string.pref_account_name), accountName);
 		apply(editor);
 	}
 
 	private  void saveAuthToken(String authToken) {
 		SharedPreferences.Editor editor = settings.edit();
-		editor.putString(PREF_AUTH_TOKEN, authToken);
+		editor.putString(getResources().getString(R.string.pref_auth_token), authToken);
 		apply(editor);
 	}
 	
 	private void saveListId(String listId) {
 		log("Saving list id: "+listId);
 		SharedPreferences.Editor editor = settings.edit();
-		editor.putString(PREF_LIST_ID, listId);
+		editor.putString(getResources().getString(R.string.pref_list_id), listId);
 		apply(editor);
 	}
 	
 	private void saveWhatToSend(int value) {
 		SharedPreferences.Editor editor = settings.edit();
-		switch (value) {
-		case PREF_SEND_ALL:
-		case PREF_SEND_LINKS:
-			editor.putInt(PREF_WHAT_TO_SEND, value);
-			break;
-		default:
-			editor.putInt(PREF_WHAT_TO_SEND, PREF_SEND_ASK);
-			break;
-		}
+		editor.putString(
+				getResources().getString(R.string.pref_what_to_send),
+				getResources().getStringArray(R.array.entryvalues_what_to_send)[value]);
 		apply(editor);
 	}
 	
