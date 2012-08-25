@@ -362,7 +362,6 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements OnI
 			saveWhatToSend(position);
 		}
 		addTask(position, getIntent().getStringExtra(Intent.EXTRA_TEXT));
-		finish();
 	}
 
 	public void doAddTask(int what_to_send, String text) throws IOException {

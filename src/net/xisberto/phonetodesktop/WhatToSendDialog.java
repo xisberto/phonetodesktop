@@ -10,6 +10,7 @@
  ******************************************************************************/
 package net.xisberto.phonetodesktop;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,8 +33,8 @@ public class WhatToSendDialog extends SherlockDialogFragment {
 	}
 
 	@Override
-	public void onDestroy() {
-		super.onDestroy();
+	public void onCancel(DialogInterface dialog) {
+		super.onCancel(dialog);
 		getActivity().finish();
 	}
 
