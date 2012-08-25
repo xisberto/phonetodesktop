@@ -131,8 +131,9 @@ public class LinkListActivity extends SherlockFragmentActivity implements OnClic
 
 		if (done) {
 			findViewById(R.id.progressBar_linkList).setVisibility(View.GONE);
-			if (titles == null) {
-				text.setText("Empty list");
+			if ((titles == null)
+					|| (titles.size() < 1)) {
+				text.setText(R.string.txt_empty_list);
 				list_view.setVisibility(View.GONE);
 				text.setVisibility(View.VISIBLE);
 			} else {

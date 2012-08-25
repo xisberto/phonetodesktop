@@ -35,6 +35,7 @@
     <string name="send_to">Enviar link para&#8230;</string>
     <string name="txt_list_links">Ver textos enviados</string>
     <string name="title_activity_link_list">Lista de textos</string>
+    <string name="txt_empty_list">Lista vazia</string>
     <string name="title_confirm">Confirmar deleção</string>
     <string name="txt_confirm">Você deseja apagar este item?</string>
 

@@ -423,15 +423,18 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements OnI
 	
 	private void doGetTaskList() throws IOException {
 		com.google.api.services.tasks.model.Tasks tasks = tasksService.tasks().list(loadListId()).execute();
-		ArrayList<String> 
+		ArrayList<String>
 			ids = new ArrayList<String>(),
 			titles = new ArrayList<String>();
 		
-		List<Task> list = tasks.getItems();
-		for (Task task : list) {
-			ids.add(task.getId());
-			titles.add(task.getTitle());
+		if (tasks.getItems() != null) {
+			List<Task> list = tasks.getItems();
+			for (Task task : list) {
+				ids.add(task.getId());
+				titles.add(task.getTitle());
+			}
 		}
+		
 		broadcastTaskList(ids, titles);
 	}
 
