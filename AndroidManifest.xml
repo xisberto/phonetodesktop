@@ -12,8 +12,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="net.xisberto.phonetodesktop"
     android:installLocation="preferExternal"
-    android:versionCode="107"
-    android:versionName="1.0.7" >
+    android:versionCode="108"
+    android:versionName="1.0.8" >
 
     <uses-sdk
         android:minSdkVersion="7"
@@ -48,13 +48,22 @@
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
-        <activity android:name="SelectAccountsActivity" >
-        </activity>
         <activity android:name="TutorialActivity" >
         </activity>
-        <activity android:name="Preferences" >
+        <activity android:name="SettingsActivity" >
+            <intent-filter>
+                <category android:name="android.intent.category.PREFERENCE" />
+            </intent-filter>
+        </activity>
+        <activity android:name="SettingsFragmentActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.PREFERENCE"/>
+            </intent-filter>
         </activity>
         <activity android:name="AboutActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="net.xisberto.phonetodesktop.PhoneToDesktopActivity" />
         </activity>
         <activity
             android:name=".LinkListActivity"

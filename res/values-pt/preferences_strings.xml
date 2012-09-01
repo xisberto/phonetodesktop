@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="pref_category_general">General</string>
-    <string name="pref_account_name_title">Google Account</string>
-    <string name="pref_account_name_summary">Select a Google Account</string>
-    <string name="pref_what_to_send_title">What to send</string>
-    <string name="pref_what_to_send_summary">What to send when sharing texts</string>
+    <string name="pref_category_general">Geral</string>
+    <string name="pref_account_name_title">Conta Google</string>
+    <string name="pref_account_name_summary">Selecione uma conta do Google</string>
+    <string name="pref_what_to_send_title">O que enviar</string>
+    <string name="pref_what_to_send_summary">O que enviar quando compartilhar textos</string>
     
     <string name="pref_account_name">accountName</string>
     <string name="pref_auth_token">authToken</string>
@@ -12,9 +12,9 @@
     <string name="pref_what_to_send">whatToSend</string>
     
     <string-array name="entries_what_to_send">
-        <item>Send the entire text</item>
-        <item>Send only links</item>
-        <item>Always ask me</item>
+        <item>Enviar todo o texto</item>
+        <item>Enviar apenas os links</item>
+        <item>Sempre pergunte</item>
     </string-array>
     <string-array name="entryvalues_what_to_send">
         <item>entire_text</item>

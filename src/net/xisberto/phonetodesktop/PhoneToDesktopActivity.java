@@ -10,16 +10,15 @@
  ******************************************************************************/
 package net.xisberto.phonetodesktop;
 
-import net.xisberto.phonetodesktop.AccountListFragment.AccountSelector;
-import android.accounts.Account;
-import android.accounts.AccountManager;
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
@@ -29,12 +28,11 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 
-public class PhoneToDesktopActivity extends SherlockFragmentActivity implements OnClickListener, AccountSelector {
+public class PhoneToDesktopActivity extends SherlockFragmentActivity implements OnClickListener {
 	
 	public static final int
 		REQUEST_SELECT_ACCOUNT = 0;
 	
-	private DialogFragment dialog;
 	private boolean updating = false;
 	
 	private BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -70,8 +68,8 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements 
 	}
 
 	@Override
-	protected void onStop() {
-		super.onStop();
+	protected void onDestroy() {
+		super.onDestroy();
 		unregisterReceiver(receiver);
 	}
 
@@ -84,36 +82,13 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements 
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.btn_preferences:
-			//Let's choose an account to authorize the app
-			//First, list the google.com accounts
-			AccountManager accountManager = AccountManager.get(this);
-			Account[] accounts = accountManager.getAccountsByType("com.google");
-			dialog = AccountListFragment.newInstance(accounts);
-			dialog.show(getSupportFragmentManager(), "dialog");
+			//Let's show to the user the PreferencesActivity
+			startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
 			break;
 		default:
 			break;
 		}
 	}
-
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		switch (requestCode) {
-		case REQUEST_SELECT_ACCOUNT:
-			if (resultCode == RESULT_OK) {
-				//User selected an account let's authenticate
-				Intent intent = new Intent(data);
-				intent.setClass(getApplicationContext(), GoogleTasksActivity.class);
-				intent.setAction(GoogleTasksActivity.ACTION_AUTHENTICATE);
-				startActivity(intent);
-			}
-			break;
-
-		default:
-			break;
-		}
-	}
-	
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -151,16 +126,14 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements 
 			//btn_authorize.setText(R.string.btn_waiting_authorization);
 			txt_authorize.setText(R.string.txt_authorize);
 		} else {
-			SharedPreferences prefs = getSharedPreferences(GoogleTasksActivity.class.getSimpleName(), MODE_PRIVATE);
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 			String account_name = prefs.getString(getResources().getString(R.string.pref_account_name), null);
 			if (account_name != null) {
 				txt_authorize.setText(
 						getResources().getString(R.string.txt_authorized_to)+
 						" "+account_name);
-				//btn_authorize.setText(R.string.btn_authorize_again);
 			} else {
 				txt_authorize.setText(R.string.txt_authorize);
-				//btn_authorize.setText(R.string.btn_authorize);
 			}
 		}
 		
@@ -172,15 +145,6 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements 
 	private void updateMainLayout(Intent intent) {
 		updating = intent.getBooleanExtra("updating", false);
 		updateMainLayout();
-	}
-
-	@Override
-	public void selectAccount(Account acc) {
-		dialog.dismiss();
-		Intent intent = new Intent(getApplicationContext(), GoogleTasksActivity.class);
-		intent.setAction(GoogleTasksActivity.ACTION_AUTHENTICATE);
-		intent.putExtra("account", acc);
-		startActivity(intent);
 	}
 
 }
