@@ -10,7 +10,6 @@
  ******************************************************************************/
 package net.xisberto.phonetodesktop;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -18,20 +17,14 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 
 public class PhoneToDesktopActivity extends SherlockFragmentActivity implements OnClickListener {
-	
-	public static final int
-		REQUEST_SELECT_ACCOUNT = 0;
 	
 	private boolean updating = false;
 	
@@ -41,7 +34,6 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements 
 			updateMainLayout(intent);
 		}
 	};
-
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -56,8 +48,10 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements 
 		} else
 			updating = ((Boolean) last_config).booleanValue();
 		
+		findViewById(R.id.btn_link_list).setOnClickListener(this);
 		findViewById(R.id.btn_preferences).setOnClickListener(this);
-		
+		findViewById(R.id.btn_how_it_works).setOnClickListener(this);
+		findViewById(R.id.btn_about).setOnClickListener(this);
 	}
 
 	@Override
@@ -80,40 +74,20 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements 
 
 	@Override
 	public void onClick(View v) {
-		switch (v.getId()) {
+		switch(v.getId()){
+		case R.id.btn_how_it_works:
+			startActivity(new Intent(getApplicationContext(), TutorialActivity.class));
+			break;
+		case R.id.btn_about:
+			startActivity(new Intent(getApplicationContext(), AboutActivity.class));
+			break;
+		case R.id.btn_link_list:
+			startActivity(new Intent(getApplicationContext(), LinkListActivity.class));
+			break;
 		case R.id.btn_preferences:
-			//Let's show to the user the PreferencesActivity
 			startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
 			break;
-		default:
-			break;
 		}
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.main_menu, menu);
-		return super.onCreateOptionsMenu(menu);
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		Intent i = null;
-		switch(item.getItemId()){
-		case R.id.item_how_works:
-			i = new Intent(getApplicationContext(), TutorialActivity.class);
-			startActivity(i);
-			break;
-		case R.id.item_about:
-			i = new Intent(getApplicationContext(), AboutActivity.class);
-			startActivity(i);
-			break;
-		case R.id.item_list_links:
-			i = new Intent(getApplicationContext(), LinkListActivity.class);
-			startActivity(i);
-			break;
-		}
-		return super.onOptionsItemSelected(item);
 	}
 
 	private void updateMainLayout() {

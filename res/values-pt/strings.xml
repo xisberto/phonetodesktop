@@ -17,7 +17,8 @@
     <string name="btn_how_it_works">Como funciona</string>
     <string name="txt_authorize">Precisamos da sua autorização para enviar links para a sua conta Google.</string>
     <string name="txt_authorized_to">Autorizado para</string>
-    <string name="btn_authorize">Preferências</string>
+    <string name="txt_check_preferences">Veja Preferências no menu para alterar</string>
+    <string name="btn_preferences">Preferências</string>
     <string name="btn_authorize_again">Autorizar outra conta</string>
     <string name="btn_waiting_authorization">Esperando autorização</string>
     <string name="txt_sending">Enviando link</string>
@@ -47,7 +48,7 @@
     <string name="btn_share_this">Clique para compartilhar o link</string>
     <string name="img_about">Logomarca do Phone To Desktop</string>
     <string name="send_to">Enviar link para&#8230;</string>
-    <string name="txt_list_links">Ver textos enviados</string>
+    <string name="btn_link_list">Ver textos enviados</string>
     <string name="title_activity_link_list">Lista de textos</string>
     <string name="txt_empty_list">Lista vazia</string>
     <string name="title_confirm">Confirmar deleção</string>

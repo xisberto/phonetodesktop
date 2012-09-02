@@ -9,10 +9,12 @@
   Contributors:
       Humberto Fraga <xisberto@gmail.com> - initial API and implementation
 -->
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
     <style name="AppTheme.Sherlock.Light.Dialog.Titlebar" parent="Theme.Sherlock.Light.Dialog">
         <item name="android:windowNoTitle">false</item>
     </style>
+
     <style name="AppTheme.Translucent.NoTitlebar" parent="Theme.Sherlock.NoActionBar">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
@@ -20,4 +22,12 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowContentOverlay">@null</item>
     </style>
+
+    <style name="HomeButton" >
+        <item name="android:gravity">left|center_vertical</item>
+        <item name="android:drawablePadding">3dp</item>
+        <item name="android:minHeight">60dp</item>
+        <item name="android:background">@drawable/home_button</item>
+    </style>
+
 </resources>

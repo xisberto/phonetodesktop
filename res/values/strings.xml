@@ -17,7 +17,8 @@
     <string name="btn_how_it_works">How it works</string>
     <string name="txt_authorize">We need your authorization to send links to your Google account.</string>
     <string name="txt_authorized_to">Authorized to</string>
-    <string name="btn_authorize">Preferences</string>
+    <string name="txt_check_preferences">Check Preferences on menu to change</string>
+    <string name="btn_preferences">Preferences</string>
     <string name="btn_authorize_again">Authorize other account</string>
     <string name="btn_waiting_authorization">Waiting authorization</string>
     <string name="txt_sending">Sending links</string>
@@ -47,7 +48,7 @@ When the text is successfully sent, the notification goes away.</string>
     <string name="btn_share_this">Click to share the link</string>
     <string name="img_about">Phone To Desktop logo</string>
     <string name="send_to">Send link to&#8230;</string>
-    <string name="txt_list_links">View sent texts</string>
+    <string name="btn_link_list">View sent texts</string>
     <string name="title_activity_link_list">Sent Texts List</string>
     <string name="txt_empty_list">Empty list</string>
     <string name="title_confirm">Confirm delete</string>
