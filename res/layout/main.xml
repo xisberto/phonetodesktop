@@ -73,7 +73,6 @@
                 style="@style/HomeButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="3dp"
                 android:drawableLeft="@drawable/ic_list"
                 android:text="@string/btn_link_list" />
 
@@ -82,7 +81,6 @@
                 style="@style/HomeButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="3dp"
                 android:drawableLeft="@drawable/ic_preferences"
                 android:text="@string/btn_preferences" />
 
