@@ -72,7 +72,7 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements
 	private SharedPreferences settings;
 	private GoogleAccountManager accountManager;
 	private GoogleCredential credential;
-	public static GoogleTasksCredentials my_credentials = new GoogleTasksCredentialsDevelopment();
+	public static GoogleTasksCredentials my_credentials = new GoogleTasksCredentials();
 
 	final HttpTransport transport = new NetHttpTransport();
 	final JsonFactory jsonFactory = new JacksonFactory();
