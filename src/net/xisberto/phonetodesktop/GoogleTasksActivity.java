@@ -72,7 +72,7 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements
 	private SharedPreferences settings;
 	private GoogleAccountManager accountManager;
 	private GoogleCredential credential;
-	public static GoogleTasksCredentials my_credentials = new GoogleTasksCredentialsDevelopment();
+	public static GoogleTasksCredentials my_credentials = new GoogleTasksCredentials();
 
 	final HttpTransport transport = new NetHttpTransport();
 	final JsonFactory jsonFactory = new JacksonFactory();
@@ -336,6 +336,7 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements
 		if (acc == null) {
 			log("Tried to send text without authorization");
 			requestSelectAccount();
+			finish();
 		} else {
 			String[] entryvalues_what_to_send = getResources().getStringArray(
 					R.array.entryvalues_what_to_send);
