@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="pref_category_general">General</string>
-    <string name="pref_account_name_title">Google Account</string>
+    <string name="pref_account_name_title">Authorize</string>
     <string name="pref_account_name_summary">Select a Google Account</string>
     <string name="pref_what_to_send_title">What to send</string>
     <string name="pref_what_to_send_summary">What to send when sharing texts</string>

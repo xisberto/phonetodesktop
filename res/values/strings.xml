@@ -15,7 +15,7 @@
     <string name="app_name">Phone To Desktop</string>
     <string name="title_select_account">Select a Google account</string>
     <string name="btn_how_it_works">How it works</string>
-    <string name="txt_authorize">We need your authorization to send links to your Google account.</string>
+    <string name="txt_authorize">Go to Preferences to authorize Phone To Desktop.</string>
     <string name="txt_authorized_to">Authorized to</string>
     <string name="txt_check_preferences">Check Preferences on menu to change</string>
     <string name="btn_preferences">Preferences</string>

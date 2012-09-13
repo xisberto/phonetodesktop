@@ -15,7 +15,7 @@
     <string name="app_name">Phone To Desktop</string>
     <string name="title_select_account">Selecione uma conta Google</string>
     <string name="btn_how_it_works">Como funciona</string>
-    <string name="txt_authorize">Precisamos da sua autorização para enviar links para a sua conta Google.</string>
+    <string name="txt_authorize">Vá em Preferências para autorizar o Phone To Desktop.</string>
     <string name="txt_authorized_to">Autorizado para</string>
     <string name="txt_check_preferences">Veja Preferências no menu para alterar</string>
     <string name="btn_preferences">Preferências</string>

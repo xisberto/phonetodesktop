@@ -168,6 +168,7 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements
 		case NOTIFICATION_NEED_AUTHORIZE:
 			notificationIntent.setClass(getApplicationContext(),
 					PhoneToDesktopActivity.class);
+			notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			contentIntent = PendingIntent.getActivity(getApplicationContext(),
 					0, notificationIntent, 0);
 			builder.setContentIntent(contentIntent)
@@ -192,7 +193,7 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements
 		default:
 			return;
 		}
-		manager.notify(notification_type, builder.getNotification());
+		manager.notify(notification_type, builder.build());
 	}
 
 	private void dismissNotification(int notificationId) {
@@ -482,6 +483,8 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements
 
 	private void requestSelectAccount() {
 		dismissNotification(NOTIFICATION_SENDING);
+		broadcastUpdatingStatus(ACTION_AUTHENTICATE, false);
+		broadcastTaskList(null, null);
 		clearCredential();
 		showNotification(NOTIFICATION_NEED_AUTHORIZE);
 	}
