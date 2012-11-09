@@ -9,7 +9,7 @@ import android.preference.ListPreference;
 import android.util.Log;
 
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
-import com.google.api.client.googleapis.extensions.android2.auth.GoogleAccountManager;
+import com.google.api.client.googleapis.extensions.android.accounts.GoogleAccountManager;
 
 public class SettingsActivity extends SherlockPreferenceActivity implements
 		OnSharedPreferenceChangeListener {

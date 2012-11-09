@@ -45,16 +45,16 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.CheckBox;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
-import com.google.api.client.googleapis.extensions.android2.auth.GoogleAccountManager;
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.googleapis.extensions.android.accounts.GoogleAccountManager;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
-import com.google.api.client.googleapis.services.GoogleKeyInitializer;
 import com.google.api.client.http.HttpTransport;
-import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson.JacksonFactory;
+import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.tasks.Tasks;
 import com.google.api.services.tasks.Tasks.TasksOperations.Insert;
+import com.google.api.services.tasks.TasksScopes;
 import com.google.api.services.tasks.model.Task;
 import com.google.api.services.tasks.model.TaskList;
 
@@ -71,11 +71,11 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements
 
 	private SharedPreferences settings;
 	private GoogleAccountManager accountManager;
-	private GoogleCredential credential;
+	private GoogleAccountCredential credential;
 	public static GoogleTasksCredentials my_credentials = new GoogleTasksCredentials();
 
-	final HttpTransport transport = new NetHttpTransport();
-	final JsonFactory jsonFactory = new JacksonFactory();
+	final HttpTransport transport = AndroidHttp.newCompatibleTransport();
+	final JsonFactory jsonFactory = new GsonFactory();
 	private Tasks tasksService;
 
 	private Looper looper;
@@ -100,14 +100,13 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements
 		accountManager = new GoogleAccountManager(getApplicationContext());
 
 		// Configure GoogleCredential. loadAuthToken can return null
-		credential = new GoogleCredential();
+		credential = GoogleAccountCredential.usingOAuth2(this, TasksScopes.TASKS);
+		credential.setSelectedAccountName(loadAccountName());
 		log("Current saved token: " + loadAuthToken());
 
 		// Configure and build the Tasks object
 		tasksService = new Tasks.Builder(transport, jsonFactory, credential)
 				.setApplicationName("PhoneToDesktop")
-				.setJsonHttpRequestInitializer(
-						new GoogleKeyInitializer(my_credentials.getAPIKey()))
 				.build();
 
 		if (getIntent().getAction().equals(ACTION_AUTHENTICATE)) {
@@ -223,7 +222,7 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements
 					String new_auth_token = bundle.getString(AccountManager.KEY_AUTHTOKEN);
 					//saveAccountName(bundle.getString(AccountManager.KEY_ACCOUNT_NAME));
 					saveAuthToken(new_auth_token);
-					credential.setAccessToken(new_auth_token);
+					//credential.setAccessToken(new_auth_token);
 					log("Token obtained: " + new_auth_token);
 					// And executing the callback function
 					callback.run();
@@ -472,8 +471,8 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements
 	}
 
 	private void clearCredential() {
-		accountManager.invalidateAuthToken(credential.getAccessToken());
-		credential.setAccessToken(null);
+		//accountManager.invalidateAuthToken(credential.getAccessToken());
+		//credential.setAccessToken(null);
 		SharedPreferences.Editor editor = settings.edit();
 		editor.remove(getResources().getString(R.string.pref_auth_token));
 		//editor.remove(getResources().getString(R.string.pref_account_name));
@@ -494,8 +493,8 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements
 			GoogleJsonResponseException exception = (GoogleJsonResponseException) e;
 			switch (exception.getStatusCode()) {
 			case 401:
-				accountManager.invalidateAuthToken(credential.getAccessToken());
-				credential.setAccessToken(null);
+				//accountManager.invalidateAuthToken(credential.getAccessToken());
+				//credential.setAccessToken(null);
 				saveAuthToken(null);
 				return true;
 			case 404:

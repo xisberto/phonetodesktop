@@ -23,19 +23,7 @@
 -injars      bin/classes
 -outjars     bin/classes-processed.jar
 
--libraryjars libs/commons-logging-1.1.1.jar
--libraryjars libs/jackson-core-asl-1.9.4.jar
--libraryjars libs/guava-11.0.1.jar
--libraryjars libs/jsr305-1.3.9.jar
--libraryjars libs/gson-2.1.jar
--libraryjars libs/httpcore-4.0.1.jar
--libraryjars libs/httpclient-4.0.3.jar
--libraryjars libs/protobuf-java-2.2.0.jar
--libraryjars libs/google-api-client-1.10.1-beta.jar
--libraryjars libs/google-http-client-1.10.2-beta.jar
--libraryjars libs/google-oauth-client-1.10.0-beta.jar
--libraryjars libs/google-api-client-android2-1.10.1-beta.jar
--libraryjars libs/google-api-tasks-v1-rev3-java-1.7.0-beta.jar
+-libraryjars libs/*
 -libraryjars ../../lib/android-sdk-linux/platforms/android-14/android.jar
 
 -keepattributes *Annotation*,Signature
