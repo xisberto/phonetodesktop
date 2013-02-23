@@ -69,7 +69,7 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements
 	private static final int NOTIFICATION_SENDING = 0, NOTIFICATION_ERROR = 1,
 			NOTIFICATION_NEED_AUTHORIZE = 2, NOTIFICATION_TIMEOUT = 3;
 
-	private SharedPreferences settings;
+	private Preferences preferences;
 	private GoogleAccountManager accountManager;
 	private GoogleAccountCredential credential;
 	public static GoogleTasksCredentials my_credentials = new GoogleTasksCredentials();
@@ -95,14 +95,12 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements
 		handler = new Handler(looper);
 
 		// Configure app's preferences
-		settings = PreferenceManager
-				.getDefaultSharedPreferences(getApplicationContext());
+		preferences = new Preferences(getApplicationContext());
 		accountManager = new GoogleAccountManager(getApplicationContext());
 
 		// Configure GoogleCredential. loadAuthToken can return null
 		credential = GoogleAccountCredential.usingOAuth2(this, TasksScopes.TASKS);
-		credential.setSelectedAccountName(loadAccountName());
-		log("Current saved token: " + loadAuthToken());
+		credential.setSelectedAccountName(preferences.loadAccountName());
 
 		// Configure and build the Tasks object
 		tasksService = new Tasks.Builder(transport, jsonFactory, credential)
@@ -113,7 +111,7 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements
 			broadcastUpdatingStatus(ACTION_AUTHENTICATE, true);
 			authorize();
 		} else if (getIntent().getAction().equals(Intent.ACTION_SEND)) {
-			addTask(loadWhatToSend(),
+			addTask(preferences.loadWhatToSend(),
 					getIntent().getStringExtra(Intent.EXTRA_TEXT));
 		} else if (getIntent().getAction().equals(ACTION_LIST_TASKS)) {
 			broadcastUpdatingStatus(ACTION_LIST_TASKS, true);
@@ -221,7 +219,7 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements
 					// authtoken
 					String new_auth_token = bundle.getString(AccountManager.KEY_AUTHTOKEN);
 					//saveAccountName(bundle.getString(AccountManager.KEY_ACCOUNT_NAME));
-					saveAuthToken(new_auth_token);
+					preferences.saveAuthToken(new_auth_token);
 					//credential.setAccessToken(new_auth_token);
 					log("Token obtained: " + new_auth_token);
 					// And executing the callback function
@@ -281,7 +279,7 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements
 		List<TaskList> list = null;
 		list = tasksService.tasklists().list().execute().getItems();
 		if (list != null) {
-			if (loadListId() == null) {
+			if (preferences.loadListId() == null) {
 				// We don't have a list id saved search in the server
 				// for a list with the title PhoneToDesktop
 				String serverListId = null;
@@ -298,13 +296,13 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements
 				} else {
 					// The server has a list named PhoneToDesktop
 					// We save its id
-					saveListId(serverListId);
+					preferences.saveListId(serverListId);
 				}
 			} else {
 				// We have a saved id. Let's search this id in server
 				boolean serverHasList = false;
 				for (TaskList taskList : list) {
-					if (taskList.getId().equals(loadListId())) {
+					if (taskList.getId().equals(preferences.loadListId())) {
 						serverHasList = true;
 						break;
 					}
@@ -328,11 +326,11 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements
 		newList.setTitle(LIST_TITLE);
 		TaskList createdList = tasksService.tasklists().insert(newList)
 				.execute();
-		saveListId(createdList.getId());
+		preferences.saveListId(createdList.getId());
 	}
 
 	private void addTask(final String what_to_send, final String text) {
-		Account acc = accountManager.getAccountByName(loadAccountName());
+		Account acc = accountManager.getAccountByName(preferences.loadAccountName());
 		if (acc == null) {
 			log("Tried to send text without authorization");
 			requestSelectAccount();
@@ -379,9 +377,9 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements
 		CheckBox check_save_option = (CheckBox) dialog.getView().findViewById(
 				R.id.check_save_option);
 		if (check_save_option.isChecked()) {
-			saveWhatToSend(position);
+			preferences.saveWhatToSend(position);
 		} else {
-			saveWhatToSend(2);
+			preferences.saveWhatToSend(2);
 		}
 		addTask(getResources().getStringArray(R.array.entryvalues_what_to_send)[position],
 				getIntent().getStringExtra(Intent.EXTRA_TEXT));
@@ -403,18 +401,18 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements
 			// what to send
 			log("Reverting to default");
 			task.setTitle(text);
-			saveWhatToSend(2);
+			preferences.saveWhatToSend(2);
 		}
 
 		Insert ins = null;
-		ins = tasksService.tasks().insert(loadListId(), task);
+		ins = tasksService.tasks().insert(preferences.loadListId(), task);
 		ins.execute();
 		log("Text sent");
 		dismissNotification(NOTIFICATION_SENDING);
 	}
 
 	private void removeTask(final String task_id) {
-		Account acc = accountManager.getAccountByName(loadAccountName());
+		Account acc = accountManager.getAccountByName(preferences.loadAccountName());
 		if (acc == null) {
 			log("Tried to remove task without authorization.");
 			requestSelectAccount();
@@ -432,13 +430,13 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements
 
 	private void doRemoveTask(String task_id) throws IOException {
 		com.google.api.services.tasks.Tasks.TasksOperations.Delete del = null;
-		del = tasksService.tasks().delete(loadListId(), task_id);
+		del = tasksService.tasks().delete(preferences.loadListId(), task_id);
 		del.execute();
 		log("Task removed");
 	}
 
 	private void getTaskList() {
-		Account acc = accountManager.getAccountByName(loadAccountName());
+		Account acc = accountManager.getAccountByName(preferences.loadAccountName());
 		if (acc == null) {
 			log("Tried to get task list without authorization.");
 			requestSelectAccount();
@@ -456,7 +454,7 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements
 
 	private void doGetTaskList() throws IOException {
 		com.google.api.services.tasks.model.Tasks tasks = tasksService.tasks()
-				.list(loadListId()).execute();
+				.list(preferences.loadListId()).execute();
 		ArrayList<String> ids = new ArrayList<String>(), titles = new ArrayList<String>();
 
 		if (tasks.getItems() != null) {
@@ -471,13 +469,8 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements
 	}
 
 	private void clearCredential() {
-		//accountManager.invalidateAuthToken(credential.getAccessToken());
-		//credential.setAccessToken(null);
-		SharedPreferences.Editor editor = settings.edit();
-		editor.remove(getResources().getString(R.string.pref_auth_token));
-		//editor.remove(getResources().getString(R.string.pref_account_name));
-		editor.remove(getResources().getString(R.string.pref_list_id));
-		apply(editor);
+		preferences.removeAuthToken();
+		preferences.removeListId();
 	}
 
 	private void requestSelectAccount() {
@@ -495,7 +488,7 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements
 			case 401:
 				//accountManager.invalidateAuthToken(credential.getAccessToken());
 				//credential.setAccessToken(null);
-				saveAuthToken(null);
+				preferences.saveAuthToken(null);
 				return true;
 			case 404:
 				dismissNotification(NOTIFICATION_SENDING);
@@ -508,81 +501,6 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements
 		}
 		Log.e(getPackageName(), e.getMessage(), e);
 		return false;
-	}
-
-	private void updateSetting(String key) {
-		SharedPreferences settings_old = getPreferences(MODE_PRIVATE);
-		if (settings_old.contains(key)) {
-			String value = settings_old.getString(key, "");
-			apply(settings.edit().putString(key, value));
-			apply(settings_old.edit().remove(key));
-		}
-	}
-
-	private String loadAccountName() {
-		updateSetting(getResources().getString(R.string.pref_account_name));
-		return settings.getString(
-				getResources().getString(R.string.pref_account_name), null);
-	}
-
-	private String loadAuthToken() {
-		updateSetting(getResources().getString(R.string.pref_auth_token));
-		return settings.getString(
-				getResources().getString(R.string.pref_auth_token), null);
-	}
-
-	private String loadListId() {
-		updateSetting(getResources().getString(R.string.pref_list_id));
-		return settings.getString(
-				getResources().getString(R.string.pref_list_id), null);
-	}
-
-	private String loadWhatToSend() {
-		updateSetting(getResources().getString(R.string.pref_what_to_send));
-		return settings
-				.getString(
-						getResources().getString(R.string.pref_what_to_send),
-						getResources().getStringArray(
-								R.array.entryvalues_what_to_send)[2]);
-	}
-
-	private void saveAccountName(String accountName) {
-		SharedPreferences.Editor editor = settings.edit();
-		editor.putString(getResources().getString(R.string.pref_account_name),
-				accountName);
-		apply(editor);
-	}
-
-	private void saveAuthToken(String authToken) {
-		SharedPreferences.Editor editor = settings.edit();
-		editor.putString(getResources().getString(R.string.pref_auth_token),
-				authToken);
-		apply(editor);
-	}
-
-	private void saveListId(String listId) {
-		log("Saving list id: " + listId);
-		SharedPreferences.Editor editor = settings.edit();
-		editor.putString(getResources().getString(R.string.pref_list_id),
-				listId);
-		apply(editor);
-	}
-
-	private void saveWhatToSend(int value) {
-		SharedPreferences.Editor editor = settings.edit();
-		editor.putString(
-				getResources().getString(R.string.pref_what_to_send),
-				getResources().getStringArray(R.array.entryvalues_what_to_send)[value]);
-		apply(editor);
-	}
-
-	@SuppressLint("NewApi")
-	private void apply(Editor editor) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
-			editor.apply();
-		} else {
-			editor.commit();
-		}
 	}
 
 	public void broadcastUpdatingStatus(String action, boolean updating) {
