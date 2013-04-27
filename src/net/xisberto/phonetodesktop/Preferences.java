@@ -10,7 +10,7 @@ import android.preference.PreferenceManager;
 public class Preferences {
 	private static final String ACCOUNT_NAME = "accountName",
 			AUTH_TOKEN = "authToken", LIST_ID = "listId",
-			WHAT_TO_SEND = "whatToSend";
+			WHAT_TO_SEND = "whatToSend", LAST_SENT_TEXT = "lastSentText";
 
 	public static final String[] WHAT_TO_SEND_VALUES = { "entire_text",
 			"only_links", "always_ask" };
@@ -18,7 +18,7 @@ public class Preferences {
 	private SharedPreferences prefs;
 
 	public Preferences(Context context) {
-		prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		prefs = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
 	}
 
 	public String loadAccountName() {
@@ -36,29 +36,37 @@ public class Preferences {
 	public String loadWhatToSend() {
 		return prefs.getString(WHAT_TO_SEND, WHAT_TO_SEND_VALUES[2]);
 	}
+	
+	public String loadLastSentText() {
+		return prefs.getString(LAST_SENT_TEXT, null);
+	}
+	
+	private void saveString(String key, String value) {
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.putString(key, value);
+		apply(editor);
+	}
 
 	public void saveAccountName(String accountName) {
-		SharedPreferences.Editor editor = prefs.edit();
-		editor.putString(ACCOUNT_NAME, accountName);
-		apply(editor);
+		saveString(ACCOUNT_NAME, accountName);
 	}
 
 	public void saveAuthToken(String authToken) {
-		SharedPreferences.Editor editor = prefs.edit();
-		editor.putString(AUTH_TOKEN, authToken);
-		apply(editor);
+		saveString(AUTH_TOKEN, authToken);
 	}
 
 	public void saveListId(String listId) {
-		SharedPreferences.Editor editor = prefs.edit();
-		editor.putString(LIST_ID, listId);
-		apply(editor);
+		saveString(LIST_ID, listId);
 	}
 
 	public void saveWhatToSend(int value) {
 		SharedPreferences.Editor editor = prefs.edit();
 		editor.putString(WHAT_TO_SEND, WHAT_TO_SEND_VALUES[value]);
 		apply(editor);
+	}
+	
+	public void saveLastSentText(String text) {
+		saveString(LAST_SENT_TEXT, text);
 	}
 
 	public void removeAuthToken() {

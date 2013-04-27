@@ -10,33 +10,19 @@
  ******************************************************************************/
 package net.xisberto.phonetodesktop;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.accounts.AccountManagerCallback;
-import android.accounts.AccountManagerFuture;
-import android.accounts.AuthenticatorException;
-import android.accounts.OperationCanceledException;
-import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Looper;
-import android.os.Process;
-import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
@@ -44,23 +30,12 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.CheckBox;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.googleapis.extensions.android.accounts.GoogleAccountManager;
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.google.api.client.googleapis.json.GoogleJsonResponseException;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.services.tasks.Tasks;
-import com.google.api.services.tasks.Tasks.TasksOperations.Insert;
-import com.google.api.services.tasks.TasksScopes;
-import com.google.api.services.tasks.model.Task;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.api.services.samples.tasks.android.CommonAsyncTask;
 import com.google.api.services.tasks.model.TaskList;
 
-public class GoogleTasksActivity extends SherlockFragmentActivity implements
+public class GoogleTasksActivity extends SyncActivity implements
 		OnItemClickListener {
-	public static final String LIST_TITLE = "PhoneToDesktop";
 
 	public static final String ACTION_AUTHENTICATE = "net.xisberto.phonetodesktop.authenticate",
 			ACTION_LIST_TASKS = "net.xisberto.phonetodesktop.list_tasks",
@@ -69,68 +44,65 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements
 	private static final int NOTIFICATION_SENDING = 0, NOTIFICATION_ERROR = 1,
 			NOTIFICATION_NEED_AUTHORIZE = 2, NOTIFICATION_TIMEOUT = 3;
 
-	private Preferences preferences;
-	private GoogleAccountManager accountManager;
-	private GoogleAccountCredential credential;
-	public static GoogleTasksCredentials my_credentials = new GoogleTasksCredentials();
-
-	final HttpTransport transport = AndroidHttp.newCompatibleTransport();
-	final JsonFactory jsonFactory = new GsonFactory();
-	private Tasks tasksService;
-
-	private Looper looper;
-	private Handler handler;
-
 	private WhatToSendDialog dialog;
+
+	public String taskId = null;
+	public ArrayList<String> list_ids = null, list_titles = null;
+
+	//private AsyncManageTasks taskManager;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		// Configure a background thread
-		HandlerThread thread = new HandlerThread("PhoneToDesktopThread",
-				Process.THREAD_PRIORITY_BACKGROUND);
-		thread.start();
-		looper = thread.getLooper();
-		handler = new Handler(looper);
-
-		// Configure app's preferences
-		preferences = new Preferences(getApplicationContext());
-		accountManager = new GoogleAccountManager(getApplicationContext());
-
-		// Configure GoogleCredential. loadAuthToken can return null
-		credential = GoogleAccountCredential.usingOAuth2(this, TasksScopes.TASKS);
-		credential.setSelectedAccountName(preferences.loadAccountName());
-
-		// Configure and build the Tasks object
-		tasksService = new Tasks.Builder(transport, jsonFactory, credential)
-				.setApplicationName("PhoneToDesktop")
-				.build();
-
 		if (getIntent().getAction().equals(ACTION_AUTHENTICATE)) {
-			broadcastUpdatingStatus(ACTION_AUTHENTICATE, true);
-			authorize();
-		} else if (getIntent().getAction().equals(Intent.ACTION_SEND)) {
-			addTask(preferences.loadWhatToSend(),
-					getIntent().getStringExtra(Intent.EXTRA_TEXT));
-		} else if (getIntent().getAction().equals(ACTION_LIST_TASKS)) {
-			broadcastUpdatingStatus(ACTION_LIST_TASKS, true);
-			getTaskList();
-		} else if (getIntent().getAction().equals(ACTION_REMOVE_TASKS)) {
-			removeTask(getIntent().getStringExtra("task_id"));
+			setTheme(R.style.AppTheme);
+			setContentView(R.layout.activity_authorize);
+		} else {
+			setTheme(R.style.AppTheme_Translucent_NoTitlebar);
 		}
+
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				if (getIntent().getAction().equals(Intent.ACTION_SEND)) {
+					addTask(preferences.loadWhatToSend(), getIntent()
+							.getStringExtra(Intent.EXTRA_TEXT));
+				} else if (getIntent().getAction().equals(ACTION_LIST_TASKS)) {
+					broadcastUpdatingStatus(ACTION_LIST_TASKS, true);
+					getTaskList();
+				} else if (getIntent().getAction().equals(ACTION_REMOVE_TASKS)) {
+					removeTask(getIntent().getStringExtra("task_id"));
+				}
+			}
+		}).start();
 
 	}
 
-	private void log(String msg) {
-		if (my_credentials.getClass().equals(
-				GoogleTasksCredentialsDevelopment.class)) {
-			Log.i("PhoneToDesktop debug", msg);
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		switch (requestCode) {
+		case REQUEST_GOOGLE_PLAY_SERVICES:
+			if (resultCode == Activity.RESULT_OK) {
+				//getCredential();
+			} else {
+				checkGooglePlayServicesAvailable();
+			}
+			break;
+		case REQUEST_AUTHORIZATION:
+			if (resultCode == Activity.RESULT_OK) {
+				//startActivity(new Intent(this, CalendarListActivity.class));
+			} else {
+				//chooseAccount();
+			}
+			break;
+		case REQUEST_ACCOUNT_PICKER:
+			break;
 		}
 	}
 
 	private void showNotification(int notification_type) {
-		log("Notification shown: " + notification_type);
 		NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		Intent notificationIntent = new Intent();
 		PendingIntent contentIntent = PendingIntent.getActivity(
@@ -198,162 +170,29 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements
 		manager.cancel(notificationId);
 	}
 
-	/**
-	 * Gets a auth token from Google services for Google Tasks service. May
-	 * launch a new Activity to ask the user for permission. Stores the account
-	 * name and the auth token in preferences and executes callback.run().
-	 * 
-	 * @param account
-	 *            the Account to ask the auth token.
-	 * @param callback
-	 *            {@link GoogleTasksCallback} object whose run method will be
-	 *            executed when the new auth token is obtained.
-	 */
-	private void getAuthToken(final Account account,
-			final GoogleTasksCallback callback) {
-		AccountManagerCallback<Bundle> ac_callback = new AccountManagerCallback<Bundle>() {
-			public void run(AccountManagerFuture<Bundle> future) {
-				try {
-					Bundle bundle = future.getResult();
-					// Here we got the auth token! Saving accountname and
-					// authtoken
-					String new_auth_token = bundle.getString(AccountManager.KEY_AUTHTOKEN);
-					//saveAccountName(bundle.getString(AccountManager.KEY_ACCOUNT_NAME));
-					preferences.saveAuthToken(new_auth_token);
-					//credential.setAccessToken(new_auth_token);
-					log("Token obtained: " + new_auth_token);
-					// And executing the callback function
-					callback.run();
-				} catch (OperationCanceledException canceledException) {
-					// User has canceled operation
-					broadcastUpdatingStatus(ACTION_AUTHENTICATE, false);
-				} catch (SocketTimeoutException e) {
-					broadcastUpdatingStatus(ACTION_AUTHENTICATE, false);
-					log("Timeout");
-					dismissNotification(NOTIFICATION_SENDING);
-					showNotification(NOTIFICATION_TIMEOUT);
-				} catch (IOException e) {
-					if (e instanceof GoogleJsonResponseException) {
-						log("Got an GoogleJson exception");
-						if (handleGoogleException(e)) {
-							getAuthToken(account, callback);
-						}
-					} else {
-						e.printStackTrace();
-					}
-				} catch (AuthenticatorException e) {
-					e.printStackTrace();
-				} catch (Exception e) {
-					broadcastUpdatingStatus(ACTION_AUTHENTICATE, false);
-					dismissNotification(NOTIFICATION_SENDING);
-					e.printStackTrace();
-				}
-			}
-		};
-		accountManager.getAccountManager().getAuthToken(account,
-				"Manage your tasks", null, GoogleTasksActivity.this,
-				ac_callback, handler);
-	}
-
-	private void authorize() {
-		Account account = (Account) getIntent().getParcelableExtra("account");
-		log("Starting authorization for " + account.name);
-		clearCredential();
-		getAuthToken(account, new GoogleTasksCallback() {
-			@Override
-			public void run() throws IOException {
-				initList();
-			}
-		});
-		finish();
-	}
-
-	/**
-	 * Initializes the Task List we will use in user's Google Tasks. Search the
-	 * tasks lists for a list named "PhoneToDesktop" and create this list if it
-	 * doesn't exist.
-	 * 
-	 */
-	private void initList() throws IOException {
-		log("initList");
-		List<TaskList> list = null;
-		list = tasksService.tasklists().list().execute().getItems();
-		if (list != null) {
-			if (preferences.loadListId() == null) {
-				// We don't have a list id saved search in the server
-				// for a list with the title PhoneToDesktop
-				String serverListId = null;
-				for (TaskList taskList : list) {
-					if (taskList.getTitle().equals(LIST_TITLE)) {
-						serverListId = taskList.getId();
-						break;
-					}
-				}
-				if (serverListId == null) {
-					// The server doesn't have any list named PhoneToDesktop
-					// We create it and save its id
-					doInitList();
-				} else {
-					// The server has a list named PhoneToDesktop
-					// We save its id
-					preferences.saveListId(serverListId);
-				}
-			} else {
-				// We have a saved id. Let's search this id in server
-				boolean serverHasList = false;
-				for (TaskList taskList : list) {
-					if (taskList.getId().equals(preferences.loadListId())) {
-						serverHasList = true;
-						break;
-					}
-				}
-				if (!serverHasList) {
-					// The server has no list with this id
-					// We create a new list and save its id
-					doInitList();
-				}
-				// else
-				// We have the list id and found the same id in server
-				// nothing to do here
-			}
-		}
-		broadcastUpdatingStatus(ACTION_AUTHENTICATE, false);
-		finish();
-	}
-
-	private void doInitList() throws IOException {
-		TaskList newList = new TaskList();
-		newList.setTitle(LIST_TITLE);
-		TaskList createdList = tasksService.tasklists().insert(newList)
-				.execute();
-		preferences.saveListId(createdList.getId());
-	}
-
-	private void addTask(final String what_to_send, final String text) {
-		Account acc = accountManager.getAccountByName(preferences.loadAccountName());
+	private void addTask(String what_to_send, String text) {
+		Account acc = credential.getSelectedAccount();
 		if (acc == null) {
-			log("Tried to send text without authorization");
 			requestSelectAccount();
-			finish();
 		} else {
 			String[] entryvalues_what_to_send = getResources().getStringArray(
 					R.array.entryvalues_what_to_send);
-			if ((what_to_send.equals(entryvalues_what_to_send[0]))
-					|| what_to_send.equals(entryvalues_what_to_send[1])) {
-				showNotification(NOTIFICATION_SENDING);
-				getAuthToken(acc, new GoogleTasksCallback() {
-					@Override
-					public void run() throws IOException {
-						doAddTask(what_to_send, text);
-					}
-				});
-				finish();
-			} else {
-				log("Asking what to send");
+			if (what_to_send.equals(entryvalues_what_to_send[2])) {
 				dialog = WhatToSendDialog.newInstance();
 				dialog.show(getSupportFragmentManager(), "what_to_send_dialog");
+			} else {
+				if (what_to_send.equals(entryvalues_what_to_send[0])) {
+					preferences.saveLastSentText(text);
+				} else {
+					preferences.saveLastSentText(filterLinks(text));
+				}
+				showNotification(NOTIFICATION_SENDING);
+//				taskManager = new AsyncManageTasks(this,
+//						AsyncManageTasks.REQUEST_ADD_TASK);
+//				taskManager.execute();
 			}
 		}
+		finish();
 	}
 
 	private String filterLinks(String text) {
@@ -373,7 +212,6 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
-		log("Selected item on WhatToSendDialog: " + position);
 		CheckBox check_save_option = (CheckBox) dialog.getView().findViewById(
 				R.id.check_save_option);
 		if (check_save_option.isChecked()) {
@@ -385,122 +223,36 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements
 				getIntent().getStringExtra(Intent.EXTRA_TEXT));
 	}
 
-	public void doAddTask(String what_to_send, String text) throws IOException {
-		Task task = new Task();
-		String[] entryvalues_what_to_send = getResources().getStringArray(
-				R.array.entryvalues_what_to_send);
-		if (what_to_send.equals(entryvalues_what_to_send[0])) {
-			log("Entire text");
-			task.setTitle(text);
-		} else if (what_to_send.equals(entryvalues_what_to_send[1])) {
-			log("Only links");
-			task.setTitle(filterLinks(text));
-		} else {
-			// Any other value to what_to_send will be ignored
-			// The entire text will be sent, and next time we will ask the user
-			// what to send
-			log("Reverting to default");
-			task.setTitle(text);
-			preferences.saveWhatToSend(2);
-		}
-
-		Insert ins = null;
-		ins = tasksService.tasks().insert(preferences.loadListId(), task);
-		ins.execute();
-		log("Text sent");
-		dismissNotification(NOTIFICATION_SENDING);
-	}
-
 	private void removeTask(final String task_id) {
-		Account acc = accountManager.getAccountByName(preferences.loadAccountName());
+		Account acc = credential.getSelectedAccount();
 		if (acc == null) {
-			log("Tried to remove task without authorization.");
 			requestSelectAccount();
 		} else {
-			log("Removing task " + task_id);
-			getAuthToken(acc, new GoogleTasksCallback() {
-				@Override
-				public void run() throws IOException {
-					doRemoveTask(task_id);
-				}
-			});
+//			taskManager = new AsyncManageTasks(this,
+//					AsyncManageTasks.REQUEST_REMOVE_TASK);
+//			taskManager.execute();
 		}
 		finish();
-	}
-
-	private void doRemoveTask(String task_id) throws IOException {
-		com.google.api.services.tasks.Tasks.TasksOperations.Delete del = null;
-		del = tasksService.tasks().delete(preferences.loadListId(), task_id);
-		del.execute();
-		log("Task removed");
 	}
 
 	private void getTaskList() {
-		Account acc = accountManager.getAccountByName(preferences.loadAccountName());
+		Account acc = credential.getSelectedAccount();
 		if (acc == null) {
-			log("Tried to get task list without authorization.");
 			requestSelectAccount();
 		} else {
-			log("Getting task list");
-			getAuthToken(acc, new GoogleTasksCallback() {
-				@Override
-				public void run() throws IOException {
-					doGetTaskList();
-				}
-			});
+//			taskManager = new AsyncManageTasks(this,
+//					AsyncManageTasks.REQUEST_LOAD_TASKS);
+//			taskManager.execute();
 		}
 		finish();
-	}
-
-	private void doGetTaskList() throws IOException {
-		com.google.api.services.tasks.model.Tasks tasks = tasksService.tasks()
-				.list(preferences.loadListId()).execute();
-		ArrayList<String> ids = new ArrayList<String>(), titles = new ArrayList<String>();
-
-		if (tasks.getItems() != null) {
-			List<Task> list = tasks.getItems();
-			for (Task task : list) {
-				ids.add(task.getId());
-				titles.add(task.getTitle());
-			}
-		}
-
-		broadcastTaskList(ids, titles);
-	}
-
-	private void clearCredential() {
-		preferences.removeAuthToken();
-		preferences.removeListId();
 	}
 
 	private void requestSelectAccount() {
 		dismissNotification(NOTIFICATION_SENDING);
 		broadcastUpdatingStatus(ACTION_AUTHENTICATE, false);
 		broadcastTaskList(null, null);
-		clearCredential();
+		//clearCredential();
 		showNotification(NOTIFICATION_NEED_AUTHORIZE);
-	}
-
-	private boolean handleGoogleException(IOException e) {
-		if (e instanceof GoogleJsonResponseException) {
-			GoogleJsonResponseException exception = (GoogleJsonResponseException) e;
-			switch (exception.getStatusCode()) {
-			case 401:
-				//accountManager.invalidateAuthToken(credential.getAccessToken());
-				//credential.setAccessToken(null);
-				preferences.saveAuthToken(null);
-				return true;
-			case 404:
-				dismissNotification(NOTIFICATION_SENDING);
-				broadcastUpdatingStatus(ACTION_AUTHENTICATE, false);
-				clearCredential();
-				showNotification(NOTIFICATION_ERROR);
-				Log.e(getPackageName(), e.getMessage());
-				return false;
-			}
-		}
-		Log.e(getPackageName(), e.getMessage(), e);
-		return false;
 	}
 
 	public void broadcastUpdatingStatus(String action, boolean updating) {
@@ -520,7 +272,37 @@ public class GoogleTasksActivity extends SherlockFragmentActivity implements
 		sendBroadcast(intent);
 	}
 
-	public interface GoogleTasksCallback {
-		public void run() throws IOException;
+	/** Check that Google Play services APK is installed and up to date. */
+	private boolean checkGooglePlayServicesAvailable() {
+		final int connectionStatusCode = GooglePlayServicesUtil
+				.isGooglePlayServicesAvailable(this);
+		if (GooglePlayServicesUtil.isUserRecoverableError(connectionStatusCode)) {
+			showGooglePlayServicesAvailabilityErrorDialog(connectionStatusCode);
+			return false;
+		}
+		return true;
 	}
+
+	/**
+	 * This will be called by a {@link CommonAsyncTask} when the ask finishes We
+	 * use the request code to know which is the next step
+	 */
+	@Override
+	public void refreshView() {
+		Log.d(TAG, "returning from background");
+
+//		if (taskManager != null) {
+//			Log.d(TAG, "taskManager.request = "+ taskManager.getRequest());
+//			if (taskManager.getRequest() == AsyncManageTasks.REQUEST_ADD_TASK) {
+//				dismissNotification(NOTIFICATION_SENDING);
+//				taskManager = null;
+//			} else if (taskManager.getRequest() == AsyncManageTasks.REQUEST_REMOVE_TASK) {
+//				taskManager = null;
+//			} else if (taskManager.getRequest() == AsyncManageTasks.REQUEST_LOAD_TASKS) {
+//				broadcastTaskList(list_ids, list_titles);
+//				taskManager = null;
+//			}
+//		}
+	}
+
 }

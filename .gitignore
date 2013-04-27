@@ -1,5 +1,6 @@
 bin
 libs
+libs-sources
 gen
 proguard
 PhoneToDesktop.apk

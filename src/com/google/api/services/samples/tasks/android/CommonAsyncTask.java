@@ -17,6 +17,7 @@ package com.google.api.services.samples.tasks.android;
 import java.io.IOException;
 
 import net.xisberto.phonetodesktop.GoogleTasksActivity;
+import net.xisberto.phonetodesktop.SyncActivity;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -31,12 +32,16 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecovera
  */
 public abstract class CommonAsyncTask extends AsyncTask<Void, Void, Boolean> {
 
-  final protected GoogleTasksActivity activity;
-  final protected com.google.api.services.tasks.Tasks client;
+  final protected SyncActivity activity;
+  final protected int request;
 
-  protected CommonAsyncTask(GoogleTasksActivity activity) {
+  protected CommonAsyncTask(SyncActivity activity, int request) {
     this.activity = activity;
-    client = activity.client;
+    this.request = request;
+  }
+  
+  public int getRequest() {
+	  return request;
   }
 
   @Override

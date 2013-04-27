@@ -52,13 +52,20 @@
         android:scaleType="centerInside"
         android:src="@drawable/hello_android" />
 
+    <Button
+        android:id="@+id/button_authorize"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/linearLayout1"
+        android:text="Authorize or choose another account" />
+
     <ScrollView
         android:id="@+id/scrollView1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="80dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
         android:background="@drawable/home_list"
         android:paddingLeft="10dp"
         android:paddingRight="10dp" >

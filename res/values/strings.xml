@@ -20,7 +20,7 @@
     <string name="txt_check_preferences">Check Preferences on menu to change</string>
     <string name="btn_preferences">Preferences</string>
     <string name="btn_authorize_again">Authorize other account</string>
-    <string name="btn_waiting_authorization">Waiting authorization</string>
+    <string name="txt_waiting_authorization">Waiting authorization process. It may take some time.</string>
     <string name="txt_sending">Sending links</string>
     <string name="txt_error_sending">Error sending link</string>
     <string name="txt_error_credentials">There was an error with Google credentials. Please authorize Phone To Desktop again.</string>
