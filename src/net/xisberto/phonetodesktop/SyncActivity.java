@@ -22,7 +22,7 @@ public abstract class SyncActivity extends SherlockFragmentActivity {
 	
 	public static String TAG = "";
 
-	protected Preferences preferences;
+	public Preferences preferences;
 	
 	protected GoogleAccountCredential credential;
 

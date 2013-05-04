@@ -13,33 +13,44 @@ package net.xisberto.phonetodesktop;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
+
+import net.xisberto.phonetodesktop.AdvancedTaskFragment.OnAdvancedTaskOptionsListener;
+import net.xisberto.phonetodesktop.google_tasks_api.TaskModel;
+import net.xisberto.phonetodesktop.google_tasks_api.TasksAsyncTask;
 
 import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.SurfaceTexture.OnFrameAvailableListener;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Advanceable;
 import android.widget.CheckBox;
+import android.widget.TabHost;
+import android.widget.TabHost.OnTabChangeListener;
+import android.widget.TabHost.TabContentFactory;
+import android.widget.TabHost.TabSpec;
 
+import com.actionbarsherlock.app.ActionBar.Tab;
+import com.actionbarsherlock.app.SherlockFragment;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.api.services.samples.tasks.android.CommonAsyncTask;
-import com.google.api.services.tasks.model.TaskList;
 
 public class GoogleTasksActivity extends SyncActivity implements
-		OnItemClickListener {
+		OnItemClickListener, OnTabChangeListener, OnAdvancedTaskOptionsListener {
 
 	public static final String ACTION_AUTHENTICATE = "net.xisberto.phonetodesktop.authenticate",
 			ACTION_LIST_TASKS = "net.xisberto.phonetodesktop.list_tasks",
-			ACTION_REMOVE_TASKS = "net.xisberto.phonetodesktop.remove_task";
+			ACTION_REMOVE_TASKS = "net.xisberto.phonetodesktop.remove_task",
+			TAG_SIMPLE = "simple", TAG_ADVANCED = "advanced";
 
 	private static final int NOTIFICATION_SENDING = 0, NOTIFICATION_ERROR = 1,
 			NOTIFICATION_NEED_AUTHORIZE = 2, NOTIFICATION_TIMEOUT = 3;
@@ -49,16 +60,34 @@ public class GoogleTasksActivity extends SyncActivity implements
 	public String taskId = null;
 	public ArrayList<String> list_ids = null, list_titles = null;
 
-	//private AsyncManageTasks taskManager;
+	private TasksAsyncTask taskManager;
+	public TaskModel model;
+
+	private class TabContent implements TabContentFactory {
+		private Context mContext;
+
+		public TabContent(Context context) {
+			mContext = context;
+		}
+
+		@Override
+		public View createTabContent(String arg0) {
+			View v = new View(mContext);
+			v.setMinimumHeight(0);
+			v.setMinimumWidth(0);
+			return v;
+		}
+
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		if (getIntent().getAction().equals(ACTION_AUTHENTICATE)) {
-			setTheme(R.style.AppTheme);
-			setContentView(R.layout.activity_authorize);
-		} else {
-			setTheme(R.style.AppTheme_Translucent_NoTitlebar);
+
+		if (getIntent().getAction().equals(Intent.ACTION_SEND)) {
+			setContentView(R.layout.activity_add_task);
+			initializeTabs();
+			return;
 		}
 
 		new Thread(new Runnable() {
@@ -79,22 +108,58 @@ public class GoogleTasksActivity extends SyncActivity implements
 
 	}
 
+	private void initializeTabs() {
+		TabHost tabHost = (TabHost) findViewById(android.R.id.tabhost);
+		tabHost.setup();
+
+		TabSpec tabSimple = tabHost.newTabSpec(TAG_SIMPLE).setIndicator(
+				"Simple");
+		tabSimple.setContent(new TabContent(this));
+		TabSpec tabAdvanced = tabHost.newTabSpec(TAG_ADVANCED).setIndicator(
+				"Advanced");
+		tabAdvanced.setContent(new TabContent(this));
+
+		tabHost.addTab(tabSimple);
+		tabHost.addTab(tabAdvanced);
+
+		tabHost.setOnTabChangedListener(this);
+	}
+
+	@Override
+	public void onTabChanged(String tabId) {
+		SherlockFragment fragment = null;
+		if (tabId.equals(TAG_SIMPLE)) {
+			fragment = SimpleTaskFragment.newInstance();
+		} else if (tabId.equals(TAG_ADVANCED)) {
+			fragment = AdvancedTaskFragment.newInstance("", "");
+		}
+		getSupportFragmentManager().beginTransaction()
+				.replace(R.id.frameContent, fragment).commit();
+
+	}
+
+	@Override
+	public void onFragmentInteraction(Uri uri) {
+		// TODO Auto-generated method stub
+
+	}
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		switch (requestCode) {
 		case REQUEST_GOOGLE_PLAY_SERVICES:
 			if (resultCode == Activity.RESULT_OK) {
-				//getCredential();
+				// getCredential();
 			} else {
 				checkGooglePlayServicesAvailable();
 			}
 			break;
 		case REQUEST_AUTHORIZATION:
 			if (resultCode == Activity.RESULT_OK) {
-				//startActivity(new Intent(this, CalendarListActivity.class));
+				// startActivity(new Intent(this, CalendarListActivity.class));
 			} else {
-				//chooseAccount();
+				// chooseAccount();
 			}
 			break;
 		case REQUEST_ACCOUNT_PICKER:
@@ -187,9 +252,9 @@ public class GoogleTasksActivity extends SyncActivity implements
 					preferences.saveLastSentText(filterLinks(text));
 				}
 				showNotification(NOTIFICATION_SENDING);
-//				taskManager = new AsyncManageTasks(this,
-//						AsyncManageTasks.REQUEST_ADD_TASK);
-//				taskManager.execute();
+				// taskManager = new AsyncManageTasks(this,
+				// AsyncManageTasks.REQUEST_ADD_TASK);
+				// taskManager.execute();
 			}
 		}
 		finish();
@@ -228,9 +293,9 @@ public class GoogleTasksActivity extends SyncActivity implements
 		if (acc == null) {
 			requestSelectAccount();
 		} else {
-//			taskManager = new AsyncManageTasks(this,
-//					AsyncManageTasks.REQUEST_REMOVE_TASK);
-//			taskManager.execute();
+			// taskManager = new AsyncManageTasks(this,
+			// AsyncManageTasks.REQUEST_REMOVE_TASK);
+			// taskManager.execute();
 		}
 		finish();
 	}
@@ -240,9 +305,9 @@ public class GoogleTasksActivity extends SyncActivity implements
 		if (acc == null) {
 			requestSelectAccount();
 		} else {
-//			taskManager = new AsyncManageTasks(this,
-//					AsyncManageTasks.REQUEST_LOAD_TASKS);
-//			taskManager.execute();
+			// taskManager = new AsyncManageTasks(this,
+			// AsyncManageTasks.REQUEST_LOAD_TASKS);
+			// taskManager.execute();
 		}
 		finish();
 	}
@@ -251,7 +316,7 @@ public class GoogleTasksActivity extends SyncActivity implements
 		dismissNotification(NOTIFICATION_SENDING);
 		broadcastUpdatingStatus(ACTION_AUTHENTICATE, false);
 		broadcastTaskList(null, null);
-		//clearCredential();
+		// clearCredential();
 		showNotification(NOTIFICATION_NEED_AUTHORIZE);
 	}
 
@@ -291,18 +356,20 @@ public class GoogleTasksActivity extends SyncActivity implements
 	public void refreshView() {
 		Log.d(TAG, "returning from background");
 
-//		if (taskManager != null) {
-//			Log.d(TAG, "taskManager.request = "+ taskManager.getRequest());
-//			if (taskManager.getRequest() == AsyncManageTasks.REQUEST_ADD_TASK) {
-//				dismissNotification(NOTIFICATION_SENDING);
-//				taskManager = null;
-//			} else if (taskManager.getRequest() == AsyncManageTasks.REQUEST_REMOVE_TASK) {
-//				taskManager = null;
-//			} else if (taskManager.getRequest() == AsyncManageTasks.REQUEST_LOAD_TASKS) {
-//				broadcastTaskList(list_ids, list_titles);
-//				taskManager = null;
-//			}
-//		}
+		// if (taskManager != null) {
+		// Log.d(TAG, "taskManager.request = "+ taskManager.getRequest());
+		// if (taskManager.getRequest() == AsyncManageTasks.REQUEST_ADD_TASK) {
+		// dismissNotification(NOTIFICATION_SENDING);
+		// taskManager = null;
+		// } else if (taskManager.getRequest() ==
+		// AsyncManageTasks.REQUEST_REMOVE_TASK) {
+		// taskManager = null;
+		// } else if (taskManager.getRequest() ==
+		// AsyncManageTasks.REQUEST_LOAD_TASKS) {
+		// broadcastTaskList(list_ids, list_titles);
+		// taskManager = null;
+		// }
+		// }
 	}
 
 }

@@ -25,49 +25,53 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlaySe
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 
 /**
- * Asynchronous task that also takes care of common needs, such as displaying progress,
- * authorization, exception handling, and notifying UI when operation succeeded.
+ * Asynchronous task that also takes care of common needs, such as displaying
+ * progress, authorization, exception handling, and notifying UI when operation
+ * succeeded.
  * 
  * @author Yaniv Inbar
  */
 public abstract class CommonAsyncTask extends AsyncTask<Void, Void, Boolean> {
 
-  final protected SyncActivity activity;
-  final protected int request;
+	final protected SyncActivity activity;
+	final protected int request;
+	final protected com.google.api.services.tasks.Tasks client;
 
-  protected CommonAsyncTask(SyncActivity activity, int request) {
-    this.activity = activity;
-    this.request = request;
-  }
-  
-  public int getRequest() {
-	  return request;
-  }
+	protected CommonAsyncTask(SyncActivity activity, int request) {
+		this.activity = activity;
+		this.client = activity.client;
+		this.request = request;
+	}
 
-  @Override
-  protected final Boolean doInBackground(Void... params) {
-    try {
-      doInBackground();
-      return true;
-    } catch (final GooglePlayServicesAvailabilityIOException availabilityException) {
-      activity.showGooglePlayServicesAvailabilityErrorDialog(
-          availabilityException.getConnectionStatusCode());
-    } catch (UserRecoverableAuthIOException userRecoverableException) {
-      activity.startActivityForResult(
-          userRecoverableException.getIntent(), GoogleTasksActivity.REQUEST_AUTHORIZATION);
-    } catch (IOException e) {
-      Log.e(GoogleTasksActivity.TAG, e.getLocalizedMessage());
-    }
-    return false;
-  }
+	public int getRequest() {
+		return request;
+	}
 
-  @Override
-  protected final void onPostExecute(Boolean success) {
-    super.onPostExecute(success);
-    if (success) {
-      activity.refreshView();
-    }
-  }
+	@Override
+	protected final Boolean doInBackground(Void... params) {
+		try {
+			doInBackground();
+			return true;
+		} catch (final GooglePlayServicesAvailabilityIOException availabilityException) {
+			activity.showGooglePlayServicesAvailabilityErrorDialog(availabilityException
+					.getConnectionStatusCode());
+		} catch (UserRecoverableAuthIOException userRecoverableException) {
+			activity.startActivityForResult(
+					userRecoverableException.getIntent(),
+					GoogleTasksActivity.REQUEST_AUTHORIZATION);
+		} catch (IOException e) {
+			Log.e(GoogleTasksActivity.TAG, e.getLocalizedMessage());
+		}
+		return false;
+	}
 
-  abstract protected void doInBackground() throws IOException;
+	@Override
+	protected final void onPostExecute(Boolean success) {
+		super.onPostExecute(success);
+		if (success) {
+			activity.refreshView();
+		}
+	}
+
+	abstract protected void doInBackground() throws IOException;
 }

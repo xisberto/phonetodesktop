@@ -10,15 +10,13 @@ import com.google.api.services.tasks.model.TaskList;
 public class ListAsyncTask extends CommonAsyncTask {
 	public static final int REQUEST_LOAD_LISTS = 0, REQUEST_SAVE_LIST = 1;
 
-	protected final TaskListModel model;
-	protected final com.google.api.services.tasks.Tasks client;
 	protected final PhoneToDesktopActivity activity;
+	protected final TaskListModel model;
 
 	public ListAsyncTask(PhoneToDesktopActivity phoneToDesktopActivity, int request) {
 		super(phoneToDesktopActivity, request);
-		model = phoneToDesktopActivity.model;
-		client = phoneToDesktopActivity.client;
 		this.activity = phoneToDesktopActivity;
+		this.model = phoneToDesktopActivity.model;
 	}
 
 	@Override

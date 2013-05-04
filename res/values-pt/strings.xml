@@ -19,6 +19,7 @@
     <string name="txt_authorized_to">Autorizado para</string>
     <string name="btn_authorize">Authorizar ou escolher outra conta</string>
     
+    <string name="send">Enviar</string>
     
     <string name="title_select_account">Selecione uma conta Google</string>
     <string name="btn_how_it_works">Como funciona</string>
