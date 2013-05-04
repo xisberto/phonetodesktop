@@ -13,9 +13,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingLeft="2dp"
-    android:paddingRight="2dp"
-    android:paddingTop="5dp" >
+    android:paddingLeft="4dp"
+    android:paddingRight="4dp"
+    android:paddingTop="8dp" >
 
     <LinearLayout
         android:id="@+id/linearLayout1"
@@ -56,9 +56,9 @@
         android:id="@+id/button_authorize"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
+        android:layout_centerHorizontal="true"
         android:layout_below="@+id/linearLayout1"
-        android:text="Authorize or choose another account" />
+        android:text="@string/btn_authorize" />
 
     <ScrollView
         android:id="@+id/scrollView1"

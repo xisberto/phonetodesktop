@@ -11,16 +11,19 @@
 -->
 <resources>
 
-    <string name="hello">Welcome to Phone To Desktop</string>
     <string name="app_name">Phone To Desktop</string>
+    <string name="hello">Welcome to Phone To Desktop</string>
+    
+    <string name="txt_authorize">Click the button bellow to authorize Phone To Desktop access to your Google Account.</string>
+    <string name="txt_waiting_authorization">Waiting authorization process. It may take some time.</string>
+    <string name="txt_authorized_to">Authorized to</string>
+    <string name="btn_authorize">Authorize or choose another account</string>
+    
     <string name="title_select_account">Select a Google account</string>
     <string name="btn_how_it_works">How it works</string>
-    <string name="txt_authorize">Go to Preferences to authorize Phone To Desktop.</string>
-    <string name="txt_authorized_to">Authorized to</string>
+    
     <string name="txt_check_preferences">Check Preferences on menu to change</string>
     <string name="btn_preferences">Preferences</string>
-    <string name="btn_authorize_again">Authorize other account</string>
-    <string name="txt_waiting_authorization">Waiting authorization process. It may take some time.</string>
     <string name="txt_sending">Sending links</string>
     <string name="txt_error_sending">Error sending link</string>
     <string name="txt_error_credentials">There was an error with Google credentials. Please authorize Phone To Desktop again.</string>

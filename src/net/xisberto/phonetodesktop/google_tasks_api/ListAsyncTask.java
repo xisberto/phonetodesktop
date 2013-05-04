@@ -2,7 +2,7 @@ package net.xisberto.phonetodesktop.google_tasks_api;
 
 import java.io.IOException;
 
-import net.xisberto.phonetodesktop.AuthorizationActivity;
+import net.xisberto.phonetodesktop.PhoneToDesktopActivity;
 
 import com.google.api.services.samples.tasks.android.CommonAsyncTask;
 import com.google.api.services.tasks.model.TaskList;
@@ -12,13 +12,13 @@ public class ListAsyncTask extends CommonAsyncTask {
 
 	protected final TaskListModel model;
 	protected final com.google.api.services.tasks.Tasks client;
-	protected final AuthorizationActivity activity;
+	protected final PhoneToDesktopActivity activity;
 
-	public ListAsyncTask(AuthorizationActivity activity, int request) {
-		super(activity, request);
-		model = activity.model;
-		client = activity.client;
-		this.activity = activity;
+	public ListAsyncTask(PhoneToDesktopActivity phoneToDesktopActivity, int request) {
+		super(phoneToDesktopActivity, request);
+		model = phoneToDesktopActivity.model;
+		client = phoneToDesktopActivity.client;
+		this.activity = phoneToDesktopActivity;
 	}
 
 	@Override
@@ -30,7 +30,7 @@ public class ListAsyncTask extends CommonAsyncTask {
 			break;
 		case REQUEST_SAVE_LIST:
 			TaskList newList = new TaskList();
-			newList.setTitle(AuthorizationActivity.LIST_TITLE);
+			newList.setTitle(PhoneToDesktopActivity.LIST_TITLE);
 			TaskList createdList = client.tasklists().insert(newList).execute();
 			// activity.listId will be saved on Preferences
 			activity.listId = createdList.getId();

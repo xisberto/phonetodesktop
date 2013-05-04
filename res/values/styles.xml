@@ -11,15 +11,15 @@
 -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="AppTheme" parent="Theme.Sherlock.Light"></style>
+    <style name="AppTheme" parent="@style/Theme.Sherlock.Light"></style>
     
     <style name="AppTheme.Dialog" parent="@android:style/Theme.Dialog"></style>
     
-    <style name="AppTheme.Sherlock.Light.Dialog.Titlebar" parent="Theme.Sherlock.Light.Dialog">
+    <style name="AppTheme.Sherlock.Light.Dialog.Titlebar" parent="@style/Theme.Sherlock.Light.Dialog">
         <item name="android:windowNoTitle">false</item>
     </style>
 
-    <style name="AppTheme.Translucent.NoTitlebar" parent="Theme.Sherlock.NoActionBar">
+    <style name="AppTheme.Translucent.NoTitlebar" parent="@style/Theme.Sherlock.NoActionBar">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
         <item name="android:windowIsTranslucent">true</item>

@@ -46,7 +46,6 @@ public abstract class CommonAsyncTask extends AsyncTask<Void, Void, Boolean> {
 
   @Override
   protected final Boolean doInBackground(Void... params) {
-	  //TODO use this params
     try {
       doInBackground();
       return true;

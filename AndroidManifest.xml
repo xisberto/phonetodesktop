@@ -27,7 +27,8 @@
     <application
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/Theme.Sherlock.Light" >
+        android:theme="@style/AppTheme"
+        android:allowBackup="false" >
         <activity
             android:name=".PhoneToDesktopActivity"
             android:label="@string/app_name" >
@@ -36,11 +37,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity
-            android:name=".AuthorizationActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.Dialog" >
         </activity>
         <activity android:name=".GoogleTasksActivity" >
             <intent-filter android:label="@string/app_name" >
