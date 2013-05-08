@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="wrap_content" >
 
     <TabHost
         android:id="@android:id/tabhost"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentTop="true" >
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" >
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -20,52 +20,22 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" >
             </TabWidget>
-
+            
             <FrameLayout
                 android:id="@android:id/tabcontent"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" >
+                android:layout_height="wrap_content" >
             </FrameLayout>
         </LinearLayout>
     </TabHost>
 
-    <ScrollView
-        android:id="@+id/scrollViewPreview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@android:id/tabhost"
-        android:layout_centerHorizontal="true"
-        android:minHeight="64dp" >
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" >
-
-            <TextView
-                android:id="@+id/textView1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="TextView" />
-        </LinearLayout>
-    </ScrollView>
-
-    <FrameLayout
-        android:id="@+id/frameContent"
-        android:layout_width="match_parent"
+    <CheckBox
+        android:id="@+id/cb_save_options"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/linearLayoutBottom"
-        android:layout_below="@+id/scrollViewPreview"
-        android:layout_centerHorizontal="true" >
-
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="@string/txt_sending"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-    </FrameLayout>
+        android:layout_alignParentLeft="true"
+        android:text="CheckBox" />
 
     <LinearLayout
         android:id="@+id/linearLayoutBottom"

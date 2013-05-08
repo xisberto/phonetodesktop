@@ -17,30 +17,26 @@ import java.util.ArrayList;
 import net.xisberto.phonetodesktop.AdvancedTaskFragment.OnAdvancedTaskOptionsListener;
 import net.xisberto.phonetodesktop.google_tasks_api.TaskModel;
 import net.xisberto.phonetodesktop.google_tasks_api.TasksAsyncTask;
-
 import android.accounts.Account;
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.SurfaceTexture.OnFrameAvailableListener;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Advanceable;
 import android.widget.CheckBox;
 import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabHost.TabContentFactory;
 import android.widget.TabHost.TabSpec;
 
-import com.actionbarsherlock.app.ActionBar.Tab;
-import com.actionbarsherlock.app.SherlockFragment;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.api.services.samples.tasks.android.CommonAsyncTask;
 
@@ -63,6 +59,9 @@ public class GoogleTasksActivity extends SyncActivity implements
 	private TasksAsyncTask taskManager;
 	public TaskModel model;
 
+	private SimpleTaskFragment simple_fragment;
+	private AdvancedTaskFragment advanced_fragment;
+	
 	private class TabContent implements TabContentFactory {
 		private Context mContext;
 
@@ -88,6 +87,8 @@ public class GoogleTasksActivity extends SyncActivity implements
 			setContentView(R.layout.activity_add_task);
 			initializeTabs();
 			return;
+		} else {
+			finish();
 		}
 
 		new Thread(new Runnable() {
@@ -112,29 +113,34 @@ public class GoogleTasksActivity extends SyncActivity implements
 		TabHost tabHost = (TabHost) findViewById(android.R.id.tabhost);
 		tabHost.setup();
 
-		TabSpec tabSimple = tabHost.newTabSpec(TAG_SIMPLE).setIndicator(
-				"Simple");
+		TabSpec tabSimple = tabHost.newTabSpec(TAG_SIMPLE).setIndicator(getString(R.string.title_simple));
 		tabSimple.setContent(new TabContent(this));
-		TabSpec tabAdvanced = tabHost.newTabSpec(TAG_ADVANCED).setIndicator(
-				"Advanced");
+		TabSpec tabAdvanced = tabHost.newTabSpec(TAG_ADVANCED).setIndicator(getString(R.string.title_advanced));
 		tabAdvanced.setContent(new TabContent(this));
 
 		tabHost.addTab(tabSimple);
 		tabHost.addTab(tabAdvanced);
 
 		tabHost.setOnTabChangedListener(this);
+		this.onTabChanged(TAG_SIMPLE);
 	}
 
 	@Override
 	public void onTabChanged(String tabId) {
-		SherlockFragment fragment = null;
+		String extra_text = getIntent().getStringExtra(Intent.EXTRA_TEXT);
+		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 		if (tabId.equals(TAG_SIMPLE)) {
-			fragment = SimpleTaskFragment.newInstance();
+			if (simple_fragment == null) {
+				simple_fragment = SimpleTaskFragment.newInstance(extra_text);
+			}
+			transaction.replace(android.R.id.tabcontent, simple_fragment);
 		} else if (tabId.equals(TAG_ADVANCED)) {
-			fragment = AdvancedTaskFragment.newInstance("", "");
+			if (advanced_fragment == null) {
+				advanced_fragment = AdvancedTaskFragment.newInstance(extra_text);
+			}
+			transaction.replace(android.R.id.tabcontent, advanced_fragment);
 		}
-		getSupportFragmentManager().beginTransaction()
-				.replace(R.id.frameContent, fragment).commit();
+		transaction.commit();
 
 	}
 

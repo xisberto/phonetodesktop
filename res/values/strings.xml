@@ -17,6 +17,11 @@
     <string name="txt_waiting_authorization">Waiting authorization process. It may take some time.</string>
     <string name="txt_authorized_to">Authorized to</string>
     <string name="btn_authorize">Authorize or choose another account</string>
+    
+    <string name="title_simple">Simple</string>
+    <string name="title_advanced">Advanced</string>
+    <string name="txt_preview">Preview</string>
+    
     <string name="title_select_account">Select a Google account</string>
     <string name="btn_how_it_works">How it works</string>
     <string name="send">Send</string>
@@ -62,6 +67,8 @@ When the text is successfully sent, the notification goes away.</string>
     </string-array>
 
     <string name="check_save_option">Save this choice</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="txt_only_links">Send only links</string>
+    
 
 </resources>
