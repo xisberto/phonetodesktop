@@ -3,11 +3,45 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content" >
 
+    <LinearLayout
+        android:id="@+id/linearLayoutActionBar"
+        style="@style/Widget.Sherlock.Light.ActionBar.Solid"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:gravity="center_vertical" >
+
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="4dp"
+            android:src="@drawable/ic_launcher" />
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/app_name"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <Button
+            android:id="@+id/btn_send"
+            style="@style/Widget.Sherlock.ActionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@android:drawable/ic_menu_send"
+            android:text="@string/send" />
+
+    </LinearLayout>
+
     <TabHost
         android:id="@android:id/tabhost"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/linearLayoutActionBar"
         android:layout_centerHorizontal="true" >
 
         <LinearLayout
@@ -20,7 +54,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" >
             </TabWidget>
-            
+
             <FrameLayout
                 android:id="@android:id/tabcontent"
                 android:layout_width="match_parent"
@@ -33,30 +67,8 @@
         android:id="@+id/cb_save_options"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/linearLayoutBottom"
-        android:layout_alignParentLeft="true"
-        android:text="CheckBox" />
-
-    <LinearLayout
-        android:id="@+id/linearLayoutBottom"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" >
-
-        <Button
-            android:id="@+id/btn_cancel"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@android:string/cancel" />
-
-        <Button
-            android:id="@+id/btn_send"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/send" />
-    </LinearLayout>
+        android:layout_alignParentLeft="true"
+        android:text="@string/check_save_option" />
 
 </RelativeLayout>

@@ -29,6 +29,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.CheckBox;
@@ -41,12 +42,15 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.api.services.samples.tasks.android.CommonAsyncTask;
 
 public class GoogleTasksActivity extends SyncActivity implements
+		OnClickListener,
 		OnItemClickListener, OnTabChangeListener, OnAdvancedTaskOptionsListener {
 
 	public static final String ACTION_AUTHENTICATE = "net.xisberto.phonetodesktop.authenticate",
 			ACTION_LIST_TASKS = "net.xisberto.phonetodesktop.list_tasks",
 			ACTION_REMOVE_TASKS = "net.xisberto.phonetodesktop.remove_task",
-			TAG_SIMPLE = "simple", TAG_ADVANCED = "advanced";
+			TAG_SIMPLE = "simple",
+			TAG_ADVANCED = "advanced",
+			SELECTED_TAB_ID = "selected_tab_tag";
 
 	private static final int NOTIFICATION_SENDING = 0, NOTIFICATION_ERROR = 1,
 			NOTIFICATION_NEED_AUTHORIZE = 2, NOTIFICATION_TIMEOUT = 3;
@@ -59,8 +63,10 @@ public class GoogleTasksActivity extends SyncActivity implements
 	private TasksAsyncTask taskManager;
 	public TaskModel model;
 
+	private TabHost mTabHost;
 	private SimpleTaskFragment simple_fragment;
 	private AdvancedTaskFragment advanced_fragment;
+
 	
 	private class TabContent implements TabContentFactory {
 		private Context mContext;
@@ -85,43 +91,54 @@ public class GoogleTasksActivity extends SyncActivity implements
 
 		if (getIntent().getAction().equals(Intent.ACTION_SEND)) {
 			setContentView(R.layout.activity_add_task);
+			
 			initializeTabs();
+			if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_TAB_ID)) {
+				mTabHost.setCurrentTabByTag(savedInstanceState.getString(SELECTED_TAB_ID));
+			}
+			findViewById(R.id.btn_send).setOnClickListener(this);
 			return;
 		} else {
 			finish();
 		}
 
-		new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				if (getIntent().getAction().equals(Intent.ACTION_SEND)) {
-					addTask(preferences.loadWhatToSend(), getIntent()
-							.getStringExtra(Intent.EXTRA_TEXT));
-				} else if (getIntent().getAction().equals(ACTION_LIST_TASKS)) {
-					broadcastUpdatingStatus(ACTION_LIST_TASKS, true);
-					getTaskList();
-				} else if (getIntent().getAction().equals(ACTION_REMOVE_TASKS)) {
-					removeTask(getIntent().getStringExtra("task_id"));
-				}
-			}
-		}).start();
+//		new Thread(new Runnable() {
+//
+//			@Override
+//			public void run() {
+//				if (getIntent().getAction().equals(Intent.ACTION_SEND)) {
+//					addTask(preferences.loadWhatToSend(), getIntent()
+//							.getStringExtra(Intent.EXTRA_TEXT));
+//				} else if (getIntent().getAction().equals(ACTION_LIST_TASKS)) {
+//					broadcastUpdatingStatus(ACTION_LIST_TASKS, true);
+//					getTaskList();
+//				} else if (getIntent().getAction().equals(ACTION_REMOVE_TASKS)) {
+//					removeTask(getIntent().getStringExtra("task_id"));
+//				}
+//			}
+//		}).start();
 
 	}
 
-	private void initializeTabs() {
-		TabHost tabHost = (TabHost) findViewById(android.R.id.tabhost);
-		tabHost.setup();
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putString(SELECTED_TAB_ID, mTabHost.getCurrentTabTag());
+	}
 
-		TabSpec tabSimple = tabHost.newTabSpec(TAG_SIMPLE).setIndicator(getString(R.string.title_simple));
+	private void initializeTabs() {
+		mTabHost = (TabHost) findViewById(android.R.id.tabhost);
+		mTabHost.setup();
+
+		TabSpec tabSimple = mTabHost.newTabSpec(TAG_SIMPLE).setIndicator(getString(R.string.title_simple));
 		tabSimple.setContent(new TabContent(this));
-		TabSpec tabAdvanced = tabHost.newTabSpec(TAG_ADVANCED).setIndicator(getString(R.string.title_advanced));
+		TabSpec tabAdvanced = mTabHost.newTabSpec(TAG_ADVANCED).setIndicator(getString(R.string.title_advanced));
 		tabAdvanced.setContent(new TabContent(this));
 
-		tabHost.addTab(tabSimple);
-		tabHost.addTab(tabAdvanced);
+		mTabHost.addTab(tabSimple);
+		mTabHost.addTab(tabAdvanced);
 
-		tabHost.setOnTabChangedListener(this);
+		mTabHost.setOnTabChangedListener(this);
 		this.onTabChanged(TAG_SIMPLE);
 	}
 
@@ -150,6 +167,21 @@ public class GoogleTasksActivity extends SyncActivity implements
 
 	}
 
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.btn_send:
+			
+			break;
+
+		default:
+			break;
+		}
+	}
+	
+	//TODO Update or delete following methods
+	
+	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -377,5 +409,6 @@ public class GoogleTasksActivity extends SyncActivity implements
 		// }
 		// }
 	}
+
 
 }

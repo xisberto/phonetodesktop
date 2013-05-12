@@ -53,7 +53,7 @@ public class AdvancedTaskFragment extends SimpleTaskFragment implements OnChecke
 		// Inflate the layout for this fragment
 		view = inflater.inflate(R.layout.fragment_advanced_task, container,
 				false);
-		((TextView)view.findViewById(R.id.text_extra)).setText(mText);
+		((TextView)view.findViewById(R.id.text_preview)).setText(mText);
 		
 		((CheckBox)view.findViewById(R.id.cb_only_links)).setOnCheckedChangeListener(this);
 		
@@ -89,9 +89,9 @@ public class AdvancedTaskFragment extends SimpleTaskFragment implements OnChecke
 		switch (buttonView.getId()) {
 		case R.id.cb_only_links:
 			if (isChecked) {
-				((TextView)view.findViewById(R.id.text_extra)).setText(filterLinks(mText));
+				((TextView)view.findViewById(R.id.text_preview)).setText(filterLinks(mText));
 			} else {
-				((TextView)view.findViewById(R.id.text_extra)).setText(mText);
+				((TextView)view.findViewById(R.id.text_preview)).setText(mText);
 			}
 			break;
 

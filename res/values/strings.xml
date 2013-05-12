@@ -21,6 +21,7 @@
     <string name="title_simple">Simple</string>
     <string name="title_advanced">Advanced</string>
     <string name="txt_preview">Preview</string>
+    <string name="check_save_option">Save these choices</string>
     
     <string name="title_select_account">Select a Google account</string>
     <string name="btn_how_it_works">How it works</string>
@@ -66,7 +67,7 @@ When the text is successfully sent, the notification goes away.</string>
         <item>Send only links</item>
     </string-array>
 
-    <string name="check_save_option">Save this choice</string>
+    
 
     <string name="txt_only_links">Send only links</string>
     

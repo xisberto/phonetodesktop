@@ -13,7 +13,12 @@
 
     <style name="AppTheme" parent="@style/Theme.Sherlock.Light"></style>
     
-    <style name="AppTheme.Dialog" parent="@android:style/Theme.Dialog"></style>
+    <style name="AppTheme.Dialog" parent="@style/Theme.Sherlock.Light.Dialog"></style>
+    
+    <style name="AppTheme.PreviewText">
+        <item name="android:background">@drawable/background_preview</item>
+        <item name="android:textColor">@android:color/black</item>
+    </style>
     
     <style name="AppTheme.Sherlock.Light.Dialog.Titlebar" parent="@style/Theme.Sherlock.Light.Dialog">
         <item name="android:windowNoTitle">false</item>
