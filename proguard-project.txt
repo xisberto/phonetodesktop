@@ -25,6 +25,10 @@
 
 -libraryjars libs/*
 
+-keep class * extends java.util.ListResourceBundle {
+    protected Object[][] getContents();
+}
+
 -keepattributes *Annotation*,Signature
 -keepclasseswithmembernames class com.google.api.client.apache.ApacheHttpTransport {
     static ** INSTANCE;

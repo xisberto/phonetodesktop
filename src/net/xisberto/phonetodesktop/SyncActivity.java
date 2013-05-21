@@ -1,5 +1,7 @@
 package net.xisberto.phonetodesktop;
 
+import java.util.ArrayList;
+
 import android.app.Dialog;
 import android.os.Bundle;
 
@@ -40,8 +42,9 @@ public abstract class SyncActivity extends SherlockFragmentActivity {
 
 		preferences = new Preferences(this);
 		
-		credential = GoogleAccountCredential.usingOAuth2(this,
-				TasksScopes.TASKS);
+		ArrayList<String> scopes = new ArrayList<String>();
+		scopes.add(TasksScopes.TASKS);
+		credential = GoogleAccountCredential.usingOAuth2(this, scopes);
 		credential.setSelectedAccountName(preferences.loadAccountName());
 		
 		client = new com.google.api.services.tasks.Tasks.Builder(

@@ -15,14 +15,14 @@ public class TasksAsyncTask extends CommonAsyncTask {
 	protected final TaskModel model;
 	private String data;
 
-	protected TasksAsyncTask(GoogleTasksActivity googleTasksActivity, int request) {
+	public TasksAsyncTask(GoogleTasksActivity googleTasksActivity, int request) {
 		super(googleTasksActivity, request);
 		this.activity = googleTasksActivity;
 		this.model = googleTasksActivity.model;
 		this.data = null;
 	}
 	
-	protected TasksAsyncTask(GoogleTasksActivity googleTasksActivity, int request, String data) {
+	public TasksAsyncTask(GoogleTasksActivity googleTasksActivity, int request, String data) {
 		this(googleTasksActivity, request);
 		this.data = data;
 	}

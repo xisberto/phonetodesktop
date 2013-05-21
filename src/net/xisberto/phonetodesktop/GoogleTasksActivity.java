@@ -42,8 +42,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.api.services.samples.tasks.android.CommonAsyncTask;
 
 public class GoogleTasksActivity extends SyncActivity implements
-		OnClickListener,
-		OnItemClickListener, OnTabChangeListener, OnAdvancedTaskOptionsListener {
+		OnItemClickListener {
 
 	public static final String ACTION_AUTHENTICATE = "net.xisberto.phonetodesktop.authenticate",
 			ACTION_LIST_TASKS = "net.xisberto.phonetodesktop.list_tasks",
@@ -63,125 +62,46 @@ public class GoogleTasksActivity extends SyncActivity implements
 	private TasksAsyncTask taskManager;
 	public TaskModel model;
 
-	private TabHost mTabHost;
-	private SimpleTaskFragment simple_fragment;
-	private AdvancedTaskFragment advanced_fragment;
-
-	
-	private class TabContent implements TabContentFactory {
-		private Context mContext;
-
-		public TabContent(Context context) {
-			mContext = context;
-		}
-
-		@Override
-		public View createTabContent(String arg0) {
-			View v = new View(mContext);
-			v.setMinimumHeight(0);
-			v.setMinimumWidth(0);
-			return v;
-		}
-
-	}
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if (getIntent().getAction().equals(Intent.ACTION_SEND)) {
-			setContentView(R.layout.activity_add_task);
-			
-			initializeTabs();
-			if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_TAB_ID)) {
-				mTabHost.setCurrentTabByTag(savedInstanceState.getString(SELECTED_TAB_ID));
-			}
-			findViewById(R.id.btn_send).setOnClickListener(this);
-			return;
+		if (getIntent().getAction().equals(Intent.ACTION_SEND)
+				&& getIntent().hasExtra(Intent.EXTRA_TEXT)) {
+			// We came from an ACTION_SEND, so send this task and end the
+			// activity
+			taskManager = new TasksAsyncTask(this,
+					TasksAsyncTask.REQUEST_ADD_TASK,
+					getIntent()
+							.getStringExtra(Intent.EXTRA_TEXT));
+			showNotification(NOTIFICATION_SENDING);
+			taskManager.execute();
 		} else {
+			// Maybe show an error dialog?
 			finish();
 		}
 
-//		new Thread(new Runnable() {
-//
-//			@Override
-//			public void run() {
-//				if (getIntent().getAction().equals(Intent.ACTION_SEND)) {
-//					addTask(preferences.loadWhatToSend(), getIntent()
-//							.getStringExtra(Intent.EXTRA_TEXT));
-//				} else if (getIntent().getAction().equals(ACTION_LIST_TASKS)) {
-//					broadcastUpdatingStatus(ACTION_LIST_TASKS, true);
-//					getTaskList();
-//				} else if (getIntent().getAction().equals(ACTION_REMOVE_TASKS)) {
-//					removeTask(getIntent().getStringExtra("task_id"));
-//				}
-//			}
-//		}).start();
+
+		// new Thread(new Runnable() {
+		//
+		// @Override
+		// public void run() {
+		// if (getIntent().getAction().equals(Intent.ACTION_SEND)) {
+		// addTask(preferences.loadWhatToSend(), getIntent()
+		// .getStringExtra(Intent.EXTRA_TEXT));
+		// } else if (getIntent().getAction().equals(ACTION_LIST_TASKS)) {
+		// broadcastUpdatingStatus(ACTION_LIST_TASKS, true);
+		// getTaskList();
+		// } else if (getIntent().getAction().equals(ACTION_REMOVE_TASKS)) {
+		// removeTask(getIntent().getStringExtra("task_id"));
+		// }
+		// }
+		// }).start();
 
 	}
 
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		outState.putString(SELECTED_TAB_ID, mTabHost.getCurrentTabTag());
-	}
+	// TODO Update or delete following methods
 
-	private void initializeTabs() {
-		mTabHost = (TabHost) findViewById(android.R.id.tabhost);
-		mTabHost.setup();
-
-		TabSpec tabSimple = mTabHost.newTabSpec(TAG_SIMPLE).setIndicator(getString(R.string.title_simple));
-		tabSimple.setContent(new TabContent(this));
-		TabSpec tabAdvanced = mTabHost.newTabSpec(TAG_ADVANCED).setIndicator(getString(R.string.title_advanced));
-		tabAdvanced.setContent(new TabContent(this));
-
-		mTabHost.addTab(tabSimple);
-		mTabHost.addTab(tabAdvanced);
-
-		mTabHost.setOnTabChangedListener(this);
-		this.onTabChanged(TAG_SIMPLE);
-	}
-
-	@Override
-	public void onTabChanged(String tabId) {
-		String extra_text = getIntent().getStringExtra(Intent.EXTRA_TEXT);
-		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-		if (tabId.equals(TAG_SIMPLE)) {
-			if (simple_fragment == null) {
-				simple_fragment = SimpleTaskFragment.newInstance(extra_text);
-			}
-			transaction.replace(android.R.id.tabcontent, simple_fragment);
-		} else if (tabId.equals(TAG_ADVANCED)) {
-			if (advanced_fragment == null) {
-				advanced_fragment = AdvancedTaskFragment.newInstance(extra_text);
-			}
-			transaction.replace(android.R.id.tabcontent, advanced_fragment);
-		}
-		transaction.commit();
-
-	}
-
-	@Override
-	public void onFragmentInteraction(Uri uri) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onClick(View v) {
-		switch (v.getId()) {
-		case R.id.btn_send:
-			
-			break;
-
-		default:
-			break;
-		}
-	}
-	
-	//TODO Update or delete following methods
-	
-	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -393,6 +313,8 @@ public class GoogleTasksActivity extends SyncActivity implements
 	@Override
 	public void refreshView() {
 		Log.d(TAG, "returning from background");
+		dismissNotification(NOTIFICATION_SENDING);
+		finish();
 
 		// if (taskManager != null) {
 		// Log.d(TAG, "taskManager.request = "+ taskManager.getRequest());
@@ -409,6 +331,5 @@ public class GoogleTasksActivity extends SyncActivity implements
 		// }
 		// }
 	}
-
 
 }

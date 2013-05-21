@@ -36,7 +36,6 @@ public class PhoneToDesktopActivity extends SyncActivity implements
 	public List<TaskList> tasklist = null;
 	public String listId = null;
 
-	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
