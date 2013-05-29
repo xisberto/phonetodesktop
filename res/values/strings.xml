@@ -15,14 +15,14 @@
     <string name="hello">Welcome to Phone To Desktop</string>
     <string name="txt_authorize">Click the button bellow to authorize Phone To Desktop access to your Google Account.</string>
     <string name="txt_waiting_authorization">Waiting authorization process. It may take some time.</string>
+    <string name="txt_loading_lists">Loading your lists</string>
+    <string name="txt_saving_list">Saving PhoneToDesktop list</string>
     <string name="txt_authorized_to">Authorized to</string>
     <string name="btn_authorize">Authorize or choose another account</string>
-    
     <string name="title_simple">Simple</string>
     <string name="title_advanced">Advanced</string>
     <string name="txt_preview">Preview</string>
     <string name="check_save_option">Save these choices</string>
-    
     <string name="title_select_account">Select a Google account</string>
     <string name="btn_how_it_works">How it works</string>
     <string name="send">Send</string>
@@ -67,9 +67,8 @@ When the text is successfully sent, the notification goes away.</string>
         <item>Send only links</item>
     </string-array>
 
-    
-
     <string name="txt_only_links">Send only links</string>
-    
+    <string name="user_recoverable_exception_notification_title_template">User recoverable exception: %1$s</string>
+    <string name="user_recoverable_exception_notification_placeholder_text_template">You said %1$s and lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam non enim magna. Morbi dictum, velit vel semper venenatis, magna odio volutpat velit, at ullamcorper nulla lacus sed turpis. Pellentesque vitae metus elit, nec tincidunt tellus. Integer sed nisl sem, ullamcorper ornare lacus. Duis ac mauris sed massa congue volutpat. Donec sed erat sit amet turpis viverra rhoncus sit amet nec magna. Donec lacinia ligula at libero volutpat volutpat nec nec tortor.</string>
 
 </resources>

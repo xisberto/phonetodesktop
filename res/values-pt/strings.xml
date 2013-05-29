@@ -16,8 +16,10 @@
     
     <string name="txt_authorize">Clique no botão abaixo para autorizar o Phone To Desktop a acessar sua Conta Google.</string>
     <string name="txt_waiting_authorization">Esperando o processo de autorização. Pode demorar um pouco.</string>
+    <string name="txt_loading_lists">Carregando suas listas</string>
+    <string name="txt_saving_list">Salvando a lista PhoneToDesktop</string>
     <string name="txt_authorized_to">Autorizado para</string>
-    <string name="btn_authorize">Authorizar ou escolher outra conta</string>
+    <string name="btn_authorize">Autorizar ou escolher outra conta</string>
     
     <string name="send">Enviar</string>
     

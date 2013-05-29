@@ -16,7 +16,6 @@ package com.google.api.services.samples.tasks.android;
 
 import java.io.IOException;
 
-import net.xisberto.phonetodesktop.GoogleTasksActivity;
 import net.xisberto.phonetodesktop.SyncActivity;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -58,9 +57,9 @@ public abstract class CommonAsyncTask extends AsyncTask<Void, Void, Boolean> {
 		} catch (UserRecoverableAuthIOException userRecoverableException) {
 			activity.startActivityForResult(
 					userRecoverableException.getIntent(),
-					GoogleTasksActivity.REQUEST_AUTHORIZATION);
+					SyncActivity.REQUEST_AUTHORIZATION);
 		} catch (IOException e) {
-			Log.e(GoogleTasksActivity.TAG, e.getLocalizedMessage());
+			Log.e(SyncActivity.TAG, Log.getStackTraceString(e));
 		}
 		return false;
 	}

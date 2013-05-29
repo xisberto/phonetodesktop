@@ -17,7 +17,7 @@
 
     <uses-sdk
         android:minSdkVersion="7"
-        android:targetSdkVersion="15" />
+        android:targetSdkVersion="17" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
@@ -30,7 +30,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".PhoneToDesktopActivity"
+            android:name="net.xisberto.phonetodesktop.PhoneToDesktopActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,7 +39,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".GoogleTasksActivity"
+            android:name="net.xisberto.phonetodesktop.GoogleTasksActivity"
             android:theme="@style/AppTheme.Translucent.NoTitlebar" >
             <intent-filter android:label="@string/app_name" >
                 <action android:name="android.intent.action.SEND" />
@@ -49,30 +49,39 @@
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
-        <activity android:name="TutorialActivity" >
+        <activity android:name="net.xisberto.phonetodesktop.AuthorizationActivity" >
         </activity>
-        <activity android:name="SettingsActivity" >
+        <activity android:name="net.xisberto.phonetodesktop.TutorialActivity" >
+        </activity>
+        <activity android:name="net.xisberto.phonetodesktop.SettingsActivity" >
             <intent-filter>
                 <category android:name="android.intent.category.PREFERENCE" />
             </intent-filter>
         </activity>
-        <activity android:name="SettingsFragmentActivity" >
+        <activity android:name="net.xisberto.phonetodesktop.SettingsFragmentActivity" >
             <intent-filter>
                 <category android:name="android.intent.category.PREFERENCE" />
             </intent-filter>
         </activity>
-        <activity android:name="AboutActivity" >
+        <activity android:name="net.xisberto.phonetodesktop.AboutActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="net.xisberto.phonetodesktop.PhoneToDesktopActivity" />
         </activity>
         <activity
-            android:name=".LinkListActivity"
+            android:name="net.xisberto.phonetodesktop.LinkListActivity"
             android:label="@string/title_activity_link_list" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="net.xisberto.phonetodesktop.PhoneToDesktopActivity" />
         </activity>
+
+        <service
+            android:name="net.xisberto.phonetodesktop.GoogleTasksService"
+            android:exported="false" >
+        </service>
     </application>
+
+    <uses-permission android:name="android.permission.VIBRATE" />
 
 </manifest>
