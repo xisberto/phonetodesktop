@@ -63,7 +63,7 @@ public class LinkListActivity extends SherlockFragmentActivity implements OnClic
 	@Override
 	protected void onStart() {
 		super.onStart();
-		registerReceiver(receiver, new IntentFilter(GoogleTasksActivity.ACTION_LIST_TASKS));
+		registerReceiver(receiver, new IntentFilter(Utils.ACTION_LIST_TASKS));
 		if (titles == null) {
 			refreshTasks();
 		} else {
@@ -115,14 +115,14 @@ public class LinkListActivity extends SherlockFragmentActivity implements OnClic
 	}
 	
 	private void refreshTasks() {
-		Intent i = new Intent(getApplicationContext(), GoogleTasksActivity.class);
-		i.setAction(GoogleTasksActivity.ACTION_LIST_TASKS);
+		Intent i = new Intent(getApplicationContext(), SimpleTasksActivity.class);
+		i.setAction(Utils.ACTION_LIST_TASKS);
 		startActivity(i);
 	}
 	
 	private void deleteTask(String task_id) {
-		Intent i = new Intent(getApplicationContext(), GoogleTasksActivity.class);
-		i.setAction(GoogleTasksActivity.ACTION_REMOVE_TASKS);
+		Intent i = new Intent(getApplicationContext(), SimpleTasksActivity.class);
+		i.setAction(Utils.ACTION_REMOVE_TASK);
 		i.putExtra("task_id", task_id);
 		startActivity(i);
 
@@ -131,7 +131,7 @@ public class LinkListActivity extends SherlockFragmentActivity implements OnClic
 
 	private void updateMainLayout(Intent intent) {
 		if ((intent.getAction() != null)
-				&& (intent.getAction().equals(GoogleTasksActivity.ACTION_LIST_TASKS))) {
+				&& (intent.getAction().equals(Utils.ACTION_LIST_TASKS))) {
 			ids = intent.getStringArrayListExtra("ids");
 			titles = intent.getStringArrayListExtra("titles");
 			done = intent.getBooleanExtra("done", false);
@@ -165,7 +165,7 @@ public class LinkListActivity extends SherlockFragmentActivity implements OnClic
 
 	}
 
-	private static class YesNoDialog extends SherlockDialogFragment {
+	public static class YesNoDialog extends SherlockDialogFragment {
 		public static YesNoDialog newInstance(String task_id) {
 			YesNoDialog dlg = new YesNoDialog();
 			Bundle bundle = new Bundle();

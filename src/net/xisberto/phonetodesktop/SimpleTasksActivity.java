@@ -10,57 +10,12 @@
  ******************************************************************************/
 package net.xisberto.phonetodesktop;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-
-import net.xisberto.phonetodesktop.AdvancedTaskFragment.OnAdvancedTaskOptionsListener;
-import net.xisberto.phonetodesktop.google_tasks_api.TaskModel;
-import net.xisberto.phonetodesktop.google_tasks_api.TasksAsyncTask;
-import android.accounts.Account;
 import android.app.Activity;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.CheckBox;
-import android.widget.TabHost;
-import android.widget.TabHost.OnTabChangeListener;
-import android.widget.TabHost.TabContentFactory;
-import android.widget.TabHost.TabSpec;
 
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.api.services.samples.tasks.android.CommonAsyncTask;
-
-public class GoogleTasksActivity extends SyncActivity implements
-		OnItemClickListener {
-
-	public static final String ACTION_AUTHENTICATE = "net.xisberto.phonetodesktop.authenticate",
-			ACTION_LIST_TASKS = "net.xisberto.phonetodesktop.list_tasks",
-			ACTION_REMOVE_TASKS = "net.xisberto.phonetodesktop.remove_task",
-			TAG_SIMPLE = "simple",
-			TAG_ADVANCED = "advanced",
-			SELECTED_TAB_ID = "selected_tab_tag";
-
-	private static final int NOTIFICATION_SENDING = 0, NOTIFICATION_ERROR = 1,
-			NOTIFICATION_NEED_AUTHORIZE = 2, NOTIFICATION_TIMEOUT = 3;
-
-	private WhatToSendDialog dialog;
-
-	public String taskId = null;
-	public ArrayList<String> list_ids = null, list_titles = null;
-
-	private TasksAsyncTask taskManager;
-	public TaskModel model;
+public class SimpleTasksActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -70,12 +25,12 @@ public class GoogleTasksActivity extends SyncActivity implements
 				&& getIntent().hasExtra(Intent.EXTRA_TEXT)) {
 			// We came from an ACTION_SEND, so send this task and end the
 			// activity
-			taskManager = new TasksAsyncTask(this,
-					TasksAsyncTask.REQUEST_ADD_TASK,
-					getIntent()
-							.getStringExtra(Intent.EXTRA_TEXT));
-			showNotification(NOTIFICATION_SENDING);
-			taskManager.execute();
+			Log.d(getLocalClassName(), "TasksActivity");
+			Intent service = new Intent(this, GoogleTasksService.class);
+			service.setAction(Utils.ACTION_SEND_TASK);
+			service.putExtra(Intent.EXTRA_TEXT, getIntent().getStringExtra(Intent.EXTRA_TEXT));
+			startService(service);
+			finish();
 		} else {
 			// Maybe show an error dialog?
 			finish();
@@ -101,7 +56,7 @@ public class GoogleTasksActivity extends SyncActivity implements
 	}
 
 	// TODO Update or delete following methods
-
+/*
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -295,26 +250,14 @@ public class GoogleTasksActivity extends SyncActivity implements
 		sendBroadcast(intent);
 	}
 
-	/** Check that Google Play services APK is installed and up to date. */
-	private boolean checkGooglePlayServicesAvailable() {
-		final int connectionStatusCode = GooglePlayServicesUtil
-				.isGooglePlayServicesAvailable(this);
-		if (GooglePlayServicesUtil.isUserRecoverableError(connectionStatusCode)) {
-			showGooglePlayServicesAvailabilityErrorDialog(connectionStatusCode);
-			return false;
-		}
-		return true;
-	}
-
-	/**
+	*//**
 	 * This will be called by a {@link CommonAsyncTask} when the ask finishes We
 	 * use the request code to know which is the next step
-	 */
+	 *//*
 	@Override
 	public void refreshView() {
 		Log.d(TAG, "returning from background");
 		dismissNotification(NOTIFICATION_SENDING);
-		finish();
 
 		// if (taskManager != null) {
 		// Log.d(TAG, "taskManager.request = "+ taskManager.getRequest());
@@ -331,5 +274,5 @@ public class GoogleTasksActivity extends SyncActivity implements
 		// }
 		// }
 	}
-
+*/
 }

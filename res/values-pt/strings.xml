@@ -12,6 +12,8 @@
 <resources>
 
     <string name="app_name">Phone To Desktop</string>
+    <string name="filter_title">Phone To Desktop</string>
+    <string name="filter_title_advanced">PtD avançado</string>
     <string name="hello">Bem-vindo ao Phone To Desktop</string>
     
     <string name="txt_authorize">Clique no botão abaixo para autorizar o Phone To Desktop a acessar sua Conta Google.</string>

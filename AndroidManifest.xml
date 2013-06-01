@@ -39,9 +39,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="net.xisberto.phonetodesktop.GoogleTasksActivity"
+            android:name="net.xisberto.phonetodesktop.SimpleTasksActivity"
             android:theme="@style/AppTheme.Translucent.NoTitlebar" >
-            <intent-filter android:label="@string/app_name" >
+            <intent-filter android:label="@string/filter_title" >
                 <action android:name="android.intent.action.SEND" />
 
                 <category android:name="android.intent.category.DEFAULT" />
@@ -49,6 +49,20 @@
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="net.xisberto.phonetodesktop.AdvancedTaskActivity" >
+            <intent-filter android:label="@string/filter_title_advanced" >
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+
+        <service android:name="net.xisberto.phonetodesktop.GoogleTasksService" >
+        </service>
+
         <activity android:name="net.xisberto.phonetodesktop.AuthorizationActivity" >
         </activity>
         <activity android:name="net.xisberto.phonetodesktop.TutorialActivity" >
@@ -81,7 +95,5 @@
             android:exported="false" >
         </service>
     </application>
-
-    <uses-permission android:name="android.permission.VIBRATE" />
 
 </manifest>
