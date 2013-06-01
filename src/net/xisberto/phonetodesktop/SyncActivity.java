@@ -61,6 +61,17 @@ public abstract class SyncActivity extends SherlockFragmentActivity {
 			}
 		});
 	}
+	
+	/** Check that Google Play services APK is installed and up to date. */
+	public boolean checkGooglePlayServicesAvailable() {
+		final int connectionStatusCode = GooglePlayServicesUtil
+				.isGooglePlayServicesAvailable(this);
+		if (GooglePlayServicesUtil.isUserRecoverableError(connectionStatusCode)) {
+			showGooglePlayServicesAvailabilityErrorDialog(connectionStatusCode);
+			return false;
+		}
+		return true;
+	}
 
 	public abstract void refreshView();
 }

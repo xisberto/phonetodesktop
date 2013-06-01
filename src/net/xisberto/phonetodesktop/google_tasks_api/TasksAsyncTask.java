@@ -2,7 +2,7 @@ package net.xisberto.phonetodesktop.google_tasks_api;
 
 import java.io.IOException;
 
-import net.xisberto.phonetodesktop.GoogleTasksActivity;
+import net.xisberto.phonetodesktop.SyncActivity;
 import android.util.Log;
 
 import com.google.api.services.samples.tasks.android.CommonAsyncTask;
@@ -11,19 +11,17 @@ import com.google.api.services.tasks.model.Task;
 public class TasksAsyncTask extends CommonAsyncTask {
 	public static final int REQUEST_ADD_TASK = 0, REQUEST_LIST_TASKS = 1, REQUEST_DEL_TASK = 2;
 	
-	protected final GoogleTasksActivity activity;
-	protected final TaskModel model;
+	protected final SyncActivity activity;
 	private String data;
 
-	public TasksAsyncTask(GoogleTasksActivity googleTasksActivity, int request) {
-		super(googleTasksActivity, request);
-		this.activity = googleTasksActivity;
-		this.model = googleTasksActivity.model;
+	public TasksAsyncTask(SyncActivity syncActivity, int request) {
+		super(syncActivity, request);
+		this.activity = syncActivity;
 		this.data = null;
 	}
 	
-	public TasksAsyncTask(GoogleTasksActivity googleTasksActivity, int request, String data) {
-		this(googleTasksActivity, request);
+	public TasksAsyncTask(SyncActivity syncActivity, int request, String data) {
+		this(syncActivity, request);
 		this.data = data;
 	}
 

@@ -50,8 +50,8 @@ public class SettingsActivity extends SherlockPreferenceActivity implements
 					.getAccountByName(sharedPreferences.getString(key, ""));
 			Log.i(getPackageName(), "Account obtained: "+account);
 			if (account != null) {
-				Intent intent = new Intent(getApplicationContext(), GoogleTasksActivity.class);
-				intent.setAction(GoogleTasksActivity.ACTION_AUTHENTICATE);
+				Intent intent = new Intent(getApplicationContext(), SimpleTasksActivity.class);
+				intent.setAction(Utils.ACTION_AUTHENTICATE);
 				intent.putExtra("account", account);
 				startActivity(intent);
 			}
