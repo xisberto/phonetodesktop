@@ -13,7 +13,6 @@ package net.xisberto.phonetodesktop;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 public class SimpleTasksActivity extends Activity {
 
@@ -25,7 +24,6 @@ public class SimpleTasksActivity extends Activity {
 				&& getIntent().hasExtra(Intent.EXTRA_TEXT)) {
 			// We came from an ACTION_SEND, so send this task and end the
 			// activity
-			Log.d(getLocalClassName(), "TasksActivity");
 			Intent service = new Intent(this, GoogleTasksService.class);
 			service.setAction(Utils.ACTION_SEND_TASK);
 			service.putExtra(Intent.EXTRA_TEXT, getIntent().getStringExtra(Intent.EXTRA_TEXT));
@@ -35,23 +33,6 @@ public class SimpleTasksActivity extends Activity {
 			// Maybe show an error dialog?
 			finish();
 		}
-
-
-		// new Thread(new Runnable() {
-		//
-		// @Override
-		// public void run() {
-		// if (getIntent().getAction().equals(Intent.ACTION_SEND)) {
-		// addTask(preferences.loadWhatToSend(), getIntent()
-		// .getStringExtra(Intent.EXTRA_TEXT));
-		// } else if (getIntent().getAction().equals(ACTION_LIST_TASKS)) {
-		// broadcastUpdatingStatus(ACTION_LIST_TASKS, true);
-		// getTaskList();
-		// } else if (getIntent().getAction().equals(ACTION_REMOVE_TASKS)) {
-		// removeTask(getIntent().getStringExtra("task_id"));
-		// }
-		// }
-		// }).start();
 
 	}
 

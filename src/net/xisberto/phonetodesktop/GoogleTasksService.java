@@ -3,12 +3,10 @@ package net.xisberto.phonetodesktop;
 import java.io.IOException;
 
 import android.app.IntentService;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
@@ -19,7 +17,6 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.tasks.model.Task;
-import com.google.api.services.tasks.model.TaskList;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -29,6 +26,11 @@ import com.google.api.services.tasks.model.TaskList;
  * helper methods.
  */
 public class GoogleTasksService extends IntentService {
+	private static final int
+			NOTIFICATION_SEND = 0,
+			NOTIFICATION_ERROR = 1,
+			NOTIFICATION_NEED_AUTHORIZE = 2;
+	
 	protected com.google.api.services.tasks.Tasks client;
 	private Preferences preferences;
 	private GoogleAccountCredential credential;
@@ -63,106 +65,89 @@ public class GoogleTasksService extends IntentService {
 			Log.i(getPackageName(), "TasksService: " + action);
 			try {
 				if (action.equals(Utils.ACTION_SEND_TASK)) {
-					notifySend();
+					showNotification(NOTIFICATION_SEND);
 					handleActionSend(intent.getStringExtra(Intent.EXTRA_TEXT));
-					cancelNotifySend();
+					cancelNotification(NOTIFICATION_SEND);
 				}
 			} catch (GooglePlayServicesAvailabilityIOException availabilityException) {
-				Intent broadcastAvailability = new Intent(
-						Utils.ACTION_SHOW_AVAILABILITY_ERROR);
-				broadcastAvailability.putExtra(
-						Utils.EXTRA_CONNECTION_STATUS_CODE,
+				cancelNotification(NOTIFICATION_SEND);
+				showNotification(NOTIFICATION_ERROR,
 						availabilityException.getConnectionStatusCode());
-				LocalBroadcastManager.getInstance(this).sendBroadcast(
-						broadcastAvailability);
+			} catch (NullPointerException npe) {
+				cancelNotification(NOTIFICATION_SEND);
+				showNotification(NOTIFICATION_NEED_AUTHORIZE);
 			} catch (UserRecoverableAuthIOException userRecoverableException) {
-				Log.d(getPackageName(), userRecoverableException.toString());
-				PendingIntent pendingIntent = PendingIntent.getActivity(this,
-						SyncActivity.REQUEST_AUTHORIZATION,
-						userRecoverableException.getIntent(), 0);
-				Notification notification = new NotificationCompat.Builder(this)
-						.setContentIntent(pendingIntent)
-						.setSmallIcon(android.R.drawable.stat_notify_error)
-						.setContentTitle(
-								getResources().getString(R.string.app_name))
-						.setAutoCancel(true)
-						.setTicker(
-								getResources().getString(
-										R.string.txt_error_sending))
-						.setContentText(
-								getResources().getString(
-										R.string.txt_need_authorize)).build();
-				
-				((NotificationManager) getSystemService(NOTIFICATION_SERVICE))
-						.notify(0, notification);
-
-				// Intent broadcastUserRecoverable = new Intent(
-				// userRecoverableException.getIntent());
-				// broadcastUserRecoverable
-				// .setAction(Utils.ACTION_SHOW_USER_RECOVERABLE)
-				// .putExtra(
-				// "package",
-				// userRecoverableException.getIntent()
-				// .getComponent().getPackageName())
-				// .putExtra(
-				// "class",
-				// userRecoverableException.getIntent()
-				// .getComponent().getClassName())
-				// .setComponent(
-				// new ComponentName(
-				// getApplicationContext(),
-				// PhoneToDesktopActivity.GoogleTasksListReceiver.class));
-				// ComponentName cn = broadcastUserRecoverable
-				// .resolveActivity(getPackageManager());
-				// Log.i(getPackageName(), cn.flattenToShortString());
-				//
-				// LocalBroadcastManager.getInstance(this).sendBroadcast(
-				// broadcastUserRecoverable);
+				cancelNotification(NOTIFICATION_SEND);
+				showNotification(NOTIFICATION_NEED_AUTHORIZE);
 			} catch (IOException ioException) {
 				Log.e(getPackageName(), ioException.getLocalizedMessage());
 			}
 		}
 	}
+	
+	private void showNotification(int notif_id, int... extras) {
+		NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+				.setWhen(System.currentTimeMillis());
+		
+		Intent intentContent = new Intent();
+		PendingIntent pendingContent;
+		
+		switch (notif_id) {
+		case NOTIFICATION_SEND:
+			//Set an empty Intent for the notification
+			pendingContent = PendingIntent.getActivity(
+					this, 0, intentContent, PendingIntent.FLAG_CANCEL_CURRENT);
+			builder.setContentIntent(pendingContent)
+					.setSmallIcon(android.R.drawable.stat_sys_upload)
+					.setTicker(getString(R.string.txt_sending))
+					.setContentTitle(getString(R.string.txt_sending))
+					.setOngoing(true);
+			break;
+		case NOTIFICATION_ERROR:
+			intentContent.setClass(this, PhoneToDesktopActivity.class);
+			intentContent.setAction(Utils.ACTION_SHOW_AVAILABILITY_ERROR);
+			if (extras.length >= 1) {
+				intentContent.putExtra(Utils.EXTRA_CONNECTION_STATUS_CODE, extras[0]);
+			}
+			PendingIntent pendingError = PendingIntent.getActivity(
+					this, 0, intentContent, PendingIntent.FLAG_CANCEL_CURRENT);
+			builder.setContentIntent(pendingError)
+					.setAutoCancel(true)
+					.setSmallIcon(android.R.drawable.stat_notify_error)
+					.setTicker(getString(R.string.txt_error_sending))
+					.setContentTitle(getString(R.string.txt_error_credentials));
+			break;
+		case NOTIFICATION_NEED_AUTHORIZE:
+			intentContent.setClass(this, PhoneToDesktopActivity.class);
+			intentContent.setAction(Utils.ACTION_AUTHENTICATE);
+			PendingIntent pendingAuthorize = PendingIntent.getActivity(
+					this, 0, intentContent, PendingIntent.FLAG_CANCEL_CURRENT);
+			builder.setContentIntent(pendingAuthorize)
+					.setAutoCancel(true)
+					.setSmallIcon(android.R.drawable.stat_notify_error)
+					.setTicker(getString(R.string.txt_error_sending))
+					.setContentTitle(getString(R.string.txt_need_authorize));
+			break;
 
-	private void notifySend() {
-		Notification notification = new NotificationCompat.Builder(this)
-				.setSmallIcon(R.drawable.ic_stat_sending)
-				.setTicker(getString(R.string.txt_sending))
-				.setContentTitle(getString(R.string.txt_sending))
-				.setWhen(System.currentTimeMillis())
-				.setAutoCancel(false)
-				.setOngoing(true)
-				.build();
-		NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		manager.notify(0, notification);
+		default:
+			break;
+		}
+		((NotificationManager)getSystemService(NOTIFICATION_SERVICE))
+			.notify(notif_id, builder.build());
 	}
-	
-	private void cancelNotifySend() {
-		NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		manager.cancel(0);
+
+	private void cancelNotification(int notif_id) {
+		((NotificationManager)getSystemService(NOTIFICATION_SERVICE)).cancel(notif_id);
 	}
-	
+
 	private void handleActionSend(String text) throws IOException,
 			GooglePlayServicesAvailabilityIOException,
 			UserRecoverableAuthIOException {
 		Task new_task = new Task().setTitle(text);
 		String listId = preferences.loadListId();
-		Log.d("TasksAsyncTask", "Adding task to list "+listId);
+		Log.d("TasksAsyncTask", "Adding task to list " + listId);
 		Task result = client.tasks().insert(listId, new_task).execute();
-		Log.d("TasksAsyncTask", "New task id: "+result.getId());
+		Log.d("TasksAsyncTask", "New task id: " + result.getId());
 		stopForeground(true);
-	}
-
-	private void handleActionSaveList() throws IOException,
-			GooglePlayServicesAvailabilityIOException,
-			UserRecoverableAuthIOException {
-		TaskList newList = new TaskList();
-		newList.setTitle(Utils.LIST_TITLE);
-		TaskList createdList = client.tasklists().insert(newList).execute();
-		Log.i(getPackageName(), "got the list id");
-		Intent broadcastList = new Intent(Utils.ACTION_SAVE_LIST);
-		broadcastList.putExtra(Utils.EXTRA_LISTID, createdList.getId());
-		LocalBroadcastManager manager = LocalBroadcastManager.getInstance(this);
-		manager.sendBroadcast(broadcastList);
 	}
 }
