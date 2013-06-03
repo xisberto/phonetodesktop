@@ -40,7 +40,8 @@
         </activity>
         <activity
             android:name="net.xisberto.phonetodesktop.SimpleTasksActivity"
-            android:theme="@style/AppTheme.Translucent.NoTitlebar" >
+            android:theme="@style/AppTheme.Translucent.NoTitlebar"
+            android:label="@string/filter_title" >
             <intent-filter android:label="@string/filter_title" >
                 <action android:name="android.intent.action.SEND" />
 
@@ -50,7 +51,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="net.xisberto.phonetodesktop.AdvancedTaskActivity" >
+            android:name="net.xisberto.phonetodesktop.AdvancedTasksActivity" 
+            android:label="@string/filter_title_advanced">
             <intent-filter android:label="@string/filter_title_advanced" >
                 <action android:name="android.intent.action.SEND" />
 

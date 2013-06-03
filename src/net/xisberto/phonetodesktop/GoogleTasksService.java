@@ -73,14 +73,14 @@ public class GoogleTasksService extends IntentService {
 				cancelNotification(NOTIFICATION_SEND);
 				showNotification(NOTIFICATION_ERROR,
 						availabilityException.getConnectionStatusCode());
-			} catch (NullPointerException npe) {
-				cancelNotification(NOTIFICATION_SEND);
-				showNotification(NOTIFICATION_NEED_AUTHORIZE);
 			} catch (UserRecoverableAuthIOException userRecoverableException) {
 				cancelNotification(NOTIFICATION_SEND);
 				showNotification(NOTIFICATION_NEED_AUTHORIZE);
 			} catch (IOException ioException) {
 				Log.e(getPackageName(), ioException.getLocalizedMessage());
+			} catch (NullPointerException npe) {
+				cancelNotification(NOTIFICATION_SEND);
+				showNotification(NOTIFICATION_NEED_AUTHORIZE);
 			}
 		}
 	}
