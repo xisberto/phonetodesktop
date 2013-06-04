@@ -3,7 +3,7 @@ package net.xisberto.phonetodesktop;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import android.app.Activity;
+import net.xisberto.phonetodesktop.JSoupAsyncTask.JSoupAsyncListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -13,9 +13,13 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 import com.google.api.services.tasks.model.Task;
 
-public class AdvancedTasksActivity extends Activity implements OnCheckedChangeListener, OnClickListener {
+public class AdvancedTasksActivity extends SherlockActivity
+		implements OnCheckedChangeListener, OnClickListener, JSoupAsyncListener {
 
 	private String extra_text;
 
@@ -36,7 +40,30 @@ public class AdvancedTasksActivity extends Activity implements OnCheckedChangeLi
 		findViewById(R.id.btn_send).setOnClickListener(this);
 		findViewById(R.id.btn_cancel).setOnClickListener(this);
 		((CheckBox)findViewById(R.id.cb_only_links)).setOnCheckedChangeListener(this);
+		((CheckBox)findViewById(R.id.cb_unshorten)).setOnCheckedChangeListener(this);
+		((CheckBox)findViewById(R.id.cb_get_titles)).setOnCheckedChangeListener(this);
 		
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getSupportMenuInflater().inflate(R.menu.activity_advanced, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.item_send:
+			Intent service = new Intent(this, GoogleTasksService.class);
+			service.setAction(Utils.ACTION_SEND_TASK);
+			service.putExtra(Intent.EXTRA_TEXT,
+					((TextView)findViewById(R.id.text_preview)).getText().toString());
+			startService(service);
+		case R.id.item_cancel:
+			finish();
+		}
+		return super.onOptionsItemSelected(item);
 	}
 
 	/**
@@ -70,16 +97,49 @@ public class AdvancedTasksActivity extends Activity implements OnCheckedChangeLi
 		return result;
 	}
 	
+	private void unshortenLinks(String text) {
+		String links = filterLinks(text);
+		String[] parts = links.split(" ");
+		JSoupAsyncTask jsoup = new JSoupAsyncTask(this, JSoupAsyncTask.TASK_UNSHORTEN);
+		jsoup.execute(parts);
+	}
+	
+	private void getTitles(String text) {
+		String links = filterLinks(text);
+		String[] parts = links.split(" ");
+		JSoupAsyncTask jsoup = new JSoupAsyncTask(this, JSoupAsyncTask.TASK_GET_TITLE);
+		jsoup.execute(parts);
+	}
+	
 	private void setPreview(String text) {
 		((TextView)findViewById(R.id.text_preview)).setText(text);
+	}
+	
+	private String getPreview() {
+		return ((TextView)findViewById(R.id.text_preview)).getText().toString();
 	}
 
 	@Override
 	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+		String text_to_send = extra_text;
 		switch (buttonView.getId()) {
 		case R.id.cb_only_links:
-			setPreview(isChecked ? filterLinks(extra_text) : extra_text);
+			text_to_send = (isChecked ? filterLinks(extra_text) : extra_text);
+			setPreview(text_to_send);
 			break;
+		case R.id.cb_unshorten:
+			if (isChecked) {
+				unshortenLinks(text_to_send);
+			} else {
+				setPreview(text_to_send);
+			}
+			break;
+		case R.id.cb_get_titles:
+			if (isChecked) {
+				getTitles(text_to_send);
+			} else {
+				setPreview(text_to_send);
+			}
 
 		default:
 			break;
@@ -103,6 +163,34 @@ public class AdvancedTasksActivity extends Activity implements OnCheckedChangeLi
 			break;
 		}
 		
+	}
+
+	@Override
+	public void prepareUI() {
+		findViewById(R.id.progress).setVisibility(View.VISIBLE);
+		setPreview("");
+	}
+
+	@Override
+	public void onPostUnshorten(String[] result) {
+		StringBuilder builder = new StringBuilder();
+		for (String string : result) {
+			builder.append(string);
+			builder.append(" ");
+		}
+		setPreview(builder.toString());
+		findViewById(R.id.progress).setVisibility(View.GONE);
+	}
+
+	@Override
+	public void onPostGetTitle(String[] result) {
+		StringBuilder builder = new StringBuilder();
+		for (String string : result) {
+			builder.append(string);
+			builder.append(" ");
+		}
+		setPreview(builder.toString());
+		findViewById(R.id.progress).setVisibility(View.GONE);
 	}
 
 }

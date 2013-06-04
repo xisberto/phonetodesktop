@@ -9,81 +9,128 @@
 
     <TextView
         android:id="@+id/title_preview"
-        android:layout_width="wrap_content"
+        style="?android:attr/listSeparatorTextViewStyle"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:text="@string/txt_preview"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:text="@string/txt_preview" />
 
-    <ScrollView
+    <FrameLayout
         android:id="@+id/scrollViewPreview"
-        style="@style/AppTheme.PreviewText"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/title_preview" >
+        android:layout_below="@+id/title_preview"
+        android:layout_marginTop="8dp" >
+
+        <ScrollView
+            style="@style/AppTheme.PreviewText"
+            android:layout_width="match_parent"
+            android:layout_height="72dp" >
 
             <TextView
                 android:id="@+id/text_preview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="2dp" />
-    </ScrollView>
+        </ScrollView>
 
-    <CheckBox
-        android:id="@+id/cb_only_links"
-        android:layout_width="wrap_content"
+        <ProgressBar
+            android:id="@+id/progress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:padding="16dp"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/title_options"
+        style="?android:attr/listSeparatorTextViewStyle"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/scrollViewPreview"
-        android:text="@string/txt_only_links" />
+        android:text="@string/txt_options" />
 
-    <CheckBox
-        android:id="@+id/cb_unshorten"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/cb_only_links"
-        android:text="@string/txt_unshorten" />
-
-    <CheckBox
-        android:id="@+id/cb_get_titles"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/cb_unshorten"
-        android:text="@string/txt_get_titles" />
-
-    <View 
-        android:layout_height="1dp"
+    <ScrollView
+        android:id="@+id/scroll_options"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/title_options"
+        android:layout_above="@+id/buttonbar"
+        android:layout_centerHorizontal="true" >
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <CheckBox
+                android:id="@+id/cb_only_links"
+                style="?android:attr/textAppearanceMedium"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="@string/txt_only_links" />
+
+            <CheckBox
+                android:id="@+id/cb_unshorten"
+                style="?android:attr/textAppearanceMedium"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="@string/txt_unshorten" />
+
+            <CheckBox
+                android:id="@+id/cb_get_titles"
+                style="?android:attr/textAppearanceMedium"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="@string/txt_get_titles" />
+
+            <CheckBox
+                android:id="@+id/cb_links_as_tasks"
+                style="?android:attr/textAppearanceMedium"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="@string/txt_links_as_tasks" />
+        </LinearLayout>
+    </ScrollView>
+
+    <View
+        android:layout_width="match_parent"
+        		android:visibility="gone"
+        android:layout_height="1dp"
+        android:layout_above="@+id/buttonbar"
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
-        android:background="@android:color/darker_gray"
-        android:layout_above="@+id/buttonbar"/>
+        android:background="@android:color/darker_gray" />
+
     <LinearLayout
         android:id="@+id/buttonbar"
+        style="@style/ButtonBar"
+        		android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/ButtonBar"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" >
 
         <Button
             android:id="@+id/btn_cancel"
+            style="@style/ButtonBarButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            style="@style/ButtonBarButton"
             android:text="@android:string/cancel" />
-        
+
         <Button
             android:id="@+id/btn_send"
+            style="@style/ButtonBarButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            style="@style/ButtonBarButton"
             android:text="@string/send" />
     </LinearLayout>
 

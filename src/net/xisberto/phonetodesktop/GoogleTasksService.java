@@ -106,6 +106,7 @@ public class GoogleTasksService extends IntentService {
 		case NOTIFICATION_ERROR:
 			intentContent.setClass(this, PhoneToDesktopActivity.class);
 			intentContent.setAction(Utils.ACTION_SHOW_AVAILABILITY_ERROR);
+			intentContent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			if (extras.length >= 1) {
 				intentContent.putExtra(Utils.EXTRA_CONNECTION_STATUS_CODE, extras[0]);
 			}
@@ -120,6 +121,7 @@ public class GoogleTasksService extends IntentService {
 		case NOTIFICATION_NEED_AUTHORIZE:
 			intentContent.setClass(this, PhoneToDesktopActivity.class);
 			intentContent.setAction(Utils.ACTION_AUTHENTICATE);
+			intentContent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			PendingIntent pendingAuthorize = PendingIntent.getActivity(
 					this, 0, intentContent, PendingIntent.FLAG_CANCEL_CURRENT);
 			builder.setContentIntent(pendingAuthorize)

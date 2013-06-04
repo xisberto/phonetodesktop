@@ -52,7 +52,8 @@
         </activity>
         <activity
             android:name="net.xisberto.phonetodesktop.AdvancedTasksActivity" 
-            android:label="@string/filter_title_advanced">
+            android:label="@string/filter_title_advanced"
+            android:uiOptions="splitActionBarWhenNarrow">
             <intent-filter android:label="@string/filter_title_advanced" >
                 <action android:name="android.intent.action.SEND" />
 
