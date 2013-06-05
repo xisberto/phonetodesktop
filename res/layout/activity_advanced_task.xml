@@ -22,12 +22,13 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/title_preview"
+        android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp" >
 
         <ScrollView
             style="@style/AppTheme.PreviewText"
             android:layout_width="match_parent"
-            android:layout_height="72dp" >
+            android:layout_height="96dp" >
 
             <TextView
                 android:id="@+id/text_preview"
@@ -61,13 +62,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/title_options"
-        android:layout_above="@+id/buttonbar"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" >
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
 
             <CheckBox
                 android:id="@+id/cb_only_links"
@@ -98,40 +99,5 @@
                 android:text="@string/txt_links_as_tasks" />
         </LinearLayout>
     </ScrollView>
-
-    <View
-        android:layout_width="match_parent"
-        		android:visibility="gone"
-        android:layout_height="1dp"
-        android:layout_above="@+id/buttonbar"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
-        android:background="@android:color/darker_gray" />
-
-    <LinearLayout
-        android:id="@+id/buttonbar"
-        style="@style/ButtonBar"
-        		android:visibility="gone"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" >
-
-        <Button
-            android:id="@+id/btn_cancel"
-            style="@style/ButtonBarButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@android:string/cancel" />
-
-        <Button
-            android:id="@+id/btn_send"
-            style="@style/ButtonBarButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/send" />
-    </LinearLayout>
 
 </RelativeLayout>

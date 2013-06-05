@@ -28,7 +28,7 @@ public class JSoupAsyncTask extends AsyncTask<String, Void, String[]> {
 
 	@Override
 	protected void onPreExecute() {
-		listener.prepareUI();
+		listener.setWaiting();
 	}
 
 	@Override
@@ -51,6 +51,7 @@ public class JSoupAsyncTask extends AsyncTask<String, Void, String[]> {
 			try {
 				Document doc = conn.get();
 				Element success = doc.getElementsByTag(TAG_SUCCESS).first();
+				Log.d("unshorten", doc.text());
 				if (success.text().equals("true")) {
 					Element resolvedURL = doc.getElementsByTag(TAG_RESOLVED)
 							.first();
@@ -97,10 +98,13 @@ public class JSoupAsyncTask extends AsyncTask<String, Void, String[]> {
 		default:
 			break;
 		}
+		listener.setDone();
 	}
 
 	public interface JSoupAsyncListener {
-		public void prepareUI();
+		public void setWaiting();
+		
+		public void setDone();
 
 		public void onPostUnshorten(String[] result);
 
