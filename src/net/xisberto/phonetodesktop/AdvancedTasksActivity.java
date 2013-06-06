@@ -2,18 +2,15 @@ package net.xisberto.phonetodesktop;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 
 import net.xisberto.phonetodesktop.JSoupAsyncTask.JSoupAsyncListener;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
@@ -23,6 +20,7 @@ public class AdvancedTasksActivity extends SherlockActivity
 		implements OnClickListener, JSoupAsyncListener {
 
 	private String text_from_extra, text_to_send;
+	private CheckBox cb_only_links, cb_unshorten, cb_get_titles;
 	private String[]
 			cache_unshorten = null,
 			cache_titles = null;
@@ -42,10 +40,18 @@ public class AdvancedTasksActivity extends SherlockActivity
 			return;
 		}
 		
-		((CheckBox)findViewById(R.id.cb_only_links)).setOnClickListener(this);
-		((CheckBox)findViewById(R.id.cb_unshorten)).setOnClickListener(this);
-		((CheckBox)findViewById(R.id.cb_get_titles)).setOnClickListener(this);
-		((CheckBox)findViewById(R.id.cb_links_as_tasks)).setOnClickListener(this);
+		Preferences prefs = new Preferences(this);
+		
+		cb_only_links = ((CheckBox)findViewById(R.id.cb_only_links));
+		cb_only_links.setOnClickListener(this);
+		cb_only_links.setChecked(prefs.loadOnlyLinks());
+		cb_unshorten = ((CheckBox)findViewById(R.id.cb_unshorten));
+		cb_unshorten.setOnClickListener(this);
+		cb_unshorten.setChecked(prefs.loadUnshorten());
+		cb_get_titles = ((CheckBox)findViewById(R.id.cb_get_titles));
+		cb_get_titles.setOnClickListener(this);
+		cb_get_titles.setChecked(prefs.loadGetTitles());
+//		((CheckBox)findViewById(R.id.cb_links_as_tasks)).setOnClickListener(this);
 		
 	}
 
@@ -64,6 +70,10 @@ public class AdvancedTasksActivity extends SherlockActivity
 			service.putExtra(Intent.EXTRA_TEXT,
 					((TextView)findViewById(R.id.text_preview)).getText().toString());
 			startService(service);
+			Preferences prefs = new Preferences(this);
+			prefs.saveOnlyLinks(cb_only_links.isChecked());
+			prefs.saveUnshorten(cb_unshorten.isChecked());
+			prefs.saveGetTitles(cb_get_titles.isChecked());
 		case R.id.item_cancel:
 			finish();
 		}
@@ -97,7 +107,7 @@ public class AdvancedTasksActivity extends SherlockActivity
 	 * found is replaced by [index]. In the following indexes
 	 * there are the URLs found.
 	 */
-	private ArrayList<String> separateLinks(String text) {
+	/*private ArrayList<String> separateLinks(String text) {
 		String[] parts = text.split("\\s");
 		ArrayList<String> result = new ArrayList<String>(parts.length);
 		String reconstructed = "";
@@ -115,7 +125,7 @@ public class AdvancedTasksActivity extends SherlockActivity
 		}
 		result.set(0, reconstructed);
 		return result;
-	}
+	}*/
 	
 	private void unshortenLinks(String text) {
 		if (cache_unshorten != null) {
@@ -145,17 +155,17 @@ public class AdvancedTasksActivity extends SherlockActivity
 	
 	@Override
 	public void onClick(View v) {
-		if (((CheckBox)findViewById(R.id.cb_only_links)).isChecked()) {
+		if (cb_only_links.isChecked()) {
 			text_to_send = filterLinks(text_from_extra);
 		} else {
 			text_to_send = text_from_extra;
 		}
 		
-		if (((CheckBox)findViewById(R.id.cb_unshorten)).isChecked()) {
+		if (cb_unshorten.isChecked()) {
 			unshortenLinks(text_to_send);
 		}
 
-		if (((CheckBox)findViewById(R.id.cb_get_titles)).isChecked()) {
+		if (cb_get_titles.isChecked()) {
 			getTitles(text_to_send);
 		}
 		/*
@@ -184,16 +194,18 @@ public class AdvancedTasksActivity extends SherlockActivity
 
 	@Override
 	public void onPostUnshorten(String[] result) {
+		if (result == null) {
+			Toast.makeText(this, R.string.txt_error_timeout, Toast.LENGTH_SHORT).show();
+			cb_unshorten.setChecked(false);
+			return;
+		}
 		int index = 0;
 		String[] parts = text_to_send.split("\\s");
 		String output = "";
 		for (String part : parts) {
 			try {
-				Log.i("onPostUnshorten", part);
 				URL u = new URL(part);
-				Log.i("onPostUnshorten", "replacing with index: "+index);
 				part = result[index];
-				Log.i("onPostUnshorten", result[index]);
 				index++;
 			} catch (MalformedURLException e) {
 				// do nothing
@@ -207,16 +219,18 @@ public class AdvancedTasksActivity extends SherlockActivity
 
 	@Override
 	public void onPostGetTitle(String[] result) {
+		if (result == null) {
+			Toast.makeText(this, R.string.txt_error_timeout, Toast.LENGTH_SHORT).show();
+			cb_get_titles.setChecked(false);
+			return;
+		}
 		int index = 0;
 		String[] parts = text_to_send.split("\\s");
 		String output = "";
 		for (String part : parts) {
 			try {
-				Log.i("onPostUnshorten", part);
 				URL u = new URL(part);
-				Log.i("onPostUnshorten", "replacing with index: "+index);
 				part = part + " [" + result[index] + "]";
-				Log.i("onPostUnshorten", result[index]);
 				index++;
 			} catch (MalformedURLException e) {
 				// do nothing

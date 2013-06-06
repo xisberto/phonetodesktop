@@ -13,7 +13,7 @@
     package="net.xisberto.phonetodesktop"
     android:installLocation="preferExternal"
     android:versionCode="114"
-    android:versionName="1.1.4" >
+    android:versionName="1.2.0 alpha" >
 
     <uses-sdk
         android:minSdkVersion="7"
@@ -39,22 +39,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="net.xisberto.phonetodesktop.SimpleTasksActivity"
-            android:theme="@style/AppTheme.Translucent.NoTitlebar"
-            android:label="@string/filter_title" >
-            <intent-filter android:label="@string/filter_title" >
-                <action android:name="android.intent.action.SEND" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:mimeType="text/plain" />
-            </intent-filter>
-        </activity>
-        <activity
             android:name="net.xisberto.phonetodesktop.AdvancedTasksActivity" 
-            android:label="@string/filter_title_advanced"
+            android:label="@string/filter_title"
             android:uiOptions="splitActionBarWhenNarrow">
-            <intent-filter android:label="@string/filter_title_advanced" >
+            <intent-filter android:label="@string/filter_title" >
                 <action android:name="android.intent.action.SEND" />
 
                 <category android:name="android.intent.category.DEFAULT" />
@@ -66,16 +54,9 @@
         <service android:name="net.xisberto.phonetodesktop.GoogleTasksService" >
         </service>
 
-        <activity android:name="net.xisberto.phonetodesktop.AuthorizationActivity" >
-        </activity>
         <activity android:name="net.xisberto.phonetodesktop.TutorialActivity" >
         </activity>
         <activity android:name="net.xisberto.phonetodesktop.SettingsActivity" >
-            <intent-filter>
-                <category android:name="android.intent.category.PREFERENCE" />
-            </intent-filter>
-        </activity>
-        <activity android:name="net.xisberto.phonetodesktop.SettingsFragmentActivity" >
             <intent-filter>
                 <category android:name="android.intent.category.PREFERENCE" />
             </intent-filter>

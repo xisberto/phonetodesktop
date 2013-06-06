@@ -13,29 +13,28 @@
 
     <string name="app_name">Phone To Desktop</string>
     <string name="filter_title">Phone To Desktop</string>
-    <string name="filter_title_advanced">PtD advanced</string>
     <string name="hello">Welcome to Phone To Desktop</string>
+    
     <string name="txt_authorize">Click the button bellow to authorize Phone To Desktop access to your Google Account.</string>
     <string name="txt_waiting_authorization">Waiting authorization process. It may take some time.</string>
-    <string name="txt_loading_lists">Loading your lists</string>
-    <string name="txt_saving_list">Saving PhoneToDesktop list</string>
     <string name="txt_authorized_to">Authorized to</string>
     <string name="btn_authorize">Authorize or choose another account</string>
-    <string name="title_simple">Simple</string>
-    <string name="title_advanced">Advanced</string>
+    
     <string name="txt_preview">Preview</string>
     <string name="txt_options">Options</string>
-    <string name="check_save_option">Save these choices</string>
+    <string name="send">Send</string>
+    
     <string name="title_select_account">Select a Google account</string>
     <string name="btn_how_it_works">How it works</string>
-    <string name="send">Send</string>
+    
+    <string name="txt_error_timeout">Could not access server. Try again later.</string>
+    
     <string name="txt_check_preferences">Check Preferences on menu to change</string>
     <string name="btn_preferences">Preferences</string>
     <string name="txt_sending">Sending links</string>
     <string name="txt_error_sending">Error sending link</string>
     <string name="txt_error_credentials">There was an error with Google credentials. Please authorize Phone To Desktop again.</string>
     <string name="txt_need_authorize">Your need first authorize Phone To Desktop.</string>
-    <string name="txt_timeout">Could not access server. Try again later.</string>
     <string name="btn_back">Back</string>
     <string name="btn_next">Next</string>
     <string name="txt_tutorial1">Phone To Desktop sends links and text from your Android device to your desktop computer</string>
@@ -63,6 +62,7 @@ When the text is successfully sent, the notification goes away.</string>
     <string name="txt_empty_list">Empty list</string>
     <string name="title_confirm">Confirm delete</string>
     <string name="txt_confirm">Do you want to delete this item?</string>
+    <string name="refresh">Refresh</string>
     <string name="title_what_to_send">Select what to send</string>
 
     <string-array name="what_to_send">
@@ -70,9 +70,6 @@ When the text is successfully sent, the notification goes away.</string>
         <item>Send only links</item>
     </string-array>
 
-    <string name="user_recoverable_exception_notification_title_template">User recoverable exception: %1$s</string>
-    <string name="user_recoverable_exception_notification_placeholder_text_template">You said %1$s and lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam non enim magna. Morbi dictum, velit vel semper venenatis, magna odio volutpat velit, at ullamcorper nulla lacus sed turpis. Pellentesque vitae metus elit, nec tincidunt tellus. Integer sed nisl sem, ullamcorper ornare lacus. Duis ac mauris sed massa congue volutpat. Donec sed erat sit amet turpis viverra rhoncus sit amet nec magna. Donec lacinia ligula at libero volutpat volutpat nec nec tortor.</string>
-    
     <string name="txt_only_links">Send only links</string>
     <string name="txt_links_as_tasks">Each link as a new task</string>
     <string name="txt_unshorten">Unshorten links</string>

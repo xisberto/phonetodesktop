@@ -13,20 +13,21 @@
 
     <string name="app_name">Phone To Desktop</string>
     <string name="filter_title">Phone To Desktop</string>
-    <string name="filter_title_advanced">PtD avançado</string>
     <string name="hello">Bem-vindo ao Phone To Desktop</string>
     
     <string name="txt_authorize">Clique no botão abaixo para autorizar o Phone To Desktop a acessar sua Conta Google.</string>
     <string name="txt_waiting_authorization">Esperando o processo de autorização. Pode demorar um pouco.</string>
-    <string name="txt_loading_lists">Carregando suas listas</string>
-    <string name="txt_saving_list">Salvando a lista PhoneToDesktop</string>
     <string name="txt_authorized_to">Autorizado para</string>
     <string name="btn_authorize">Autorizar ou escolher outra conta</string>
-    
+
+	<string name="txt_preview">Pré-visualização</string>
+    <string name="txt_options">Opções</string>
     <string name="send">Enviar</string>
     
     <string name="title_select_account">Selecione uma conta Google</string>
     <string name="btn_how_it_works">Como funciona</string>
+
+    <string name="txt_error_timeout">Não foi possível acessar o servidor. Tente novamente.</string>
     
     <string name="txt_check_preferences">Veja Preferências no menu para alterar</string>
     <string name="btn_preferences">Preferências</string>
@@ -34,7 +35,6 @@
     <string name="txt_error_sending">Erro enviando link</string>
     <string name="txt_error_credentials">Houve um erro ao enviar o link. Por favor, autorize o Phone To Desktop novamente.</string>
     <string name="txt_need_authorize">Você precisa primeiro autorizar o Phone To Desktop.</string>
-    <string name="txt_timeout">Não foi possível acessar o servidor. Tente novamente.</string>
     <string name="btn_back">Voltar</string>
     <string name="btn_next">Avançar</string>
     <string name="txt_tutorial1">Phone To Desktop envia links e texto do seu aparelho Android para seu computador.</string>
@@ -62,13 +62,12 @@
     <string name="txt_empty_list">Lista vazia</string>
     <string name="title_confirm">Confirmar deleção</string>
     <string name="txt_confirm">Você deseja apagar este item?</string>
+    <string name="refresh">Refresh</string>
     <string name="title_what_to_send">Selecione o que enviar</string>
 
     <string-array name="what_to_send">
         <item>Enviar todo o texto</item>
         <item>Enviar apenas os links</item>
     </string-array>
-
-    <string name="check_save_option">Salvar esta escolha</string>
 
 </resources>

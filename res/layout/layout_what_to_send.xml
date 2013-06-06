@@ -27,7 +27,7 @@
         android:id="@+id/check_save_option"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/check_save_option" >
+        android:text="" >
 
     </CheckBox>
 

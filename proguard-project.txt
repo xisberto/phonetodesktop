@@ -20,10 +20,10 @@
 -dontwarn android.support.**
 -dontwarn org.apache.**
 
--injars      bin/classes
--outjars     bin/classes-processed.jar
+#-injars      bin/classes
+#-outjars     bin/classes-processed.jar
 
--libraryjars libs/*
+#-libraryjars libs/*
 
 -keep class * extends java.util.ListResourceBundle {
     protected Object[][] getContents();

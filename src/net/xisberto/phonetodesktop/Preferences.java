@@ -10,7 +10,9 @@ import android.preference.PreferenceManager;
 public class Preferences {
 	private static final String ACCOUNT_NAME = "accountName",
 			AUTH_TOKEN = "authToken", LIST_ID = "listId",
-			WHAT_TO_SEND = "whatToSend", LAST_SENT_TEXT = "lastSentText";
+			WHAT_TO_SEND = "whatToSend", LAST_SENT_TEXT = "lastSentText",
+			ONLY_LINKS = "only_links",
+			UNSHORTEN = "unshorten", GET_TITLES = "getTitles";
 
 	public static final String[] WHAT_TO_SEND_VALUES = { "entire_text",
 			"only_links", "always_ask" };
@@ -41,6 +43,18 @@ public class Preferences {
 		return prefs.getString(LAST_SENT_TEXT, null);
 	}
 	
+	public boolean loadOnlyLinks() {
+		return prefs.getBoolean(ONLY_LINKS, false);
+	}
+	
+	public boolean loadUnshorten() {
+		return prefs.getBoolean(UNSHORTEN, false);
+	}
+	
+	public boolean loadGetTitles() {
+		return prefs.getBoolean(GET_TITLES, false);
+	}
+	
 	private void saveString(String key, String value) {
 		SharedPreferences.Editor editor = prefs.edit();
 		editor.putString(key, value);
@@ -67,6 +81,24 @@ public class Preferences {
 	
 	public void saveLastSentText(String text) {
 		saveString(LAST_SENT_TEXT, text);
+	}
+	
+	public void saveOnlyLinks(boolean value) {
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.putBoolean(ONLY_LINKS, value);
+		apply(editor);
+	}
+	
+	public void saveUnshorten(boolean value) {
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.putBoolean(UNSHORTEN, value);
+		apply(editor);
+	}
+	
+	public void saveGetTitles(boolean value) {
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.putBoolean(GET_TITLES, value);
+		apply(editor);
 	}
 
 	public void removeAuthToken() {
