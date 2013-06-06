@@ -21,7 +21,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -75,7 +74,7 @@ public class PhoneToDesktopActivity extends SyncActivity implements
 		super.onActivityResult(requestCode, resultCode, data);
 		switch (requestCode) {
 		case REQUEST_ACCOUNT_PICKER:
-			Log.d(TAG, "Result from Account Picker");
+			Utils.log("Result from Account Picker");
 			if (resultCode == RESULT_OK && data != null
 					&& data.hasExtra(AccountManager.KEY_ACCOUNT_NAME)) {
 				String accountName = data.getExtras().getString(
@@ -96,11 +95,11 @@ public class PhoneToDesktopActivity extends SyncActivity implements
 			break;
 
 		case REQUEST_GOOGLE_PLAY_SERVICES:
-			Log.d(TAG, "Result from Play Services error");
+			Utils.log("Result from Play Services error");
 			authorize();
 			break;
 		case REQUEST_AUTHORIZATION:
-			Log.d(TAG, "Result from Authorization");
+			Utils.log("Result from Authorization");
 			if (resultCode == RESULT_OK) {
 				asyncRequestLists();
 			} else {
@@ -203,7 +202,6 @@ public class PhoneToDesktopActivity extends SyncActivity implements
 
 	@Override
 	public void selectList(List<TaskList> tasklists) {
-		Log.d(TAG, "selectList");
 		if (tasklists != null) {
 			if (preferences.loadListId() == null) {
 				// We don't have a list id saved. Search in the server
@@ -252,7 +250,6 @@ public class PhoneToDesktopActivity extends SyncActivity implements
 
 	@Override
 	public void saveList(String listId) {
-		Log.d(TAG, "saveList");
 		preferences.saveListId(listId);
 		updateMainLayout(false);
 	}

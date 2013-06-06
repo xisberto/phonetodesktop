@@ -3,6 +3,8 @@ package net.xisberto.phonetodesktop;
 import java.util.Arrays;
 import java.util.Collection;
 
+import android.util.Log;
+
 import com.google.api.services.tasks.TasksScopes;
 
 public class Utils {
@@ -22,4 +24,10 @@ public class Utils {
 			EXTRA_CONNECTION_STATUS_CODE = "net.xisberto.phonetodesktop.extra.CONNECTION_SATUS_CODE",
 			EXTRA_UPDATING = "net.xisberto.phonetodesktop.extra.UPDATING",
 			LIST_TITLE = "PhoneToDesktop";
+	
+	public static void log(String message) {
+		if (BuildConfig.DEBUG){
+			Log.d(LIST_TITLE, message);
+		}
+	}
 }

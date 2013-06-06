@@ -115,16 +115,16 @@ public class LinkListActivity extends SherlockFragmentActivity implements OnClic
 	}
 	
 	private void refreshTasks() {
-		Intent i = new Intent(getApplicationContext(), SimpleTasksActivity.class);
-		i.setAction(Utils.ACTION_LIST_TASKS);
-		startActivity(i);
+		//Intent i = new Intent(getApplicationContext(), SimpleTasksActivity.class);
+		//i.setAction(Utils.ACTION_LIST_TASKS);
+		//startActivity(i);
 	}
 	
 	private void deleteTask(String task_id) {
-		Intent i = new Intent(getApplicationContext(), SimpleTasksActivity.class);
-		i.setAction(Utils.ACTION_REMOVE_TASK);
-		i.putExtra("task_id", task_id);
-		startActivity(i);
+		//Intent i = new Intent(getApplicationContext(), SimpleTasksActivity.class);
+		//i.setAction(Utils.ACTION_REMOVE_TASK);
+		//i.putExtra("task_id", task_id);
+		//startActivity(i);
 
 		refreshTasks();
 	}

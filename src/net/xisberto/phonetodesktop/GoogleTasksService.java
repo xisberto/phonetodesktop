@@ -7,7 +7,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
@@ -62,7 +61,6 @@ public class GoogleTasksService extends IntentService {
 	protected void onHandleIntent(Intent intent) {
 		if (intent != null) {
 			final String action = intent.getAction();
-			Log.i(getPackageName(), "TasksService: " + action);
 			try {
 				if (action.equals(Utils.ACTION_SEND_TASK)) {
 					showNotification(NOTIFICATION_SEND);
@@ -77,7 +75,7 @@ public class GoogleTasksService extends IntentService {
 				cancelNotification(NOTIFICATION_SEND);
 				showNotification(NOTIFICATION_NEED_AUTHORIZE);
 			} catch (IOException ioException) {
-				Log.e(getPackageName(), ioException.getLocalizedMessage());
+				Utils.log(ioException.getLocalizedMessage());
 			} catch (NullPointerException npe) {
 				cancelNotification(NOTIFICATION_SEND);
 				showNotification(NOTIFICATION_NEED_AUTHORIZE);
@@ -104,6 +102,7 @@ public class GoogleTasksService extends IntentService {
 					.setOngoing(true);
 			break;
 		case NOTIFICATION_ERROR:
+			//TODO retry code
 			intentContent.setClass(this, PhoneToDesktopActivity.class);
 			intentContent.setAction(Utils.ACTION_SHOW_AVAILABILITY_ERROR);
 			intentContent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -147,9 +146,7 @@ public class GoogleTasksService extends IntentService {
 			UserRecoverableAuthIOException {
 		Task new_task = new Task().setTitle(text);
 		String listId = preferences.loadListId();
-		Log.d("TasksAsyncTask", "Adding task to list " + listId);
 		Task result = client.tasks().insert(listId, new_task).execute();
-		Log.d("TasksAsyncTask", "New task id: " + result.getId());
 		stopForeground(true);
 	}
 }
