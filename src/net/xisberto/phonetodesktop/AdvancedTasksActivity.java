@@ -24,6 +24,9 @@ public class AdvancedTasksActivity extends SherlockActivity
 	private String[]
 			cache_unshorten = null,
 			cache_titles = null;
+	private static final String
+			SAVE_CACHE_UNSHORTEN = "cache_unshorten",
+			SAVE_CACHE_TITLES = "cache_titles";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +37,6 @@ public class AdvancedTasksActivity extends SherlockActivity
 				&& getIntent().hasExtra(Intent.EXTRA_TEXT)) {
 			text_from_extra = getIntent().getStringExtra(Intent.EXTRA_TEXT);
 			text_to_send = text_from_extra;
-			setPreview(text_from_extra);
 		} else {
 			finish();
 			return;
@@ -44,15 +46,34 @@ public class AdvancedTasksActivity extends SherlockActivity
 		
 		cb_only_links = ((CheckBox)findViewById(R.id.cb_only_links));
 		cb_only_links.setOnClickListener(this);
-		cb_only_links.setChecked(prefs.loadOnlyLinks());
 		cb_unshorten = ((CheckBox)findViewById(R.id.cb_unshorten));
 		cb_unshorten.setOnClickListener(this);
-		cb_unshorten.setChecked(prefs.loadUnshorten());
 		cb_get_titles = ((CheckBox)findViewById(R.id.cb_get_titles));
 		cb_get_titles.setOnClickListener(this);
-		cb_get_titles.setChecked(prefs.loadGetTitles());
 //		((CheckBox)findViewById(R.id.cb_links_as_tasks)).setOnClickListener(this);
 		
+		if (savedInstanceState != null) {
+			cache_unshorten = savedInstanceState.getStringArray(SAVE_CACHE_UNSHORTEN);
+			cache_titles = savedInstanceState.getStringArray(SAVE_CACHE_TITLES);
+		} else {
+			cb_only_links.setChecked(prefs.loadOnlyLinks());
+			cb_unshorten.setChecked(prefs.loadUnshorten());
+			cb_get_titles.setChecked(prefs.loadGetTitles());
+		}
+		
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		processCheckBoxes();
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putStringArray(SAVE_CACHE_UNSHORTEN, cache_unshorten);
+		outState.putStringArray(SAVE_CACHE_TITLES, cache_titles);
 	}
 
 	@Override
@@ -78,6 +99,19 @@ public class AdvancedTasksActivity extends SherlockActivity
 			finish();
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.cb_only_links:
+		case R.id.cb_unshorten:
+		case R.id.cb_get_titles:
+			processCheckBoxes();
+			break;
+
+		default:
+			break;
+		}
 	}
 
 	/**
@@ -153,8 +187,7 @@ public class AdvancedTasksActivity extends SherlockActivity
 		((TextView)findViewById(R.id.text_preview)).setText(text);
 	}
 	
-	@Override
-	public void onClick(View v) {
+	private void processCheckBoxes() {
 		if (cb_only_links.isChecked()) {
 			text_to_send = filterLinks(text_from_extra);
 		} else {
