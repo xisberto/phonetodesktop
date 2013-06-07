@@ -1,9 +1,9 @@
 package net.xisberto.phonetodesktop;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import net.xisberto.phonetodesktop.JSoupAsyncTask.JSoupAsyncListener;
+import net.xisberto.phonetodesktop.URLOptionsAsyncTask.URLOptionsListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -17,7 +17,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
 public class AdvancedTasksActivity extends SherlockActivity
-		implements OnClickListener, JSoupAsyncListener {
+		implements OnClickListener, URLOptionsListener {
 
 	private String text_from_extra, text_to_send;
 	private CheckBox cb_only_links, cb_unshorten, cb_get_titles;
@@ -27,7 +27,10 @@ public class AdvancedTasksActivity extends SherlockActivity
 	private static final String
 			SAVE_CACHE_UNSHORTEN = "cache_unshorten",
 			SAVE_CACHE_TITLES = "cache_titles";
-
+	private static final Pattern urlPattern = Pattern.compile(
+			"\\b((?:https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])",
+	        Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -121,16 +124,12 @@ public class AdvancedTasksActivity extends SherlockActivity
 	 * @return the found URLs separated by space
 	 */
 	private String filterLinks(String text) {
-		String[] parts = text.split("\\s");
 		String result = "";
-		for (String part : parts) {
-			try {
-				URL u = new URL(part);
-				result += part + " ";
-			} catch (MalformedURLException e) {
-				// do nothing
-			}
+		Matcher matcher = urlPattern.matcher(text);
+		while (matcher.find()) {
+			result += matcher.group() + " ";
 		}
+		
 		return result;
 	}
 	
@@ -165,9 +164,9 @@ public class AdvancedTasksActivity extends SherlockActivity
 		if (cache_unshorten != null) {
 			onPostUnshorten(cache_unshorten);
 		} else {
-			String links = filterLinks(text);
+			String links = filterLinks(text).trim();
 			String[] parts = links.split(" ");
-			JSoupAsyncTask jsoup = new JSoupAsyncTask(this, JSoupAsyncTask.TASK_UNSHORTEN);
+			URLOptionsAsyncTask jsoup = new URLOptionsAsyncTask(this, URLOptionsAsyncTask.TASK_UNSHORTEN);
 			jsoup.execute(parts);
 		}
 	}
@@ -176,9 +175,9 @@ public class AdvancedTasksActivity extends SherlockActivity
 		if (cache_titles != null) {
 			onPostGetTitle(cache_titles);
 		} else {
-			String links = filterLinks(text);
+			String links = filterLinks(text).trim();
 			String[] parts = links.split(" ");
-			JSoupAsyncTask jsoup = new JSoupAsyncTask(this, JSoupAsyncTask.TASK_GET_TITLE);
+			URLOptionsAsyncTask jsoup = new URLOptionsAsyncTask(this, URLOptionsAsyncTask.TASK_GET_TITLE);
 			jsoup.execute(parts);
 		}
 	}
@@ -233,20 +232,13 @@ public class AdvancedTasksActivity extends SherlockActivity
 			return;
 		}
 		int index = 0;
-		String[] parts = text_to_send.split("\\s");
-		String output = "";
-		for (String part : parts) {
-			try {
-				URL u = new URL(part);
-				part = result[index];
-				index++;
-			} catch (MalformedURLException e) {
-				// do nothing
-			}
-			output += part + " ";
+		Matcher matcher = urlPattern.matcher(text_to_send);
+		while (matcher.find()) {
+			text_to_send = text_to_send.replace(matcher.group(), result[index]);
+			index++;
 		}
+
 		cache_unshorten = result;
-		text_to_send = output;
 		setPreview(text_to_send);
 	}
 
@@ -257,21 +249,20 @@ public class AdvancedTasksActivity extends SherlockActivity
 			cb_get_titles.setChecked(false);
 			return;
 		}
+
 		int index = 0;
-		String[] parts = text_to_send.split("\\s");
-		String output = "";
-		for (String part : parts) {
-			try {
-				URL u = new URL(part);
-				part = part + " [" + result[index] + "]";
-				index++;
-			} catch (MalformedURLException e) {
-				// do nothing
+		Matcher matcher = urlPattern.matcher(text_to_send);
+		while (matcher.find()) {
+			if (! matcher.group().equals(result[index])) {
+				//skip replace when we have the URL and not a title
+				text_to_send = text_to_send.replace(
+						matcher.group(),
+						matcher.group() + " [" + result[index] + "]");
 			}
-			output += part + " ";
+			index++;
 		}
+		
 		cache_titles = result;
-		text_to_send = output;
 		setPreview(text_to_send);
 	}
 
