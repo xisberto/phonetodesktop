@@ -167,8 +167,10 @@ public class PhoneToDesktopActivity extends SyncActivity implements
 				txt_authorize.setText(getResources().getString(
 						R.string.txt_authorized_to)
 						+ " " + account_name);
-				getSherlock().getActionBar().setSubtitle(
-						"List: " + prefs.loadListId());
+				if (BuildConfig.DEBUG) {
+					getSherlock().getActionBar().setSubtitle(
+							"List: " + prefs.loadListId());
+				}
 			} else {
 				txt_authorize.setText(R.string.txt_authorize);
 			}
