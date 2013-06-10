@@ -53,7 +53,6 @@ public class AdvancedTasksActivity extends SherlockActivity
 		cb_unshorten.setOnClickListener(this);
 		cb_get_titles = ((CheckBox)findViewById(R.id.cb_get_titles));
 		cb_get_titles.setOnClickListener(this);
-//		((CheckBox)findViewById(R.id.cb_links_as_tasks)).setOnClickListener(this);
 		
 		if (savedInstanceState != null) {
 			cache_unshorten = savedInstanceState.getStringArray(SAVE_CACHE_UNSHORTEN);
@@ -91,13 +90,13 @@ public class AdvancedTasksActivity extends SherlockActivity
 		case R.id.item_send:
 			Intent service = new Intent(this, GoogleTasksService.class);
 			service.setAction(Utils.ACTION_SEND_TASK);
-			service.putExtra(Intent.EXTRA_TEXT,
-					((TextView)findViewById(R.id.text_preview)).getText().toString());
+			service.putExtra(Intent.EXTRA_TEXT, text_to_send);
 			startService(service);
 			Preferences prefs = new Preferences(this);
 			prefs.saveOnlyLinks(cb_only_links.isChecked());
 			prefs.saveUnshorten(cb_unshorten.isChecked());
 			prefs.saveGetTitles(cb_get_titles.isChecked());
+			prefs.saveLastSentText(text_to_send);
 		case R.id.item_cancel:
 			finish();
 		}
@@ -132,33 +131,6 @@ public class AdvancedTasksActivity extends SherlockActivity
 		
 		return result;
 	}
-	
-	/**
-	 * Separate URLs in {@code text} from it.
-	 * @param text
-	 * @return at index 0, there's {@code text} but each URL
-	 * found is replaced by [index]. In the following indexes
-	 * there are the URLs found.
-	 */
-	/*private ArrayList<String> separateLinks(String text) {
-		String[] parts = text.split("\\s");
-		ArrayList<String> result = new ArrayList<String>(parts.length);
-		String reconstructed = "";
-		result.add("");
-		for (String part : parts) {
-			try {
-				URL u = new URL(part);
-				int size = result.size();
-				result.add("[" + size + "] " + part);
-				part = "[" + size + "]";
-			} catch (MalformedURLException e) {
-				// do nothing
-			}
-			reconstructed += part + " ";
-		}
-		result.set(0, reconstructed);
-		return result;
-	}*/
 	
 	private void unshortenLinks(String text) {
 		if (cache_unshorten != null) {
@@ -200,15 +172,7 @@ public class AdvancedTasksActivity extends SherlockActivity
 		if (cb_get_titles.isChecked()) {
 			getTitles(text_to_send);
 		}
-		/*
-		if (((CheckBox)findViewById(R.id.cb_links_as_tasks)).isChecked()) {
-			ArrayList<String> separated = separateLinks(text_to_send);
-			text_to_send = separated.get(0);
-			for (int i = 1; i < separated.size(); i++) {
-				text_to_send += "\n- " + separated.get(i);
-			}
-		}
-		*/
+
 		setPreview(text_to_send);
 	}
 

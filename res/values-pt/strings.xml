@@ -22,6 +22,9 @@
 
 	<string name="txt_preview">Pré-visualização</string>
     <string name="txt_options">Opções</string>
+    <string name="txt_only_links">Enviar apenas os links</string>
+    <string name="txt_unshorten">Desencurtar links</string>
+    <string name="txt_get_titles">Adicionar os títulos (se os links levarem a páginas web)</string>
     <string name="send">Enviar</string>
     
     <string name="title_select_account">Selecione uma conta Google</string>

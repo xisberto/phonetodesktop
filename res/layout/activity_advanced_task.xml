@@ -91,13 +91,6 @@
                 android:layout_height="48dp"
                 android:text="@string/txt_get_titles" />
 
-            <CheckBox
-                android:id="@+id/cb_links_as_tasks"
-                style="?android:attr/textAppearanceMedium"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:visibility="gone"
-                android:text="@string/txt_links_as_tasks" />
         </LinearLayout>
     </ScrollView>
 

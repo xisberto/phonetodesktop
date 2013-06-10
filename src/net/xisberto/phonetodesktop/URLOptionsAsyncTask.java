@@ -49,8 +49,9 @@ public class URLOptionsAsyncTask extends AsyncTask<String, Void, String[]> {
 			default:
 				return null;
 			}
-		} catch (IOException e) {
-			Log.e("", e.getMessage());
+		} catch (IOException ioe) {
+			return null;
+		} catch (NullPointerException npe) {
 			return null;
 		}
 	}
@@ -71,7 +72,7 @@ public class URLOptionsAsyncTask extends AsyncTask<String, Void, String[]> {
 		return result;
 	}
 
-	private String[] getTitles(String... params) throws IOException {
+	private String[] getTitles(String... params) throws IOException, NullPointerException {
 		String[] result = new String[params.length];
 		for (int i = 0; i < params.length; i++) {
 			Utils.log("getTitles "+params[i]);
@@ -121,7 +122,7 @@ public class URLOptionsAsyncTask extends AsyncTask<String, Void, String[]> {
 	 *  a HTML page or if no title was found
 	 * @throws IOException
 	 */
-	private String getPageTitle(String url) throws IOException {		
+	private String getPageTitle(String url) throws IOException, NullPointerException {		
 		URL u = new URL(url);
 		URLConnection conn = u.openConnection();
 		

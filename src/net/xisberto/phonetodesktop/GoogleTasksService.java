@@ -10,7 +10,6 @@ import android.support.v4.app.NotificationCompat;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
@@ -67,15 +66,12 @@ public class GoogleTasksService extends IntentService {
 					handleActionSend(intent.getStringExtra(Intent.EXTRA_TEXT));
 					cancelNotification(NOTIFICATION_SEND);
 				}
-			} catch (GooglePlayServicesAvailabilityIOException availabilityException) {
-				cancelNotification(NOTIFICATION_SEND);
-				showNotification(NOTIFICATION_ERROR,
-						availabilityException.getConnectionStatusCode());
 			} catch (UserRecoverableAuthIOException userRecoverableException) {
 				cancelNotification(NOTIFICATION_SEND);
 				showNotification(NOTIFICATION_NEED_AUTHORIZE);
 			} catch (IOException ioException) {
-				Utils.log(ioException.getLocalizedMessage());
+				cancelNotification(NOTIFICATION_SEND);
+				showNotification(NOTIFICATION_ERROR);
 			} catch (NullPointerException npe) {
 				cancelNotification(NOTIFICATION_SEND);
 				showNotification(NOTIFICATION_NEED_AUTHORIZE);
@@ -83,7 +79,7 @@ public class GoogleTasksService extends IntentService {
 		}
 	}
 	
-	private void showNotification(int notif_id, int... extras) {
+	private void showNotification(int notif_id) {
 		NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
 				.setWhen(System.currentTimeMillis());
 		
@@ -102,20 +98,19 @@ public class GoogleTasksService extends IntentService {
 					.setOngoing(true);
 			break;
 		case NOTIFICATION_ERROR:
-			//TODO retry code
-			intentContent.setClass(this, PhoneToDesktopActivity.class);
-			intentContent.setAction(Utils.ACTION_SHOW_AVAILABILITY_ERROR);
+			//On error, we create an intent to retry the send
+			intentContent.setClass(this, AdvancedTasksActivity.class);
+			intentContent.setAction(Intent.ACTION_SEND);
 			intentContent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-			if (extras.length >= 1) {
-				intentContent.putExtra(Utils.EXTRA_CONNECTION_STATUS_CODE, extras[0]);
-			}
+			intentContent.putExtra(Intent.EXTRA_TEXT, preferences.loadLastSentText());
 			PendingIntent pendingError = PendingIntent.getActivity(
 					this, 0, intentContent, PendingIntent.FLAG_CANCEL_CURRENT);
 			builder.setContentIntent(pendingError)
 					.setAutoCancel(true)
 					.setSmallIcon(android.R.drawable.stat_notify_error)
 					.setTicker(getString(R.string.txt_error_sending))
-					.setContentTitle(getString(R.string.txt_error_credentials));
+					.setContentTitle(getString(R.string.txt_error_sending))
+					.setContentText(getString(R.string.txt_error_try_again));
 			break;
 		case NOTIFICATION_NEED_AUTHORIZE:
 			intentContent.setClass(this, PhoneToDesktopActivity.class);
@@ -127,7 +122,8 @@ public class GoogleTasksService extends IntentService {
 					.setAutoCancel(true)
 					.setSmallIcon(android.R.drawable.stat_notify_error)
 					.setTicker(getString(R.string.txt_error_sending))
-					.setContentTitle(getString(R.string.txt_need_authorize));
+					.setContentTitle(getString(R.string.txt_error_sending))
+					.setContentText(getString(R.string.txt_need_authorize));
 			break;
 
 		default:
@@ -142,11 +138,10 @@ public class GoogleTasksService extends IntentService {
 	}
 
 	private void handleActionSend(String text) throws IOException,
-			GooglePlayServicesAvailabilityIOException,
 			UserRecoverableAuthIOException {
 		Task new_task = new Task().setTitle(text);
 		String listId = preferences.loadListId();
-		Task result = client.tasks().insert(listId, new_task).execute();
-		stopForeground(true);
+		client.tasks().insert(listId, new_task).execute();
+		preferences.saveLastSentText("");
 	}
 }

@@ -22,6 +22,9 @@
     
     <string name="txt_preview">Preview</string>
     <string name="txt_options">Options</string>
+    <string name="txt_only_links">Send only links</string>
+    <string name="txt_unshorten">Unshorten links</string>
+    <string name="txt_get_titles">Add titles (if the links lead to web pages)</string>
     <string name="send">Send</string>
     
     <string name="title_select_account">Select a Google account</string>
@@ -71,9 +74,5 @@ When the text is successfully sent, the notification goes away.</string>
         <item>Send only links</item>
     </string-array>
 
-    <string name="txt_only_links">Send only links</string>
-    <string name="txt_links_as_tasks">Each link as a new task</string>
-    <string name="txt_unshorten">Unshorten links</string>
-    <string name="txt_get_titles">Get links\' titles</string>
 
 </resources>
