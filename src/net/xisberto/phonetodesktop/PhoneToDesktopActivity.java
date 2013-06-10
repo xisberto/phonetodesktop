@@ -55,17 +55,13 @@ public class PhoneToDesktopActivity extends SyncActivity implements
 		findViewById(R.id.btn_how_it_works).setOnClickListener(this);
 		findViewById(R.id.btn_about).setOnClickListener(this);
 		findViewById(R.id.btn_authorize).setOnClickListener(this);
+
+		updateMainLayout(false);
 		
 		String action = getIntent().getAction();
-		if (action != null) {
-			if (action.equals(Utils.ACTION_SHOW_AVAILABILITY_ERROR)
-					&& getIntent().hasExtra(Utils.EXTRA_CONNECTION_STATUS_CODE)) {
-				showGooglePlayServicesAvailabilityErrorDialog(
-						getIntent().getIntExtra(Utils.EXTRA_CONNECTION_STATUS_CODE, 0));
-			} else if (action.equals(Utils.ACTION_AUTHENTICATE)) {
+		if (action != null && action.equals(Utils.ACTION_AUTHENTICATE)) {
 				updateMainLayout(true);
 				authorize();
-			}
 		}
 	}
 
@@ -117,7 +113,6 @@ public class PhoneToDesktopActivity extends SyncActivity implements
 		super.onStart();
 		LocalBroadcastManager.getInstance(this).registerReceiver(receiver,
 				new IntentFilter(Utils.ACTION_AUTHENTICATE));
-		updateMainLayout(false);
 	}
 
 	@Override
