@@ -28,13 +28,14 @@
     <string name="btn_how_it_works">How it works</string>
     
     <string name="txt_error_timeout">Could not access server. Try again later.</string>
+    <string name="txt_sending">Sending links</string>
+    <string name="txt_error_sending">Error sending link</string>
+    <string name="txt_error_try_again">Click here to try again.</string>
+    <string name="txt_need_authorize">Your need first authorize Phone To Desktop.</string>
     
     <string name="txt_check_preferences">Check Preferences on menu to change</string>
     <string name="btn_preferences">Preferences</string>
-    <string name="txt_sending">Sending links</string>
-    <string name="txt_error_sending">Error sending link</string>
-    <string name="txt_error_credentials">There was an error with Google credentials. Please authorize Phone To Desktop again.</string>
-    <string name="txt_need_authorize">Your need first authorize Phone To Desktop.</string>
+    
     <string name="btn_back">Back</string>
     <string name="btn_next">Next</string>
     <string name="txt_tutorial1">Phone To Desktop sends links and text from your Android device to your desktop computer</string>

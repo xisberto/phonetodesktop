@@ -28,13 +28,14 @@
     <string name="btn_how_it_works">Como funciona</string>
 
     <string name="txt_error_timeout">Não foi possível acessar o servidor. Tente novamente.</string>
+    <string name="txt_sending">Enviando link</string>
+    <string name="txt_error_sending">Erro enviando link</string>
+    <string name="txt_error_try_again">Clique para tentar novamente.</string>
+    <string name="txt_need_authorize">Você precisa primeiro autorizar o Phone To Desktop.</string>
     
     <string name="txt_check_preferences">Veja Preferências no menu para alterar</string>
     <string name="btn_preferences">Preferências</string>
-    <string name="txt_sending">Enviando link</string>
-    <string name="txt_error_sending">Erro enviando link</string>
-    <string name="txt_error_credentials">Houve um erro ao enviar o link. Por favor, autorize o Phone To Desktop novamente.</string>
-    <string name="txt_need_authorize">Você precisa primeiro autorizar o Phone To Desktop.</string>
+    
     <string name="btn_back">Voltar</string>
     <string name="btn_next">Avançar</string>
     <string name="txt_tutorial1">Phone To Desktop envia links e texto do seu aparelho Android para seu computador.</string>
