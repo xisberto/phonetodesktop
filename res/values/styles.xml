@@ -13,7 +13,7 @@
 
     <style name="AppTheme" parent="@style/Theme.Sherlock.Light"></style>
     
-    <style name="AppTheme.Dialog" parent="@style/Theme.Sherlock.Light.Dialog"></style>
+    <style name="AppTheme.Dialog" parent="@android:style/Theme.Dialog"></style>
     
     <style name="AppTheme.PreviewText">
         <item name="android:background">@drawable/background_preview</item>
@@ -24,7 +24,7 @@
         <item name="android:windowNoTitle">false</item>
     </style>
 
-    <style name="AppTheme.Translucent.NoTitlebar" parent="@style/Theme.Sherlock.NoActionBar">
+    <style name="AppTheme.Translucent.NoTitlebar" parent="@style/Theme.Sherlock.Light.NoActionBar">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
         <item name="android:windowIsTranslucent">true</item>
@@ -39,8 +39,4 @@
         <item name="android:background">@drawable/home_button</item>
     </style>
     
-    <style name="ButtonBarButton"></style>
-    
-    <style name="ButtonBar" parent="@android:style/ButtonBar"></style>
-
 </resources>

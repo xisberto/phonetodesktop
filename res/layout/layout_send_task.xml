@@ -1,8 +1,9 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/RelativeLayout1"
+    android:id="@+id/LinearLayout1"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
     android:paddingLeft="4dp"
     android:paddingRight="4dp"
     tools:context=".AdvancedTaskFragment" >
@@ -12,16 +13,12 @@
         style="?android:attr/listSeparatorTextViewStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
         android:text="@string/txt_preview" />
 
     <FrameLayout
         android:id="@+id/scrollViewPreview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/title_preview"
         android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp" >
 
@@ -53,17 +50,13 @@
         style="?android:attr/listSeparatorTextViewStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/scrollViewPreview"
         android:text="@string/txt_options" />
 
-    <ScrollView
+    <LinearLayout
         android:id="@+id/scroll_options"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/title_options"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" >
+        android:orientation="vertical" >
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -90,8 +83,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:text="@string/txt_get_titles" />
-
         </LinearLayout>
-    </ScrollView>
+    </LinearLayout>
 
-</RelativeLayout>
+</LinearLayout>

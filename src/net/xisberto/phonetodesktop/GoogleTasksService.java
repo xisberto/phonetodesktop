@@ -99,7 +99,7 @@ public class GoogleTasksService extends IntentService {
 			break;
 		case NOTIFICATION_ERROR:
 			//On error, we create an intent to retry the send
-			intentContent.setClass(this, AdvancedTasksActivity.class);
+			intentContent.setClass(this, SendTasksActivity.class);
 			intentContent.setAction(Intent.ACTION_SEND);
 			intentContent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			intentContent.putExtra(Intent.EXTRA_TEXT, preferences.loadLastSentText());
