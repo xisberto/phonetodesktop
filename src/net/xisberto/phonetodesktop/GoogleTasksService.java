@@ -10,6 +10,7 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
@@ -75,12 +76,15 @@ public class GoogleTasksService extends IntentService {
 					handleActionRemove(intent.getStringExtra(Utils.EXTRA_TASK_ID));
 				}
 			} catch (UserRecoverableAuthIOException userRecoverableException) {
+				Utils.log(Log.getStackTraceString(userRecoverableException));
 				cancelNotification(NOTIFICATION_SEND);
 				showNotification(NOTIFICATION_NEED_AUTHORIZE);
 			} catch (IOException ioException) {
+				Utils.log(Log.getStackTraceString(ioException));
 				cancelNotification(NOTIFICATION_SEND);
 				showNotification(NOTIFICATION_ERROR);
 			} catch (NullPointerException npe) {
+				Utils.log(Log.getStackTraceString(npe));
 				cancelNotification(NOTIFICATION_SEND);
 				showNotification(NOTIFICATION_NEED_AUTHORIZE);
 			}

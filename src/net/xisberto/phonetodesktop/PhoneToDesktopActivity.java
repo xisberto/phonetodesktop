@@ -94,6 +94,7 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements
 					&& data.hasExtra(AccountManager.KEY_ACCOUNT_NAME)) {
 				String accountName = data.getExtras().getString(
 						AccountManager.KEY_ACCOUNT_NAME);
+				Utils.log("Saving account "+accountName);
 				if (accountName != null) {
 					credential.setSelectedAccountName(accountName);
 					preferences.saveAccountName(accountName);
@@ -230,13 +231,13 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements
 	}
 
 	private void asyncRequestLists() {
-		listManager = new ListAsyncTask(this, ListAsyncTask.REQUEST_LOAD_LISTS);
-		listManager.execute();
+		listManager = new ListAsyncTask(this);
+		listManager.execute(ListAsyncTask.REQUEST_LOAD_LISTS);
 	}
 
 	private void asyncSaveList() {
-		listManager = new ListAsyncTask(this, ListAsyncTask.REQUEST_SAVE_LIST);
-		listManager.execute();
+		listManager = new ListAsyncTask(this);
+		listManager.execute(ListAsyncTask.REQUEST_SAVE_LIST);
 	}
 
 	@Override

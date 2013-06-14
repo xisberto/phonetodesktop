@@ -30,7 +30,7 @@ public class ListAsyncTask extends AsyncTask<Integer, Void, String> {
 	private PhoneToDesktopActivity listener;
 	private List<TaskList> tasklists;
 
-	public ListAsyncTask(PhoneToDesktopActivity activity, int request) {
+	public ListAsyncTask(PhoneToDesktopActivity activity) {
 		if (activity instanceof TaskListTaskListener) {
 			listener = (PhoneToDesktopActivity) activity;
 		} else {
@@ -40,6 +40,11 @@ public class ListAsyncTask extends AsyncTask<Integer, Void, String> {
 
 		transport = AndroidHttp.newCompatibleTransport();
 		jsonFactory = new GsonFactory();
+
+		Preferences preferences = new Preferences(listener);
+		credential = GoogleAccountCredential
+				.usingOAuth2(listener, Utils.scopes);
+		credential.setSelectedAccountName(preferences.loadAccountName());
 
 		client = new com.google.api.services.tasks.Tasks.Builder(transport,
 				jsonFactory, credential).setApplicationName("PhoneToDesktop")
@@ -52,20 +57,25 @@ public class ListAsyncTask extends AsyncTask<Integer, Void, String> {
 		try {
 			switch (request) {
 			case REQUEST_LOAD_LISTS:
+				Utils.log("Loading lists");
 				tasklists = client.tasklists().list().execute().getItems();
 				break;
 			case REQUEST_SAVE_LIST:
+				Utils.log("Saving list");
 				TaskList newList = new TaskList();
 				newList.setTitle(Utils.LIST_TITLE);
-				TaskList createdList = client.tasklists().insert(newList).execute();
+				TaskList createdList = client.tasklists().insert(newList)
+						.execute();
 				return createdList.getId();
 			default:
 				break;
 			}
-		} catch ( GooglePlayServicesAvailabilityIOException availabilityException) {
+		} catch (final GooglePlayServicesAvailabilityIOException availabilityException) {
+			Utils.log(Log.getStackTraceString(availabilityException));
 			listener.showGooglePlayServicesAvailabilityErrorDialog(availabilityException
 					.getConnectionStatusCode());
-		} catch (UserRecoverableAuthIOException userRecoverableException) {
+		} catch (final UserRecoverableAuthIOException userRecoverableException) {
+			Utils.log(Log.getStackTraceString(userRecoverableException));
 			listener.startActivityForResult(
 					userRecoverableException.getIntent(),
 					PhoneToDesktopActivity.REQUEST_AUTHORIZATION);
