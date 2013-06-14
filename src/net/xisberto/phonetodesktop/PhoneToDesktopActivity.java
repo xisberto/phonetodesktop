@@ -12,9 +12,9 @@ package net.xisberto.phonetodesktop;
 
 import java.util.List;
 
-import net.xisberto.phonetodesktop.google_tasks_api.ListAsyncTask;
-import net.xisberto.phonetodesktop.google_tasks_api.ListAsyncTask.TaskListTaskListener;
+import net.xisberto.phonetodesktop.ListAsyncTask.TaskListTaskListener;
 import android.accounts.AccountManager;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -26,11 +26,24 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Window;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.services.tasks.model.TaskList;
 
-public class PhoneToDesktopActivity extends SyncActivity implements
+public class PhoneToDesktopActivity extends SherlockFragmentActivity implements
 		OnClickListener, TaskListTaskListener {
+	
+	public static final int REQUEST_GOOGLE_PLAY_SERVICES = 0;
+
+	public static final int REQUEST_AUTHORIZATION = 1;
+
+	public static final int REQUEST_ACCOUNT_PICKER = 2;
+
+	protected GoogleAccountCredential credential;
+
+	public Preferences preferences;
 
 	private ListAsyncTask listManager;
 
@@ -48,6 +61,12 @@ public class PhoneToDesktopActivity extends SyncActivity implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+		
+		preferences = new Preferences(this);
+
+		credential = GoogleAccountCredential.usingOAuth2(this, Utils.scopes);
+		credential.setSelectedAccountName(preferences.loadAccountName());
+
 		setContentView(R.layout.main);
 
 		findViewById(R.id.btn_link_list).setOnClickListener(this);
@@ -171,6 +190,29 @@ public class PhoneToDesktopActivity extends SyncActivity implements
 			}
 		}
 	}
+	
+	public void showGooglePlayServicesAvailabilityErrorDialog(
+			final int connectionStatusCode) {
+		runOnUiThread(new Runnable() {
+			public void run() {
+				Dialog dialog = GooglePlayServicesUtil.getErrorDialog(
+						connectionStatusCode, PhoneToDesktopActivity.this,
+						REQUEST_GOOGLE_PLAY_SERVICES);
+				dialog.show();
+			}
+		});
+	}
+	
+	/** Check that Google Play services APK is installed and up to date. */
+	public boolean checkGooglePlayServicesAvailable() {
+		final int connectionStatusCode = GooglePlayServicesUtil
+				.isGooglePlayServicesAvailable(this);
+		if (GooglePlayServicesUtil.isUserRecoverableError(connectionStatusCode)) {
+			showGooglePlayServicesAvailabilityErrorDialog(connectionStatusCode);
+			return false;
+		}
+		return true;
+	}
 
 	private void authorize() {
 		clearCredential();
@@ -249,12 +291,6 @@ public class PhoneToDesktopActivity extends SyncActivity implements
 	public void saveList(String listId) {
 		preferences.saveListId(listId);
 		updateMainLayout(false);
-	}
-
-	@Override
-	public void refreshView() {
-		// TODO Auto-generated method stub
-
 	}
 
 }
