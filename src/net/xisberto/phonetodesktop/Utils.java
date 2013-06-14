@@ -23,6 +23,9 @@ public class Utils {
 			EXTRA_LISTID = "net.xisberto.phonetodesktop.extra.LISTID",
 			EXTRA_CONNECTION_STATUS_CODE = "net.xisberto.phonetodesktop.extra.CONNECTION_SATUS_CODE",
 			EXTRA_UPDATING = "net.xisberto.phonetodesktop.extra.UPDATING",
+			EXTRA_TITLES = "net.xisberto.phonetodesktop.extra.TITLES",
+			EXTRA_IDS = "net.xisberto.phonetodesktop.extra.IDS",
+			EXTRA_TASK_ID = "net.xisberto.phonetodesktop.extra.TASK_ID",
 			LIST_TITLE = "PhoneToDesktop";
 	
 	public static void log(String message) {

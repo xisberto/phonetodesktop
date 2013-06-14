@@ -1,12 +1,15 @@
 package net.xisberto.phonetodesktop;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import android.app.IntentService;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.LocalBroadcastManager;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
@@ -20,8 +23,6 @@ import com.google.api.services.tasks.model.Task;
  * An {@link IntentService} subclass for handling asynchronous task requests in
  * a service on a separate handler thread.
  * <p>
- * TODO: Customize class - update intent actions, extra parameters and static
- * helper methods.
  */
 public class GoogleTasksService extends IntentService {
 	private static final int
@@ -30,10 +31,12 @@ public class GoogleTasksService extends IntentService {
 			NOTIFICATION_NEED_AUTHORIZE = 2;
 	
 	protected com.google.api.services.tasks.Tasks client;
-	private Preferences preferences;
 	private GoogleAccountCredential credential;
 	private HttpTransport transport;
 	private JsonFactory jsonFactory;
+
+	private Preferences preferences;
+	private String list_id;
 
 	public GoogleTasksService() {
 		super("GoogleTasksService");
@@ -44,6 +47,7 @@ public class GoogleTasksService extends IntentService {
 		super.onCreate();
 
 		preferences = new Preferences(this);
+		list_id = preferences.loadListId();
 
 		credential = GoogleAccountCredential.usingOAuth2(this, Utils.scopes);
 		credential.setSelectedAccountName(preferences.loadAccountName());
@@ -65,6 +69,10 @@ public class GoogleTasksService extends IntentService {
 					showNotification(NOTIFICATION_SEND);
 					handleActionSend(intent.getStringExtra(Intent.EXTRA_TEXT));
 					cancelNotification(NOTIFICATION_SEND);
+				} else if (action.equals(Utils.ACTION_LIST_TASKS)) {
+					handleActionList();
+				} else if (action.equals(Utils.ACTION_REMOVE_TASK)) {
+					handleActionRemove(intent.getStringExtra(Utils.EXTRA_TASK_ID));
 				}
 			} catch (UserRecoverableAuthIOException userRecoverableException) {
 				cancelNotification(NOTIFICATION_SEND);
@@ -140,8 +148,32 @@ public class GoogleTasksService extends IntentService {
 	private void handleActionSend(String text) throws IOException,
 			UserRecoverableAuthIOException {
 		Task new_task = new Task().setTitle(text);
-		String listId = preferences.loadListId();
-		client.tasks().insert(listId, new_task).execute();
+		client.tasks().insert(list_id, new_task).execute();
 		preferences.saveLastSentText("");
+	}
+	
+	private void handleActionList() throws IOException,
+			UserRecoverableAuthIOException {
+		List<Task> list = client.tasks().list(list_id).execute().getItems();
+		
+		if (list != null) {
+			ArrayList<String> ids = new ArrayList<String>();
+			ArrayList<String> titles = new ArrayList<String>();
+			for (Task task : list) {
+				ids.add(task.getId());
+				titles.add(task.getTitle());
+			}
+			
+			Intent broadcast = new Intent(Utils.ACTION_LIST_TASKS);
+			broadcast.putStringArrayListExtra(Utils.EXTRA_IDS, ids);
+			broadcast.putStringArrayListExtra(Utils.EXTRA_TITLES, titles);
+			LocalBroadcastManager.getInstance(this).sendBroadcast(broadcast);
+		}
+	}
+	
+	private void handleActionRemove(String task_id) throws IOException,
+			UserRecoverableAuthIOException {
+		client.tasks().delete(list_id, task_id).execute();
+		handleActionList();
 	}
 }
