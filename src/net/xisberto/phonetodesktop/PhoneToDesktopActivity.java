@@ -34,7 +34,7 @@ import com.google.api.services.tasks.model.TaskList;
 
 public class PhoneToDesktopActivity extends SherlockFragmentActivity implements
 		OnClickListener, TaskListTaskListener {
-	
+
 	public static final int REQUEST_GOOGLE_PLAY_SERVICES = 0;
 
 	public static final int REQUEST_AUTHORIZATION = 1;
@@ -51,7 +51,8 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			if (intent.hasExtra(Utils.EXTRA_UPDATING)) {
-				updateMainLayout(intent.getBooleanExtra(Utils.EXTRA_UPDATING, false));
+				updateMainLayout(intent.getBooleanExtra(Utils.EXTRA_UPDATING,
+						false));
 			}
 		}
 	};
@@ -61,7 +62,7 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-		
+
 		preferences = new Preferences(this);
 
 		credential = GoogleAccountCredential.usingOAuth2(this, Utils.scopes);
@@ -70,17 +71,17 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements
 		setContentView(R.layout.main);
 
 		findViewById(R.id.btn_link_list).setOnClickListener(this);
-		findViewById(R.id.btn_preferences).setOnClickListener(this);
+		// findViewById(R.id.btn_preferences).setOnClickListener(this);
 		findViewById(R.id.btn_how_it_works).setOnClickListener(this);
 		findViewById(R.id.btn_about).setOnClickListener(this);
 		findViewById(R.id.btn_authorize).setOnClickListener(this);
 
 		updateMainLayout(false);
-		
+
 		String action = getIntent().getAction();
 		if (action != null && action.equals(Utils.ACTION_AUTHENTICATE)) {
-				updateMainLayout(true);
-				authorize();
+			updateMainLayout(true);
+			authorize();
 		}
 	}
 
@@ -94,7 +95,7 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements
 					&& data.hasExtra(AccountManager.KEY_ACCOUNT_NAME)) {
 				String accountName = data.getExtras().getString(
 						AccountManager.KEY_ACCOUNT_NAME);
-				Utils.log("Saving account "+accountName);
+				Utils.log("Saving account " + accountName);
 				if (accountName != null) {
 					credential.setSelectedAccountName(accountName);
 					preferences.saveAccountName(accountName);
@@ -156,10 +157,10 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements
 			startActivity(new Intent(getApplicationContext(),
 					LinkListActivity.class));
 			break;
-		case R.id.btn_preferences:
-			startActivity(new Intent(getApplicationContext(),
-					SettingsActivity.class));
-			break;
+		// case R.id.btn_preferences:
+		// startActivity(new Intent(getApplicationContext(),
+		// SettingsActivity.class));
+		// break;
 		case R.id.btn_authorize:
 			updateMainLayout(true);
 			authorize();
@@ -179,9 +180,9 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements
 			Preferences prefs = new Preferences(this);
 			String account_name = prefs.loadAccountName();
 			if (account_name != null) {
-				txt_authorize.setText(getResources().getString(
-						R.string.txt_authorized_to)
+				txt_authorize.setText(getString(R.string.txt_authorized_to)
 						+ " " + account_name);
+				btn_authorize.setText(R.string.btn_authorize_other);
 				if (BuildConfig.DEBUG) {
 					getSherlock().getActionBar().setSubtitle(
 							"List: " + prefs.loadListId());
@@ -191,7 +192,7 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements
 			}
 		}
 	}
-	
+
 	public void showGooglePlayServicesAvailabilityErrorDialog(
 			final int connectionStatusCode) {
 		runOnUiThread(new Runnable() {
@@ -203,7 +204,7 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements
 			}
 		});
 	}
-	
+
 	/** Check that Google Play services APK is installed and up to date. */
 	public boolean checkGooglePlayServicesAvailable() {
 		final int connectionStatusCode = GooglePlayServicesUtil

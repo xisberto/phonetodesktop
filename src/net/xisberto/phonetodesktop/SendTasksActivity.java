@@ -56,7 +56,7 @@ public class SendTasksActivity extends SherlockFragmentActivity
 				if (getResources().getBoolean(R.bool.is_tablet)) {
 						send_fragment.show(getSupportFragmentManager(), "send_fragment");
 				} else {
-					setTheme(R.style.AppTheme);
+					setTheme(R.style.Theme_Pdttheme);
 					getSupportFragmentManager().beginTransaction()
 							.replace(android.R.id.content, send_fragment, "send_fragment")
 							.commit();

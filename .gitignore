@@ -3,6 +3,6 @@ libs
 libs-sources
 gen
 proguard
-PhoneToDesktop.apk
-phonetodesktop.apk
-PhoneToDesktop.keystore
+*.apk
+*.keystore
+*.zip

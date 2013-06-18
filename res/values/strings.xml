@@ -13,12 +13,12 @@
 
     <string name="app_name">Phone To Desktop</string>
     <string name="filter_title">Phone To Desktop</string>
-    <string name="hello">Welcome to Phone To Desktop</string>
     
-    <string name="txt_authorize">Click the button bellow to authorize Phone To Desktop access to your Google Account.</string>
+    <string name="txt_authorize">Phone To Desktop needs authorization to access your Google Tasks.</string>
     <string name="txt_waiting_authorization">Waiting authorization process. It may take some time.</string>
     <string name="txt_authorized_to">Authorized to</string>
-    <string name="btn_authorize">Authorize or choose another account</string>
+    <string name="btn_authorize">Authorize your Google account</string>
+    <string name="btn_authorize_other">Authorize other Google account</string>
     
     <string name="txt_preview">Preview</string>
     <string name="txt_options">Options</string>
@@ -28,7 +28,8 @@
     <string name="send">Send</string>
     
     <string name="title_select_account">Select a Google account</string>
-    <string name="btn_how_it_works">How it works</string>
+    <string name="btn_how_it_works">See how it works</string>
+    <string name="btn_about">About Phone To Desktop</string>
     
     <string name="txt_error_timeout">Could not access server. Try again later.</string>
     <string name="txt_sending">Sending links</string>
@@ -48,7 +49,6 @@
 When the text is successfully sent, the notification goes away.</string>
     <string name="txt_tutorial5">To see your sent texts in your desktop or notebook, choose Tasks in Gmail.</string>
     <string name="txt_tutorial6">You can see the list of sent texts under the "Phone To Desktop" list.</string>
-    <string name="about">About</string>
     <string name="link_about_message">https://github.com/xisberto/phonetodesktop</string>
     <string name="txt_about_message">Phone To Desktop is free software (as in freedom).
 	    The source code is on GitHub.</string>
