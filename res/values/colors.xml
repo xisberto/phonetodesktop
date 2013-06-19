@@ -18,7 +18,7 @@
 -->
 
 <resources>
-    <color name="pressed_pdttheme">#CC669900</color>
-    <color name="highlight_pdttheme">#FF669900</color>
-    <color name="selected_pdttheme">#33669900</color>
+    <color name="phonetodesktop_pressed">#CC669900</color>
+    <color name="phonetodesktop_highlight">#FF669900</color>
+    <color name="phonetodesktop_selected">#33669900</color>
 </resources>

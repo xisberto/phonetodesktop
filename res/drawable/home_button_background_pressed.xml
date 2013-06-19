@@ -7,6 +7,6 @@
         android:left="2dp"
         android:right="2dp" />
 
-    <solid android:color="@color/highlight_pdttheme" />
+    <solid android:color="@color/phonetodesktop_highlight" />
 
 </shape>

@@ -8,10 +8,10 @@
         android:right="2dp" />
     
     <solid 
-        android:color="@color/selected_pdttheme"/>
+        android:color="@color/phonetodesktop_selected"/>
     
     <stroke
         android:width="2dp"
-        android:color="@color/highlight_pdttheme" />
+        android:color="@color/phonetodesktop_highlight" />
 
 </shape>

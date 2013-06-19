@@ -7,12 +7,12 @@
     <item
         android:state_focused="true"
         android:state_pressed="false"
-        android:color="@color/highlight_pdttheme" />
+        android:color="@color/phonetodesktop_highlight" />
     <item
         android:state_focused="false"
         android:state_pressed="true"
         android:color="@color/abs__background_holo_light" />
 	<item
-        android:color="@color/highlight_pdttheme" />
+        android:color="@color/phonetodesktop_highlight" />
     
 </selector>
