@@ -41,19 +41,13 @@ public class SendTasksActivity extends SherlockFragmentActivity
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 		Utils.log("onCreate");
 		
 		if (getIntent().getAction().equals(Intent.ACTION_SEND)
 				&& getIntent().hasExtra(Intent.EXTRA_TEXT)) {
 			text_from_extra = getIntent().getStringExtra(Intent.EXTRA_TEXT);
 			text_to_send = text_from_extra;
-			
-			if (getResources().getBoolean(R.bool.is_tablet)) {
-				setTheme(R.style.Theme_Pdttheme_Translucent_NoTitlebar);
-			} else {
-				setTheme(R.style.Theme_Pdttheme);
-			}
-			super.onCreate(savedInstanceState);
 			
 			send_fragment = (SendFragment) getSupportFragmentManager().findFragmentByTag("send_fragment");
 			if (send_fragment == null) {

@@ -53,6 +53,8 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowContentOverlay">@null</item>
     </style>
+    
+    <style name="Theme.Phttheme.ActivityOrDialog" parent="@style/Theme.Pdttheme"></style>
 
     <style name="Theme.Pdttheme.HomeButton">
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>

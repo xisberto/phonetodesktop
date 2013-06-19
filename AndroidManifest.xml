@@ -11,7 +11,7 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="net.xisberto.phonetodesktop"
-    android:installLocation="preferExternal"
+    android:installLocation="auto"
     android:versionCode="119"
     android:versionName="1.2.0 beta 6" >
 
@@ -41,7 +41,8 @@
         <activity
             android:name="net.xisberto.phonetodesktop.SendTasksActivity" 
             android:label="@string/filter_title"
-            android:uiOptions="splitActionBarWhenNarrow">
+            android:uiOptions="splitActionBarWhenNarrow"
+            android:theme="@style/Theme.Phttheme.ActivityOrDialog">
             <intent-filter android:label="@string/filter_title" >
                 <action android:name="android.intent.action.SEND" />
 

@@ -1,9 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <bool name="is_tablet">true</bool>
-    <!--
-         Customize dimensions originally defined in res/values/dimens.xml (such as
-         screen margins) for sw600dp devices (e.g. 7" tablets) here.
-    -->
+    <dimen name="activity_horizontal_margin">64dp</dimen>
 
 </resources>
