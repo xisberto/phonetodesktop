@@ -58,7 +58,7 @@
     <string name="link_google_java_api">http://code.google.com/p/google-api-java-client/</string>
     <string name="txt_actionbarsherlock">Phone To Desktop usa a ActionBarSherlock</string>
     <string name="link_actionbarsherlock">http://actionbarsherlock.com/</string>
-    <string name="btn_share_this">Clique para compartilhar o link</string>
+    <string name="btn_share_this">Compartilhar este link</string>
     <string name="img_about">Logomarca do Phone To Desktop</string>
     <string name="send_to">Enviar link para&#8230;</string>
     <string name="btn_link_list">Ver textos enviados</string>
