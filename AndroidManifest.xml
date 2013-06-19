@@ -41,7 +41,6 @@
         <activity
             android:name="net.xisberto.phonetodesktop.SendTasksActivity" 
             android:label="@string/filter_title"
-            android:theme="@style/AppTheme.Translucent.NoTitlebar"
             android:uiOptions="splitActionBarWhenNarrow">
             <intent-filter android:label="@string/filter_title" >
                 <action android:name="android.intent.action.SEND" />

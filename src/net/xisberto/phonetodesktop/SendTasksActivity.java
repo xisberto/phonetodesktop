@@ -40,14 +40,22 @@ public class SendTasksActivity extends SherlockFragmentActivity
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
 		Utils.log("onCreate");
+		Utils.log("actual theme: "+getTheme());
 		
 		if (getIntent().getAction().equals(Intent.ACTION_SEND)
 				&& getIntent().hasExtra(Intent.EXTRA_TEXT)) {
 			text_from_extra = getIntent().getStringExtra(Intent.EXTRA_TEXT);
 			text_to_send = text_from_extra;
-
+			
+			if (getResources().getBoolean(R.bool.is_tablet)) {
+				setTheme(R.style.Theme_Pdttheme_Translucent_NoTitlebar);
+			} else {
+				setTheme(R.style.Theme_Pdttheme);
+			}
+			super.onCreate(savedInstanceState);
+			Utils.log("actual theme: "+getTheme().toString());
+			
 			send_fragment = (SendFragment) getSupportFragmentManager().findFragmentByTag("send_fragment");
 			if (send_fragment == null) {
 				send_fragment = SendFragment.newInstance(text_from_extra);
@@ -56,7 +64,6 @@ public class SendTasksActivity extends SherlockFragmentActivity
 				if (getResources().getBoolean(R.bool.is_tablet)) {
 						send_fragment.show(getSupportFragmentManager(), "send_fragment");
 				} else {
-					setTheme(R.style.Theme_Pdttheme);
 					getSupportFragmentManager().beginTransaction()
 							.replace(android.R.id.content, send_fragment, "send_fragment")
 							.commit();
@@ -173,8 +180,8 @@ public class SendTasksActivity extends SherlockFragmentActivity
 		} else {
 			String links = filterLinks(text).trim();
 			String[] parts = links.split(" ");
-			URLOptionsAsyncTask jsoup = new URLOptionsAsyncTask(this, URLOptionsAsyncTask.TASK_UNSHORTEN);
-			jsoup.execute(parts);
+			URLOptionsAsyncTask async = new URLOptionsAsyncTask(this, URLOptionsAsyncTask.TASK_UNSHORTEN);
+			async.execute(parts);
 		}
 	}
 	
@@ -184,8 +191,8 @@ public class SendTasksActivity extends SherlockFragmentActivity
 		} else {
 			String links = filterLinks(text).trim();
 			String[] parts = links.split(" ");
-			URLOptionsAsyncTask jsoup = new URLOptionsAsyncTask(this, URLOptionsAsyncTask.TASK_GET_TITLE);
-			jsoup.execute(parts);
+			URLOptionsAsyncTask async = new URLOptionsAsyncTask(this, URLOptionsAsyncTask.TASK_GET_TITLE);
+			async.execute(parts);
 		}
 	}
 
@@ -225,6 +232,7 @@ public class SendTasksActivity extends SherlockFragmentActivity
 			return;
 		}
 
+		Utils.log("Got "+result.length+" titles");
 		int index = 0;
 		Matcher matcher = urlPattern.matcher(text_to_send);
 		while (matcher.find()) {
@@ -279,15 +287,19 @@ public class SendTasksActivity extends SherlockFragmentActivity
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         	Utils.log("onCreateView");
             if (getDialog() == null) {
-                return createView();
+                return createView(inflater, container);
             } else {
                 return super.onCreateView(inflater, container, savedInstanceState);
             }
         }
-
+        
         private View createView() {
+        	return createView(getActivity().getLayoutInflater(), null);
+        }
+
+        private View createView(LayoutInflater inflater, ViewGroup container) {
         	Utils.log("createView");
-            v = getActivity().getLayoutInflater().inflate(R.layout.layout_send_task, null);
+            v = inflater.inflate(R.layout.layout_send_task, container, false);
             ((TextView)v.findViewById(R.id.text_preview)).setText(getArguments().getString(Intent.EXTRA_TEXT));
     		
     		cb_only_links = ((CheckBox)v.findViewById(R.id.cb_only_links));

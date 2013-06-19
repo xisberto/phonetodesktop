@@ -20,4 +20,5 @@
 <resources>
     <color name="pressed_pdttheme">#CC669900</color>
     <color name="highlight_pdttheme">#FF669900</color>
+    <color name="selected_pdttheme">#33669900</color>
 </resources>
