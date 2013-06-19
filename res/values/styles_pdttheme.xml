@@ -20,33 +20,16 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="Theme.Pdttheme" parent="@style/Theme.Sherlock.Light">
+    <style name="Theme.PhoneToDesktop" parent="@style/Theme.Sherlock.Light">
         <item name="actionBarItemBackground">@drawable/selectable_background_pdttheme</item>
-        <item name="popupMenuStyle">@style/PopupMenu.Pdttheme</item>
-        <item name="dropDownListViewStyle">@style/DropDownListView.Pdttheme</item>
         <item name="actionBarStyle">@style/ActionBar.Transparent.Pdttheme</item>
-        <item name="actionModeBackground">@drawable/cab_background_top_pdttheme</item>
-        <item name="actionModeSplitBackground">@drawable/cab_background_bottom_pdttheme</item>
-        <item name="actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Pdttheme</item>
     </style>
 
     <style name="ActionBar.Transparent.Pdttheme" parent="@style/Widget.Sherlock.Light.ActionBar">
         <item name="background">@drawable/ab_transparent_pdttheme</item>
     </style>
 
-    <style name="PopupMenu.Pdttheme" parent="@style/Widget.Sherlock.Light.ListPopupWindow">
-        <item name="android:popupBackground">@drawable/menu_dropdown_panel_pdttheme</item>
-    </style>
-
-    <style name="DropDownListView.Pdttheme" parent="@style/Widget.Sherlock.Light.ListView.DropDown">
-        <item name="android:listSelector">@drawable/selectable_background_pdttheme</item>
-    </style>
-
-    <style name="ActionButton.CloseMode.Pdttheme" parent="@style/Widget.Sherlock.Light.ActionButton.CloseMode">
-        <item name="android:background">@drawable/btn_cab_done_pdttheme</item>
-    </style>
-
-    <style name="Theme.Pdttheme.Translucent.NoTitlebar" parent="@style/Theme.Sherlock.Light.NoActionBar">
+    <style name="Theme.PhoneToDesktop.Translucent.NoTitlebar" parent="@style/Theme.Sherlock.Light.NoActionBar">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
         <item name="android:windowIsTranslucent">true</item>
@@ -54,9 +37,9 @@
         <item name="android:windowContentOverlay">@null</item>
     </style>
     
-    <style name="Theme.Phttheme.ActivityOrDialog" parent="@style/Theme.Pdttheme"></style>
+    <style name="Theme.PhoneToDesktop.ActivityOrDialog" parent="@style/Theme.PhoneToDesktop"></style>
 
-    <style name="Theme.Pdttheme.HomeButton">
+    <style name="Theme.PhoneToDesktop.HomeButton">
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
         <item name="android:minHeight">48dp</item>
         <item name="android:textStyle">italic</item>
@@ -64,7 +47,7 @@
         <item name="android:background">@drawable/home_button_background</item>
     </style>
 
-    <style name="Theme.Pdttheme.PreviewText">
+    <style name="Theme.PhoneToDesktop.PreviewText">
         <item name="android:background">@drawable/background_preview</item>
         <item name="android:textColor">@android:color/black</item>
     </style>

@@ -49,7 +49,7 @@
 
         <Button
             android:id="@+id/btn_share_about_message"
-            style="@style/Theme.Pdttheme.HomeButton"
+            style="@style/Theme.PhoneToDesktop.HomeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/btn_share_this" />
@@ -70,7 +70,7 @@
 
         <Button
             android:id="@+id/btn_share_chrome"
-            style="@style/Theme.Pdttheme.HomeButton"
+            style="@style/Theme.PhoneToDesktop.HomeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/btn_share_this" />
@@ -91,7 +91,7 @@
 
         <Button
             android:id="@+id/btn_share_google_java_api"
-            style="@style/Theme.Pdttheme.HomeButton"
+            style="@style/Theme.PhoneToDesktop.HomeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/btn_share_this" />
@@ -112,7 +112,7 @@
 
         <Button
             android:id="@+id/btn_share_actionbarsherlock"
-            style="@style/Theme.Pdttheme.HomeButton"
+            style="@style/Theme.PhoneToDesktop.HomeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/btn_share_this" />

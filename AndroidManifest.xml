@@ -28,7 +28,7 @@
         android:allowBackup="false"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/Theme.Pdttheme" >
+        android:theme="@style/Theme.PhoneToDesktop" >
         <activity
             android:name="net.xisberto.phonetodesktop.PhoneToDesktopActivity"
             android:label="@string/app_name" >

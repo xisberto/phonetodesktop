@@ -19,15 +19,9 @@
 
 <resources>
 
-    <style name="Theme.Pdttheme" parent="@style/Theme.Sherlock.Light">
+    <style name="Theme.PhoneToDesktop" parent="@style/Theme.Sherlock.Light">
         <item name="android:actionBarItemBackground">@drawable/selectable_background_pdttheme</item>
-        <item name="android:popupMenuStyle">@style/PopupMenu.Pdttheme</item>
-        <item name="android:dropDownListViewStyle">@style/DropDownListView.Pdttheme</item>
         <item name="android:actionBarStyle">@style/ActionBar.Transparent.Pdttheme</item>
-        <item name="android:actionModeBackground">@drawable/cab_background_top_pdttheme</item>
-        <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_pdttheme</item>
-        <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Pdttheme</item>
-        
     </style>
 
     <style name="ActionBar.Transparent.Pdttheme" parent="@style/Widget.Sherlock.Light.ActionBar">

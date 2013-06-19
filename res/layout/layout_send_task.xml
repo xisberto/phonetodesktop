@@ -23,7 +23,7 @@
         android:layout_marginTop="8dp" >
 
         <ScrollView
-            style="@style/Theme.Pdttheme.PreviewText"
+            style="@style/Theme.PhoneToDesktop.PreviewText"
             android:layout_width="match_parent"
             android:layout_height="96dp" >
 

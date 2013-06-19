@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.Phttheme.ActivityOrDialog" parent="@style/Theme.Pdttheme.Translucent.NoTitlebar"></style>
+    <style name="Theme.PhoneToDesktop.ActivityOrDialog" parent="@style/Theme.PhoneToDesktop.Translucent.NoTitlebar"></style>
 
 </resources>
