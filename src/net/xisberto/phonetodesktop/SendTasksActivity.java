@@ -31,6 +31,7 @@ public class SendTasksActivity extends SherlockFragmentActivity
 			cache_unshorten = null,
 			cache_titles = null;
 	private SendFragment send_fragment;
+	private boolean restoreFromPreferences;
 	private static final String
 			SAVE_CACHE_UNSHORTEN = "cache_unshorten",
 			SAVE_CACHE_TITLES = "cache_titles";
@@ -41,7 +42,6 @@ public class SendTasksActivity extends SherlockFragmentActivity
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		Utils.log("onCreate");
-		Utils.log("actual theme: "+getTheme());
 		
 		if (getIntent().getAction().equals(Intent.ACTION_SEND)
 				&& getIntent().hasExtra(Intent.EXTRA_TEXT)) {
@@ -54,7 +54,6 @@ public class SendTasksActivity extends SherlockFragmentActivity
 				setTheme(R.style.Theme_Pdttheme);
 			}
 			super.onCreate(savedInstanceState);
-			Utils.log("actual theme: "+getTheme().toString());
 			
 			send_fragment = (SendFragment) getSupportFragmentManager().findFragmentByTag("send_fragment");
 			if (send_fragment == null) {
@@ -77,6 +76,9 @@ public class SendTasksActivity extends SherlockFragmentActivity
 		if (savedInstanceState != null) {
 			cache_unshorten = savedInstanceState.getStringArray(SAVE_CACHE_UNSHORTEN);
 			cache_titles = savedInstanceState.getStringArray(SAVE_CACHE_TITLES);
+			restoreFromPreferences = false;
+		} else {
+			restoreFromPreferences = true;
 		}
 		
 	}
@@ -84,11 +86,12 @@ public class SendTasksActivity extends SherlockFragmentActivity
 	@Override
 	protected void onResume() {
 		super.onResume();
-		Utils.log("onResume");
-		Preferences prefs = new Preferences(this);
-		send_fragment.cb_only_links.setChecked(prefs.loadOnlyLinks());
-		send_fragment.cb_unshorten.setChecked(prefs.loadUnshorten());
-		send_fragment.cb_get_titles.setChecked(prefs.loadGetTitles());
+		if (restoreFromPreferences) {
+			Preferences prefs = new Preferences(this);
+			send_fragment.cb_only_links.setChecked(prefs.loadOnlyLinks());
+			send_fragment.cb_unshorten.setChecked(prefs.loadUnshorten());
+			send_fragment.cb_get_titles.setChecked(prefs.loadGetTitles());
+		}
 		processCheckBoxes();
 	}
 
