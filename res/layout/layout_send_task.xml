@@ -4,8 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingLeft="4dp"
-    android:paddingRight="4dp"
+    android:padding="4dp"
     tools:context=".AdvancedTaskFragment" >
 
     <TextView
@@ -52,11 +51,10 @@
         android:layout_height="wrap_content"
         android:text="@string/txt_options" />
 
-    <LinearLayout
+    <ScrollView
         android:id="@+id/scroll_options"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical" >
+        android:layout_height="wrap_content" >
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -84,6 +82,6 @@
                 android:layout_height="48dp"
                 android:text="@string/txt_get_titles" />
         </LinearLayout>
-    </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>

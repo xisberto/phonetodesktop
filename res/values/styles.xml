@@ -23,6 +23,8 @@
     <style name="Theme.PhoneToDesktop" parent="@style/Theme.Sherlock.Light">
         <item name="actionBarItemBackground">@drawable/selectable_background_pdttheme</item>
         <item name="actionBarStyle">@style/ActionBar.Transparent.Pdttheme</item>
+        <item name="android:checkboxStyle">@style/Theme.PhoneToDesktop.CheckBox</item>
+        <item name="android:progressBarStyleHorizontal">@style/Theme.PhoneToDesktop.ProgressBar</item>
     </style>
 
     <style name="ActionBar.Transparent.Pdttheme" parent="@style/Widget.Sherlock.Light.ActionBar">
@@ -36,7 +38,7 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowContentOverlay">@null</item>
     </style>
-    
+
     <style name="Theme.PhoneToDesktop.ActivityOrDialog" parent="@style/Theme.PhoneToDesktop"></style>
 
     <style name="Theme.PhoneToDesktop.HomeButton">
@@ -51,5 +53,16 @@
         <item name="android:background">@drawable/background_preview</item>
         <item name="android:textColor">@android:color/black</item>
     </style>
-    
+
+    <style name="Theme.PhoneToDesktop.CheckBox" parent="android:Widget.CompoundButton.CheckBox">
+        <item name="android:button">@drawable/btn_check_holo_light</item>
+    </style>
+
+    <style name="Theme.PhoneToDesktop.ProgressBar" parent="android:Widget.ProgressBar.Horizontal">
+        <item name="android:progressDrawable">@drawable/progress_horizontal_holo_light</item>
+        <item name="android:indeterminateDrawable">@drawable/progress_indeterminate_horizontal_holo_light</item>
+        <item name="android:minHeight">16dip</item>
+        <item name="android:maxHeight">16dip</item>
+    </style>
+
 </resources>
