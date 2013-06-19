@@ -7,19 +7,23 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
-import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.DefaultHttpClient;
+
 import android.os.AsyncTask;
-import android.util.Log;
 
 public class URLOptionsAsyncTask extends AsyncTask<String, Void, String[]> {
 
 	public static final int TASK_UNSHORTEN = 0, TASK_GET_TITLE = 1;
 	private static final 
-			Pattern TITLE_TAG = Pattern.compile("\\<title>(.*)\\</title>",
+			Pattern TITLE_TAG = Pattern.compile("\\<title>(.*?)\\</title>",
 					Pattern.CASE_INSENSITIVE|Pattern.DOTALL),
 	        CHARSET_HEADER = Pattern.compile("charset=([-_a-zA-Z0-9]+)",
 	        		Pattern.CASE_INSENSITIVE|Pattern.DOTALL);
@@ -79,20 +83,11 @@ public class URLOptionsAsyncTask extends AsyncTask<String, Void, String[]> {
 			
 			String title = getPageTitle(params[i]);
 			if (title != null) {
+				Utils.log("Found title "+title);
 				result[i] = title;
 			} else {
 				result[i] = params[i];
 			}
-			/*
-			conn = HttpConnection.connect(params[i]);
-			Document doc = conn.get();
-			String title = doc.title();
-			if (title != null) {
-				result[i] = title;
-			} else {
-				result[i] = params[i];
-			}
-			*/
 		}
 		return result;
 	}
@@ -123,45 +118,55 @@ public class URLOptionsAsyncTask extends AsyncTask<String, Void, String[]> {
 	 * @throws IOException
 	 */
 	private String getPageTitle(String url) throws IOException, NullPointerException {		
-		URL u = new URL(url);
-		URLConnection conn = u.openConnection();
-		
+		HttpClient client = new DefaultHttpClient();
+		HttpUriRequest request = new HttpGet(url);
+		HttpResponse response = client.execute(request);
+
 		// Make sure this URL goes to a HTML page
-		Map<String, List<String>> headers = conn.getHeaderFields();
-		if (headers.containsKey("Content-Type")) {
-			String headerValue = conn.getContentType();
-			Utils.log(headerValue);
-			String contentType = "";
-			Charset charset = Charset.forName("ISO-8859-1");
-			int sep = headerValue.indexOf(";");
-			if (sep != -1) {
-				contentType = headerValue.substring(0, sep);
-				Matcher matcherCharset = CHARSET_HEADER.matcher(headerValue);
-				if (matcherCharset.find()) {
-					charset = Charset.forName(matcherCharset.group(1));
-				}
-			} else {
-				contentType = headerValue;
+		String headerValue = "";
+		for (Header header : response.getAllHeaders()) {
+			Utils.log("header: "+header.getName());
+			if (header.getName().equals("Content-Type")) {
+				headerValue = header.getValue();
+				break;
 			}
+		}
+		
+		Utils.log(headerValue);
+		String contentType = "";
+		Charset charset = Charset.forName("ISO-8859-1");
+		int sep = headerValue.indexOf(";");
+		if (sep != -1) {
+			contentType = headerValue.substring(0, sep);
+			Matcher matcherCharset = CHARSET_HEADER.matcher(headerValue);
+			if (matcherCharset.find()) {
+				charset = Charset.forName(matcherCharset.group(1));
+			}
+		} else {
+			contentType = headerValue;
+		}
 			
-			if (contentType.equals("text/html")) {
-				// Now we can search for <title>
-				InputStream in = conn.getInputStream();
-				BufferedReader reader = new BufferedReader(new InputStreamReader(in, charset));
-				int n = 0, totalRead = 0;
-				char[] buffer = new char[1024];
-				StringBuilder content = new StringBuilder();
-				
-				while (totalRead < 8192 && (n = reader.read(buffer, 0, buffer.length)) != -1) {
-					content.append(buffer);
-					totalRead += n;
-				}
-				reader.close();
-				
-				Matcher matcher = TITLE_TAG.matcher(content);
-				if (matcher.find()) {
-					return matcher.group(1).replaceAll("[\\s\\<>]+", " ").trim();
-				}
+		if (contentType.equals("text/html")) {
+			// Now we can search for <title>
+			InputStream in = response.getEntity().getContent();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(in, charset));
+		int n = 0, totalRead = 0;
+			char[] buffer = new char[1024];
+			StringBuilder content = new StringBuilder();
+			
+			while (totalRead < 8192 && (n = reader.read(buffer, 0, buffer.length)) != -1) {
+				content.append(buffer);
+				totalRead += n;
+				Matcher m = TITLE_TAG.matcher(content);
+				Utils.log("Found: "+m.find());
+			}
+			reader.close();
+			
+			Utils.log(content.toString());
+			
+			Matcher matcher = TITLE_TAG.matcher(content);
+			if (matcher.find()) {
+				return matcher.group(1).replaceAll("[\\s\\<>]+", " ").trim();
 			}
 		}
 		
