@@ -42,7 +42,7 @@
             android:id="@+id/txt_how_works"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/txt_tutorial1"
+            android:text="@string/txt_tutorial"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <Button

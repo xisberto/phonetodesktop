@@ -1,5 +1,6 @@
 package net.xisberto.phonetodesktop;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -31,6 +32,16 @@ public class Utils {
 	public static void log(String message) {
 		if (BuildConfig.DEBUG){
 			Log.d(LIST_TITLE, message);
+		}
+	}
+	
+	public static int getResId(Class<?> c, String resourceName) {
+		try {
+			Field idField = c.getDeclaredField(resourceName);
+			return idField.getInt(idField);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return -1;
 		}
 	}
 }

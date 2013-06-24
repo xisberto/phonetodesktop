@@ -42,13 +42,14 @@
     
     <string name="btn_back">Voltar</string>
     <string name="btn_next">Avançar</string>
-    <string name="txt_tutorial1">Phone To Desktop envia links e texto do seu aparelho Android para seu computador.</string>
-    <string name="txt_tutorial2">A partir de uma aplicação que compartilhe texto, escolha a opção de compartilhar ou enviar.</string>
-    <string name="txt_tutorial3">Você verá uma lista de aplicativos que podem receber texto. Escolha o Phone To Desktop.</string>
-    <string name="txt_tutorial4">Você verá uma notificação enquanto o Phone To Desktop envia o texto.
+    <string name="txt_tutorial">Phone To Desktop envia links e texto do seu aparelho Android para seu computador.</string>
+    <string name="txt_tutorial_0">A partir de uma aplicação que compartilhe texto, escolha a opção de compartilhar ou enviar.</string>
+    <string name="txt_tutorial_1">Será exibida uma lista de aplicativos que podem receber texto. Escolha o Phone To Desktop.</string>
+    <string name="txt_tutorial_2">Você verá uma tela com uma prévia e algumas opções. Escolha Enviar quando estiver pronto.</string>
+    <string name="txt_tutorial_3">Haverá uma notificação enquanto o Phone To Desktop envia o texto.
         Quando o texto for enviado, a notificação vai embora.</string>
-    <string name="txt_tutorial5">Para ver seus textos enviados no seu desktop ou notebook, escolha Tarefas no Gmail.</string>
-    <string name="txt_tutorial6">Você pode ver os textos enviados na lista "Phone To Desktop".</string>
+    <string name="txt_tutorial_4">Para ver seus textos enviados no seu desktop ou notebook, escolha Tarefas no Gmail.</string>
+    <string name="txt_tutorial_5">Você pode ver os textos enviados na lista "Phone To Desktop".</string>
     <string name="link_about_message">https://github.com/xisberto/phonetodesktop</string>
     <string name="txt_about_message">Phone To Desktop é um software livre.
 	    O código fonte pode ser encontrado no GitHub.</string>
