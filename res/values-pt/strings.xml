@@ -50,6 +50,7 @@
         Quando o texto for enviado, a notificação vai embora.</string>
     <string name="txt_tutorial_4">Para ver seus textos enviados no seu desktop ou notebook, escolha Tarefas no Gmail.</string>
     <string name="txt_tutorial_5">Você pode ver os textos enviados na lista "Phone To Desktop".</string>
+    
     <string name="link_about_message">https://github.com/xisberto/phonetodesktop</string>
     <string name="txt_about_message">Phone To Desktop é um software livre.
 	    O código fonte pode ser encontrado no GitHub.</string>
@@ -59,20 +60,16 @@
     <string name="link_google_java_api">http://code.google.com/p/google-api-java-client/</string>
     <string name="txt_actionbarsherlock">Phone To Desktop usa a ActionBarSherlock</string>
     <string name="link_actionbarsherlock">http://actionbarsherlock.com/</string>
+    
     <string name="btn_share_this">Compartilhar este link</string>
     <string name="img_about">Logomarca do Phone To Desktop</string>
     <string name="send_to">Enviar link para&#8230;</string>
+    
     <string name="btn_link_list">Ver textos enviados</string>
     <string name="title_activity_link_list">Lista de textos</string>
     <string name="txt_empty_list">Lista vazia</string>
     <string name="title_confirm">Confirmar deleção</string>
     <string name="txt_confirm">Você deseja apagar este item?</string>
     <string name="refresh">Refresh</string>
-    <string name="title_what_to_send">Selecione o que enviar</string>
-
-    <string-array name="what_to_send">
-        <item>Enviar todo o texto</item>
-        <item>Enviar apenas os links</item>
-    </string-array>
-
+    
 </resources>
