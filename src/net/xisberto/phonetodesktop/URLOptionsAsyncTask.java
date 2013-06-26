@@ -32,12 +32,12 @@ import android.os.AsyncTask;
 public class URLOptionsAsyncTask extends AsyncTask<String, Void, String[]> {
 
 	public static final int TASK_UNSHORTEN = 0, TASK_GET_TITLE = 1;
-	private static final 
-			Pattern TITLE_TAG = Pattern.compile("\\<title>(.*?)\\</title>",
-					Pattern.CASE_INSENSITIVE|Pattern.DOTALL),
-	        CHARSET_HEADER = Pattern.compile("charset=([-_a-zA-Z0-9]+)",
-	        		Pattern.CASE_INSENSITIVE|Pattern.DOTALL);
-	
+	private static final Pattern TITLE_TAG = Pattern.compile(
+			"\\<title>(.*?)\\</title>", Pattern.CASE_INSENSITIVE
+					| Pattern.DOTALL), CHARSET_HEADER = Pattern.compile(
+			"charset=([-_a-zA-Z0-9]+)", Pattern.CASE_INSENSITIVE
+					| Pattern.DOTALL);
+
 	private int task;
 	private URLOptionsListener listener;
 
@@ -73,27 +73,28 @@ public class URLOptionsAsyncTask extends AsyncTask<String, Void, String[]> {
 	private String[] unshorten(String... params) throws IOException {
 		String[] result = new String[params.length];
 		for (int i = 0; i < params.length; i++) {
-			Utils.log("unshorten "+params[i]);
-			
+			Utils.log("unshorten " + params[i]);
+
 			URLConnection connection = new URL(params[i]).openConnection();
 			connection.connect();
 			InputStream instr = connection.getInputStream();
 			instr.close();
-			
+
 			result[i] = connection.getURL().toString();
-			Utils.log("got "+result[i]);
+			Utils.log("got " + result[i]);
 		}
 		return result;
 	}
 
-	private String[] getTitles(String... params) throws IOException, NullPointerException {
+	private String[] getTitles(String... params) throws IOException,
+			NullPointerException {
 		String[] result = new String[params.length];
 		for (int i = 0; i < params.length; i++) {
-			Utils.log("getTitles "+params[i]);
-			
+			Utils.log("getTitles " + params[i]);
+
 			String title = getPageTitle(params[i]);
 			if (title != null) {
-				Utils.log("Found title "+title);
+				Utils.log("Found title " + title);
 				result[i] = title;
 			} else {
 				result[i] = params[i];
@@ -116,18 +117,21 @@ public class URLOptionsAsyncTask extends AsyncTask<String, Void, String[]> {
 		}
 		listener.setDone();
 	}
-	
+
 	/**
-	 * Loads a url and search for a HTML title.
-	 * <br>
+	 * Loads a url and search for a HTML title. <br>
 	 * Based on the code found at
-	 * http://www.gotoquiz.com/web-coding/programming/java-programming/how-to-extract-titles-from-web-pages-in-java/
-	 * @param url the url to load
-	 * @return the HTML title or {@code null} if it's not
-	 *  a HTML page or if no title was found
+	 * http://www.gotoquiz.com/web-coding/programming/
+	 * java-programming/how-to-extract-titles-from-web-pages-in-java/
+	 * 
+	 * @param url
+	 *            the url to load
+	 * @return the HTML title or {@code null} if it's not a HTML page or if no
+	 *         title was found
 	 * @throws IOException
 	 */
-	private String getPageTitle(String url) throws IOException, NullPointerException {		
+	private String getPageTitle(String url) throws IOException,
+			NullPointerException {
 		HttpClient client = new DefaultHttpClient();
 		HttpUriRequest request = new HttpGet(url);
 		HttpResponse response = client.execute(request);
@@ -135,13 +139,13 @@ public class URLOptionsAsyncTask extends AsyncTask<String, Void, String[]> {
 		// Make sure this URL goes to a HTML page
 		String headerValue = "";
 		for (Header header : response.getAllHeaders()) {
-			Utils.log("header: "+header.getName());
+			Utils.log("header: " + header.getName());
 			if (header.getName().equals("Content-Type")) {
 				headerValue = header.getValue();
 				break;
 			}
 		}
-		
+
 		Utils.log(headerValue);
 		String contentType = "";
 		Charset charset = Charset.forName("ISO-8859-1");
@@ -155,34 +159,36 @@ public class URLOptionsAsyncTask extends AsyncTask<String, Void, String[]> {
 		} else {
 			contentType = headerValue;
 		}
-			
+
 		if (contentType.equals("text/html")) {
 			// Now we can search for <title>
 			InputStream in = response.getEntity().getContent();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(in, charset));
-		int n = 0, totalRead = 0;
+			BufferedReader reader = new BufferedReader(new InputStreamReader(
+					in, charset));
+			int n = 0, totalRead = 0;
 			char[] buffer = new char[1024];
 			StringBuilder content = new StringBuilder();
-			
-			while (totalRead < 8192 && (n = reader.read(buffer, 0, buffer.length)) != -1) {
+
+			while (totalRead < 8192
+					&& (n = reader.read(buffer, 0, buffer.length)) != -1) {
 				content.append(buffer);
 				totalRead += n;
 				Matcher m = TITLE_TAG.matcher(content);
-				Utils.log("Found: "+m.find());
+				Utils.log("Found: " + m.find());
 			}
 			reader.close();
-			
+
 			Utils.log(content.toString());
-			
+
 			Matcher matcher = TITLE_TAG.matcher(content);
 			if (matcher.find()) {
 				return matcher.group(1).replaceAll("[\\s\\<>]+", " ").trim();
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	public interface URLOptionsListener {
 		public void setWaiting();
 
