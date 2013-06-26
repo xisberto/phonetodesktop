@@ -212,18 +212,11 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements
 	}
 
 	private void authorize() {
-		clearCredential();
 		if (checkGooglePlayServicesAvailable()) {
 			// ask user to choose account
 			startActivityForResult(credential.newChooseAccountIntent(),
 					REQUEST_ACCOUNT_PICKER);
 		}
-	}
-
-	private void clearCredential() {
-		credential.setSelectedAccountName(null);
-		preferences.removeAuthToken();
-		preferences.removeListId();
 	}
 
 	private void asyncRequestLists() {
