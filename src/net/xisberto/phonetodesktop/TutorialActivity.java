@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.LayoutInflater;
@@ -26,6 +27,7 @@ import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.MenuItem;
 
 public class TutorialActivity extends SherlockFragmentActivity implements OnClickListener, OnPageChangeListener {
 	private final int
@@ -36,6 +38,7 @@ public class TutorialActivity extends SherlockFragmentActivity implements OnClic
 	@Override
 	protected void onCreate(Bundle arg0) {
 		super.onCreate(arg0);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		setContentView(R.layout.layout_presentation);
 		if (BuildConfig.DEBUG) {
 			float density = getResources().getDisplayMetrics().density;
@@ -50,6 +53,18 @@ public class TutorialActivity extends SherlockFragmentActivity implements OnClic
 		view_pager.setAdapter(page_adapter);
 		view_pager.setOnPageChangeListener(this);
 		onPageSelected(view_pager.getCurrentItem());
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			NavUtils.navigateUpFromSameTask(this);
+			return true;
+
+		default:
+			return super.onOptionsItemSelected(item);
+		}
 	}
 
 	@Override

@@ -52,7 +52,9 @@
             style="@style/Theme.PhoneToDesktop.HomeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/btn_share_this" />
+            android:text="@string/btn_share_this"
+            android:tag="@string/link_about_message"
+            android:onClick="onClick" />
         
         <View
             android:layout_width="match_parent"
@@ -73,7 +75,9 @@
             style="@style/Theme.PhoneToDesktop.HomeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/btn_share_this" />
+            android:text="@string/btn_share_this"
+            android:tag="@string/link_chrome_extension"
+            android:onClick="onClick" />
 
         <View
             android:layout_width="match_parent"
@@ -94,7 +98,9 @@
             style="@style/Theme.PhoneToDesktop.HomeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/btn_share_this" />
+            android:text="@string/btn_share_this"
+            android:tag="@string/link_google_java_api"
+            android:onClick="onClick" />
 
         <View
             android:layout_width="match_parent"
@@ -115,7 +121,9 @@
             style="@style/Theme.PhoneToDesktop.HomeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/btn_share_this" />
+            android:text="@string/btn_share_this"
+            android:tag="@string/link_actionbarsherlock"
+            android:onClick="onClick" />
     </LinearLayout>
 
 </ScrollView>

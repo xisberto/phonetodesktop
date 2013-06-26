@@ -38,11 +38,31 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="net.xisberto.phonetodesktop.TutorialActivity"
+            android:parentActivityName="net.xisberto.phonetodesktop.PhoneToDesktopActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="net.xisberto.phonetodesktop.PhoneToDesktopActivity" />
+        </activity>
+        <activity android:name="net.xisberto.phonetodesktop.AboutActivity"
+            android:parentActivityName="net.xisberto.phonetodesktop.PhoneToDesktopActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="net.xisberto.phonetodesktop.PhoneToDesktopActivity" />
+        </activity>
         <activity
-            android:name="net.xisberto.phonetodesktop.SendTasksActivity" 
+            android:name="net.xisberto.phonetodesktop.LinkListActivity"
+            android:label="@string/title_activity_link_list"
+            android:parentActivityName="net.xisberto.phonetodesktop.PhoneToDesktopActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="net.xisberto.phonetodesktop.PhoneToDesktopActivity" />
+        </activity>
+        <activity
+            android:name="net.xisberto.phonetodesktop.SendTasksActivity"
             android:label="@string/filter_title"
-            android:uiOptions="splitActionBarWhenNarrow"
-            android:theme="@style/Theme.PhoneToDesktop.ActivityOrDialog">
+            android:theme="@style/Theme.PhoneToDesktop.ActivityOrDialog"
+            android:uiOptions="splitActionBarWhenNarrow" >
             <intent-filter android:label="@string/filter_title" >
                 <action android:name="android.intent.action.SEND" />
 
@@ -50,29 +70,6 @@
 
                 <data android:mimeType="text/plain" />
             </intent-filter>
-        </activity>
-
-        <service android:name="net.xisberto.phonetodesktop.GoogleTasksService" >
-        </service>
-
-        <activity android:name="net.xisberto.phonetodesktop.TutorialActivity" >
-        </activity>
-        <activity android:name="net.xisberto.phonetodesktop.SettingsActivity" >
-            <intent-filter>
-                <category android:name="android.intent.category.PREFERENCE" />
-            </intent-filter>
-        </activity>
-        <activity android:name="net.xisberto.phonetodesktop.AboutActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="net.xisberto.phonetodesktop.PhoneToDesktopActivity" />
-        </activity>
-        <activity
-            android:name="net.xisberto.phonetodesktop.LinkListActivity"
-            android:label="@string/title_activity_link_list" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="net.xisberto.phonetodesktop.PhoneToDesktopActivity" />
         </activity>
 
         <service
