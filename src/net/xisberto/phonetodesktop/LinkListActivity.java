@@ -29,18 +29,20 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockDialogFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 
-public class LinkListActivity extends SherlockFragmentActivity implements OnClickListener {
+public class LinkListActivity extends SherlockFragmentActivity implements
+		OnClickListener {
 	private BroadcastReceiver receiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			updateLayout(intent);
 		}
 	};
-	
+
 	private ArrayList<String> ids;
 	private ArrayList<String> titles;
 	private boolean updating;
@@ -67,8 +69,8 @@ public class LinkListActivity extends SherlockFragmentActivity implements OnClic
 	@Override
 	protected void onStart() {
 		super.onStart();
-		LocalBroadcastManager.getInstance(this)
-				.registerReceiver(receiver, new IntentFilter(Utils.ACTION_LIST_TASKS));
+		LocalBroadcastManager.getInstance(this).registerReceiver(receiver,
+				new IntentFilter(Utils.ACTION_LIST_TASKS));
 		if (titles == null) {
 			refreshTasks();
 		} else {
@@ -79,8 +81,7 @@ public class LinkListActivity extends SherlockFragmentActivity implements OnClic
 	@Override
 	protected void onStop() {
 		super.onStop();
-		LocalBroadcastManager.getInstance(this)
-				.unregisterReceiver(receiver);
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
 	}
 
 	@Override
@@ -120,28 +121,28 @@ public class LinkListActivity extends SherlockFragmentActivity implements OnClic
 		YesNoDialog dialog = YesNoDialog.newInstance(v.getTag().toString());
 		dialog.show(getSupportFragmentManager(), "dialog");
 	}
-	
+
 	private void refreshTasks() {
 		updating = true;
-		updateLayout();
+		updateActionBar();
 		Intent service = new Intent(this, GoogleTasksService.class);
 		service.setAction(Utils.ACTION_LIST_TASKS);
 		startService(service);
 	}
-	
+
 	private void deleteTask(String task_id) {
 		updating = true;
-		updateLayout();
+		updateActionBar();
 		Intent service = new Intent(this, GoogleTasksService.class);
 		service.setAction(Utils.ACTION_REMOVE_TASK);
 		service.putExtra(Utils.EXTRA_TASK_ID, task_id);
 		startService(service);
 	}
-	
+
 	/**
 	 * Updates the status of the layout according to field {@code updating}
 	 */
-	private void updateLayout() {
+	private void updateActionBar() {
 		supportInvalidateOptionsMenu();
 		setProgressBarIndeterminateVisibility(updating);
 	}
@@ -153,21 +154,24 @@ public class LinkListActivity extends SherlockFragmentActivity implements OnClic
 			titles = intent.getStringArrayListExtra(Utils.EXTRA_TITLES);
 			updating = intent.getBooleanExtra(Utils.EXTRA_UPDATING, false);
 		}
-		Utils.log("updating: "+updating);
-		updateLayout();
-		
+		updateActionBar();
+
 		TextView text = (TextView) findViewById(R.id.textView_linkList);
 		ListView list_view = (ListView) findViewById(R.id.listView_linkList);
 
 		if (!updating) {
 			findViewById(R.id.progressBar_linkList).setVisibility(View.GONE);
-			if ((titles == null)
-					|| (titles.size() < 1)) {
+			if ((titles == null) || (titles.size() < 1)) {
 				text.setText(R.string.txt_empty_list);
 				list_view.setVisibility(View.GONE);
 				text.setVisibility(View.VISIBLE);
+				if (intent.getStringExtra(Utils.EXTRA_ERROR_TEXT) != null) {
+					Toast.makeText(this,
+							intent.getStringExtra(Utils.EXTRA_ERROR_TEXT),
+							Toast.LENGTH_SHORT).show();
+				}
 			} else {
-				//We're using LinkedHashMap to guarantee the order of insertion
+				// We're using LinkedHashMap to guarantee the order of insertion
 				HashMap<String, String> tasks = new LinkedHashMap<String, String>();
 				for (int i = 0; i < titles.size(); i++) {
 					tasks.put(ids.get(i), titles.get(i));
@@ -197,18 +201,19 @@ public class LinkListActivity extends SherlockFragmentActivity implements OnClic
 		@Override
 		public Dialog onCreateDialog(Bundle savedInstanceState) {
 			return new AlertDialog.Builder(getActivity())
-				.setTitle(R.string.title_confirm)
-				.setMessage(R.string.txt_confirm)
-				.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface arg0, int arg1) {
-						((LinkListActivity) getActivity()).deleteTask(getArguments().getString("task_id"));
-					}
-				})
-				.setNegativeButton(android.R.string.no, null)
-				.create();
+					.setTitle(R.string.title_confirm)
+					.setMessage(R.string.txt_confirm)
+					.setPositiveButton(android.R.string.yes,
+							new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface arg0,
+										int arg1) {
+									((LinkListActivity) getActivity())
+											.deleteTask(getArguments()
+													.getString("task_id"));
+								}
+							}).setNegativeButton(android.R.string.no, null)
+					.create();
 		}
-		
-		
 	}
 }

@@ -91,8 +91,14 @@ public class GoogleTasksService extends IntentService {
 				showNotification(NOTIFICATION_NEED_AUTHORIZE);
 			} catch (IOException ioException) {
 				Utils.log(Log.getStackTraceString(ioException));
-				cancelNotification(NOTIFICATION_SEND);
-				showNotification(NOTIFICATION_ERROR);
+				if (action.equals(Utils.ACTION_SEND_TASK)) {
+					cancelNotification(NOTIFICATION_SEND);
+					showNotification(NOTIFICATION_ERROR);
+				} else {
+					Intent broadcast = new Intent(Utils.ACTION_LIST_TASKS);
+					broadcast.putExtra(Utils.EXTRA_ERROR_TEXT, getString(R.string.txt_error_list));
+					LocalBroadcastManager.getInstance(this).sendBroadcast(broadcast);
+				}
 			} catch (NullPointerException npe) {
 				Utils.log(Log.getStackTraceString(npe));
 				cancelNotification(NOTIFICATION_SEND);
@@ -101,6 +107,13 @@ public class GoogleTasksService extends IntentService {
 		}
 	}
 	
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		Utils.log("Destroying service");
+		cancelNotification(NOTIFICATION_SEND);
+	}
+
 	private void showNotification(int notif_id) {
 		NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
 				.setWhen(System.currentTimeMillis());
@@ -116,8 +129,7 @@ public class GoogleTasksService extends IntentService {
 			builder.setContentIntent(pendingContent)
 					.setSmallIcon(android.R.drawable.stat_sys_upload)
 					.setTicker(getString(R.string.txt_sending))
-					.setContentTitle(getString(R.string.txt_sending))
-					.setOngoing(true);
+					.setContentTitle(getString(R.string.txt_sending));
 			break;
 		case NOTIFICATION_ERROR:
 			//On error, we create an intent to retry the send

@@ -33,8 +33,9 @@
 
     <string name="txt_error_timeout">Não foi possível acessar o servidor. Tente novamente.</string>
     <string name="txt_sending">Enviando link</string>
-    <string name="txt_error_sending">Erro enviando link</string>
+    <string name="txt_error_sending">Não pude enviar o texto</string>
     <string name="txt_error_try_again">Clique para tentar novamente.</string>
+    <string name="txt_error_list">Não pude obter a lista. Tente novamente.</string>
     <string name="txt_need_authorize">Você precisa primeiro autorizar o Phone To Desktop.</string>
     
     <string name="txt_check_preferences">Veja Preferências no menu para alterar</string>

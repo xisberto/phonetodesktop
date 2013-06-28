@@ -33,8 +33,9 @@
     
     <string name="txt_error_timeout">Could not access server. Try again later.</string>
     <string name="txt_sending">Sending links</string>
-    <string name="txt_error_sending">Error sending link</string>
+    <string name="txt_error_sending">Could not send text</string>
     <string name="txt_error_try_again">Click here to try again.</string>
+    <string name="txt_error_list">Could not get the list. Try again.</string>
     <string name="txt_need_authorize">Your need first authorize Phone To Desktop.</string>
     
     <string name="txt_check_preferences">Check Preferences on menu to change</string>
