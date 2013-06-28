@@ -28,6 +28,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 public class URLOptionsAsyncTask extends AsyncTask<String, Void, String[]> {
 
@@ -64,43 +65,12 @@ public class URLOptionsAsyncTask extends AsyncTask<String, Void, String[]> {
 				return null;
 			}
 		} catch (IOException ioe) {
+			Log.e(URLOptionsAsyncTask.class.getName(), ioe.getMessage());
 			return null;
 		} catch (NullPointerException npe) {
+			Log.e(URLOptionsAsyncTask.class.getName(), Log.getStackTraceString(npe));
 			return null;
 		}
-	}
-
-	private String[] unshorten(String... params) throws IOException {
-		String[] result = new String[params.length];
-		for (int i = 0; i < params.length; i++) {
-			Utils.log("unshorten " + params[i]);
-
-			URLConnection connection = new URL(params[i]).openConnection();
-			connection.connect();
-			InputStream instr = connection.getInputStream();
-			instr.close();
-
-			result[i] = connection.getURL().toString();
-			Utils.log("got " + result[i]);
-		}
-		return result;
-	}
-
-	private String[] getTitles(String... params) throws IOException,
-			NullPointerException {
-		String[] result = new String[params.length];
-		for (int i = 0; i < params.length; i++) {
-			Utils.log("getTitles " + params[i]);
-
-			String title = getPageTitle(params[i]);
-			if (title != null) {
-				Utils.log("Found title " + title);
-				result[i] = title;
-			} else {
-				result[i] = params[i];
-			}
-		}
-		return result;
 	}
 
 	@Override
@@ -116,6 +86,68 @@ public class URLOptionsAsyncTask extends AsyncTask<String, Void, String[]> {
 			break;
 		}
 		listener.setDone();
+	}
+
+	@Override
+	protected void onCancelled() {
+		super.onCancelled();
+		listener.setDone();
+	}
+
+	@Override
+	protected void onCancelled(String[] result) {
+		switch (task) {
+		case TASK_UNSHORTEN:
+			listener.onPostUnshorten(null);
+			break;
+		case TASK_GET_TITLE:
+			listener.onPostGetTitle(null);
+			break;
+		default:
+			break;
+		}
+		listener.setDone();
+	}
+
+	private String[] unshorten(String... params) throws IOException {
+		String[] result = params.clone();
+		for (int i = 0; i < params.length; i++) {
+			Utils.log("unshorten " + params[i]);
+
+			URLConnection connection = new URL(params[i]).openConnection();
+			connection.connect();
+			InputStream instr = connection.getInputStream();
+			instr.close();
+			
+			if (isCancelled()) {
+				return result;
+			}
+
+			result[i] = connection.getURL().toString();
+			Utils.log("got " + result[i]);
+		}
+		return result;
+	}
+
+	private String[] getTitles(String... params) throws IOException,
+			NullPointerException {
+		String[] result = params.clone();
+		for (int i = 0; i < params.length; i++) {
+			Utils.log("getTitles " + params[i]);
+
+			String title = getPageTitle(params[i]);
+			if (title != null) {
+				Utils.log("Found title " + title);
+				result[i] = title;
+			} else {
+				result[i] = params[i];
+			}
+			
+			if (isCancelled()) {
+				return result;
+			}
+		}
+		return result;
 	}
 
 	/**
@@ -135,6 +167,10 @@ public class URLOptionsAsyncTask extends AsyncTask<String, Void, String[]> {
 		HttpClient client = new DefaultHttpClient();
 		HttpUriRequest request = new HttpGet(url);
 		HttpResponse response = client.execute(request);
+		
+		if (isCancelled()) {
+			return null;
+		}
 
 		// Make sure this URL goes to a HTML page
 		String headerValue = "";
@@ -146,7 +182,7 @@ public class URLOptionsAsyncTask extends AsyncTask<String, Void, String[]> {
 			}
 		}
 
-		Utils.log(headerValue);
+		Utils.log("value: "+headerValue);
 		String contentType = "";
 		Charset charset = Charset.forName("ISO-8859-1");
 		int sep = headerValue.indexOf(";");
@@ -173,19 +209,19 @@ public class URLOptionsAsyncTask extends AsyncTask<String, Void, String[]> {
 					&& (n = reader.read(buffer, 0, buffer.length)) != -1) {
 				content.append(buffer);
 				totalRead += n;
-				Matcher m = TITLE_TAG.matcher(content);
-				Utils.log("Found: " + m.find());
-			}
-			reader.close();
-
-			Utils.log(content.toString());
-
-			Matcher matcher = TITLE_TAG.matcher(content);
-			if (matcher.find()) {
-				return matcher.group(1).replaceAll("[\\s\\<>]+", " ").trim();
+				Matcher matcher = TITLE_TAG.matcher(content);
+				if (matcher.find()) {
+					reader.close();
+					String result = matcher.group(1).replaceAll("[\\s\\<>]+", " ").trim();
+					return result;
+				}
+				if (isCancelled()) {
+					reader.close();
+					return null;
+				}
+				Utils.log("Will read some more");
 			}
 		}
-
 		return null;
 	}
 

@@ -40,6 +40,8 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 	private String[] cache_unshorten = null, cache_titles = null;
 	private SendFragment send_fragment;
 	private boolean restoreFromPreferences;
+	private URLOptionsAsyncTask async_unshorten;
+	private URLOptionsAsyncTask async_titles;
 	private static final String SAVE_CACHE_UNSHORTEN = "cache_unshorten",
 			SAVE_CACHE_TITLES = "cache_titles";
 	private static final Pattern urlPattern = Pattern
@@ -107,6 +109,19 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		super.onSaveInstanceState(outState);
 		outState.putStringArray(SAVE_CACHE_UNSHORTEN, cache_unshorten);
 		outState.putStringArray(SAVE_CACHE_TITLES, cache_titles);
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		if (isFinishing()) {
+			if (async_unshorten != null) {
+				async_unshorten.cancel(true);
+			}
+			if (async_titles != null) {
+				async_titles.cancel(true);
+			}
+		}
 	}
 
 	@Override
@@ -191,9 +206,9 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		} else {
 			String links = filterLinks(text).trim();
 			String[] parts = links.split(" ");
-			URLOptionsAsyncTask async = new URLOptionsAsyncTask(this,
+			async_unshorten = new URLOptionsAsyncTask(this,
 					URLOptionsAsyncTask.TASK_UNSHORTEN);
-			async.execute(parts);
+			async_unshorten.execute(parts);
 		}
 	}
 
@@ -203,9 +218,9 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		} else {
 			String links = filterLinks(text).trim();
 			String[] parts = links.split(" ");
-			URLOptionsAsyncTask async = new URLOptionsAsyncTask(this,
+			async_titles = new URLOptionsAsyncTask(this,
 					URLOptionsAsyncTask.TASK_GET_TITLE);
-			async.execute(parts);
+			async_titles.execute(parts);
 		}
 	}
 
@@ -222,8 +237,10 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 	@Override
 	public void onPostUnshorten(String[] result) {
 		if (result == null) {
-			Toast.makeText(this, R.string.txt_error_timeout, Toast.LENGTH_SHORT)
-					.show();
+			if (!isFinishing()) {
+				Toast.makeText(this, R.string.txt_error_timeout, Toast.LENGTH_SHORT)
+						.show();
+			}
 			send_fragment.cb_unshorten.setChecked(false);
 			return;
 		}
@@ -241,8 +258,10 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 	@Override
 	public void onPostGetTitle(String[] result) {
 		if (result == null) {
-			Toast.makeText(this, R.string.txt_error_timeout, Toast.LENGTH_SHORT)
-					.show();
+			if (!isFinishing()) {
+				Toast.makeText(this, R.string.txt_error_timeout, Toast.LENGTH_SHORT)
+						.show();
+			}
 			send_fragment.cb_get_titles.setChecked(false);
 			return;
 		}
@@ -360,9 +379,15 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 			if (is_waiting) {
 				v.findViewById(R.id.progress).setVisibility(View.VISIBLE);
 				v.findViewById(R.id.text_preview).setEnabled(false);
+				cb_only_links.setEnabled(false);
+				cb_unshorten.setEnabled(false);
+				cb_get_titles.setEnabled(false);
 			} else {
 				v.findViewById(R.id.progress).setVisibility(View.GONE);
 				v.findViewById(R.id.text_preview).setEnabled(true);
+				cb_only_links.setEnabled(true);
+				cb_unshorten.setEnabled(true);
+				cb_get_titles.setEnabled(true);
 			}
 		}
 	}
