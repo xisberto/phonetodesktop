@@ -23,71 +23,79 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockDialogFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 
-public class LinkListActivity extends SherlockFragmentActivity implements OnClickListener {
+public class LinkListActivity extends SherlockFragmentActivity implements
+		OnClickListener {
 	private BroadcastReceiver receiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			updateMainLayout(intent);
+			updateLayout(intent);
 		}
 	};
-	
+
 	private ArrayList<String> ids;
 	private ArrayList<String> titles;
-	private boolean done;
+	private boolean updating;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		setContentView(R.layout.activity_link_list);
 
 		if ((savedInstanceState != null)
-				&& savedInstanceState.containsKey("titles")) {
-			titles = savedInstanceState.getStringArrayList("titles");
-			ids = savedInstanceState.getStringArrayList("ids");
-			done = savedInstanceState.getBoolean("done");
+				&& savedInstanceState.containsKey(Utils.EXTRA_TITLES)) {
+			titles = savedInstanceState.getStringArrayList(Utils.EXTRA_TITLES);
+			ids = savedInstanceState.getStringArrayList(Utils.EXTRA_IDS);
+			updating = savedInstanceState.getBoolean(Utils.EXTRA_UPDATING);
 		} else {
 			titles = null;
 			ids = null;
-			done = true;
+			updating = false;
 		}
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
-		registerReceiver(receiver, new IntentFilter(GoogleTasksActivity.ACTION_LIST_TASKS));
+		LocalBroadcastManager.getInstance(this).registerReceiver(receiver,
+				new IntentFilter(Utils.ACTION_LIST_TASKS));
 		if (titles == null) {
 			refreshTasks();
 		} else {
-			updateMainLayout(getIntent());
+			updateLayout(getIntent());
 		}
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
-		unregisterReceiver(receiver);
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
 	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putStringArrayList("titles", titles);
-		outState.putStringArrayList("ids", ids);
-		outState.putBoolean("done", done);
+		outState.putStringArrayList(Utils.EXTRA_TITLES, titles);
+		outState.putStringArrayList(Utils.EXTRA_IDS, ids);
+		outState.putBoolean(Utils.EXTRA_UPDATING, updating);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(com.actionbarsherlock.view.Menu menu) {
 		getSupportMenuInflater().inflate(R.menu.activity_link_list, menu);
+		menu.findItem(R.id.item_refresh).setVisible(!updating);
 		return true;
 	}
 
@@ -99,13 +107,13 @@ public class LinkListActivity extends SherlockFragmentActivity implements OnClic
 			NavUtils.navigateUpFromSameTask(this);
 			return true;
 		case R.id.item_refresh:
-			if (!done) {
+			if (updating) {
 				return true;
 			}
 			refreshTasks();
 			return true;
 		}
-		return super.onOptionsItemSelected(item);
+		return false;
 	}
 
 	@Override
@@ -113,41 +121,57 @@ public class LinkListActivity extends SherlockFragmentActivity implements OnClic
 		YesNoDialog dialog = YesNoDialog.newInstance(v.getTag().toString());
 		dialog.show(getSupportFragmentManager(), "dialog");
 	}
-	
+
 	private void refreshTasks() {
-		Intent i = new Intent(getApplicationContext(), GoogleTasksActivity.class);
-		i.setAction(GoogleTasksActivity.ACTION_LIST_TASKS);
-		startActivity(i);
+		updating = true;
+		updateActionBar();
+		Intent service = new Intent(this, GoogleTasksService.class);
+		service.setAction(Utils.ACTION_LIST_TASKS);
+		startService(service);
 	}
-	
+
 	private void deleteTask(String task_id) {
-		Intent i = new Intent(getApplicationContext(), GoogleTasksActivity.class);
-		i.setAction(GoogleTasksActivity.ACTION_REMOVE_TASKS);
-		i.putExtra("task_id", task_id);
-		startActivity(i);
-
-		refreshTasks();
+		updating = true;
+		updateActionBar();
+		Intent service = new Intent(this, GoogleTasksService.class);
+		service.setAction(Utils.ACTION_REMOVE_TASK);
+		service.putExtra(Utils.EXTRA_TASK_ID, task_id);
+		startService(service);
 	}
 
-	private void updateMainLayout(Intent intent) {
+	/**
+	 * Updates the status of the layout according to field {@code updating}
+	 */
+	private void updateActionBar() {
+		supportInvalidateOptionsMenu();
+		setProgressBarIndeterminateVisibility(updating);
+	}
+
+	private void updateLayout(Intent intent) {
 		if ((intent.getAction() != null)
-				&& (intent.getAction().equals(GoogleTasksActivity.ACTION_LIST_TASKS))) {
-			ids = intent.getStringArrayListExtra("ids");
-			titles = intent.getStringArrayListExtra("titles");
-			done = intent.getBooleanExtra("done", false);
+				&& (intent.getAction().equals(Utils.ACTION_LIST_TASKS))) {
+			ids = intent.getStringArrayListExtra(Utils.EXTRA_IDS);
+			titles = intent.getStringArrayListExtra(Utils.EXTRA_TITLES);
+			updating = intent.getBooleanExtra(Utils.EXTRA_UPDATING, false);
 		}
+		updateActionBar();
+
 		TextView text = (TextView) findViewById(R.id.textView_linkList);
 		ListView list_view = (ListView) findViewById(R.id.listView_linkList);
 
-		if (done) {
+		if (!updating) {
 			findViewById(R.id.progressBar_linkList).setVisibility(View.GONE);
-			if ((titles == null)
-					|| (titles.size() < 1)) {
+			if ((titles == null) || (titles.size() < 1)) {
 				text.setText(R.string.txt_empty_list);
 				list_view.setVisibility(View.GONE);
 				text.setVisibility(View.VISIBLE);
+				if (intent.getStringExtra(Utils.EXTRA_ERROR_TEXT) != null) {
+					Toast.makeText(this,
+							intent.getStringExtra(Utils.EXTRA_ERROR_TEXT),
+							Toast.LENGTH_SHORT).show();
+				}
 			} else {
-				//We're using LinkedHashMap to guarantee the order of insertion
+				// We're using LinkedHashMap to guarantee the order of insertion
 				HashMap<String, String> tasks = new LinkedHashMap<String, String>();
 				for (int i = 0; i < titles.size(); i++) {
 					tasks.put(ids.get(i), titles.get(i));
@@ -165,7 +189,7 @@ public class LinkListActivity extends SherlockFragmentActivity implements OnClic
 
 	}
 
-	private static class YesNoDialog extends SherlockDialogFragment {
+	public static class YesNoDialog extends SherlockDialogFragment {
 		public static YesNoDialog newInstance(String task_id) {
 			YesNoDialog dlg = new YesNoDialog();
 			Bundle bundle = new Bundle();
@@ -177,18 +201,19 @@ public class LinkListActivity extends SherlockFragmentActivity implements OnClic
 		@Override
 		public Dialog onCreateDialog(Bundle savedInstanceState) {
 			return new AlertDialog.Builder(getActivity())
-				.setTitle(R.string.title_confirm)
-				.setMessage(R.string.txt_confirm)
-				.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface arg0, int arg1) {
-						((LinkListActivity) getActivity()).deleteTask(getArguments().getString("task_id"));
-					}
-				})
-				.setNegativeButton(android.R.string.no, null)
-				.create();
+					.setTitle(R.string.title_confirm)
+					.setMessage(R.string.txt_confirm)
+					.setPositiveButton(android.R.string.yes,
+							new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface arg0,
+										int arg1) {
+									((LinkListActivity) getActivity())
+											.deleteTask(getArguments()
+													.getString("task_id"));
+								}
+							}).setNegativeButton(android.R.string.no, null)
+					.create();
 		}
-		
-		
 	}
 }

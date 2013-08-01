@@ -1,3 +1,13 @@
+#-------------------------------------------------------------------------------
+# Copyright (c) 2013 Humberto Fraga <xisberto@gmail.com>.
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the GNU Public License v3.0
+# which accompanies this distribution, and is available at
+# http://www.gnu.org/licenses/gpl.html
+# 
+# Contributors:
+#     Humberto Fraga <xisberto@gmail.com> - initial API and implementation
+#-------------------------------------------------------------------------------
 -dontobfuscate
 
 # If you want to enable optimization, you should include the
@@ -20,40 +30,38 @@
 -dontwarn android.support.**
 -dontwarn org.apache.**
 
--injars      bin/classes
--outjars     bin/classes-processed.jar
+#-injars      bin/classes
+#-outjars     bin/classes-processed.jar
 
--libraryjars libs/commons-logging-1.1.1.jar
--libraryjars libs/jackson-core-asl-1.9.4.jar
--libraryjars libs/guava-11.0.1.jar
--libraryjars libs/jsr305-1.3.9.jar
--libraryjars libs/gson-2.1.jar
--libraryjars libs/httpcore-4.0.1.jar
--libraryjars libs/httpclient-4.0.3.jar
--libraryjars libs/protobuf-java-2.2.0.jar
--libraryjars libs/google-api-client-1.10.1-beta.jar
--libraryjars libs/google-http-client-1.10.2-beta.jar
--libraryjars libs/google-oauth-client-1.10.0-beta.jar
--libraryjars libs/google-api-client-android2-1.10.1-beta.jar
--libraryjars libs/google-api-tasks-v1-rev3-java-1.7.0-beta.jar
--libraryjars ../../lib/android-sdk-linux/platforms/android-14/android.jar
+#-libraryjars libs/*
+
+-keep class * extends java.util.ListResourceBundle {
+    protected Object[][] getContents();
+}
 
 -keepattributes *Annotation*,Signature
 -keepclasseswithmembernames class com.google.api.client.apache.ApacheHttpTransport {
     static ** INSTANCE;
 }
 
-# Needed by google-api-client to keep generic types and @Key annotations accessed via reflection
+# Needed to keep generic types and @Key annotations accessed via reflection
+
+-keepattributes Signature,RuntimeVisibleAnnotations,AnnotationDefault
 
 -keepclassmembers class * {
   @com.google.api.client.util.Key <fields>;
 }
 
--keepattributes Signature,RuntimeVisibleAnnotations,AnnotationDefault
-
 # Needed by Guava
+# See https://groups.google.com/forum/#!topic/guava-discuss/YCZzeCiIVoI
 
 -dontwarn sun.misc.Unsafe
-
-# See https://groups.google.com/forum/#!topic/guava-discuss/YCZzeCiIVoI
 -dontwarn com.google.common.collect.MinMaxPriorityQueue
+
+# Needed by google-http-client-android when linking against an older platform version
+
+-dontwarn com.google.api.client.extensions.android.**
+
+# Needed by google-api-client-android when linking against an older platform version
+
+-dontwarn com.google.api.client.googleapis.extensions.android.**

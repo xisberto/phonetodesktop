@@ -1,33 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Copyright (c) 2012 Humberto Fraga <xisberto@gmail.com>.
-  All rights reserved. This program and the accompanying materials
-  are made available under the terms of the GNU Public License v3.0
-  which accompanies this distribution, and is available at
-  http://www.gnu.org/licenses/gpl.html
+     File created by the Android Action Bar Style Generator
+
+     Copyright (C) 2011 The Android Open Source Project
+     Copyright (C) 2012 readyState Software Ltd
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
   
-  Contributors:
-      Humberto Fraga <xisberto@gmail.com> - initial API and implementation
+          http://www.apache.org/licenses/LICENSE-2.0
+  
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
 -->
+
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="AppTheme.Sherlock.Light.Dialog.Titlebar" parent="Theme.Sherlock.Light.Dialog">
-        <item name="android:windowNoTitle">false</item>
+    <style name="Theme.PhoneToDesktop" parent="@style/Theme.Sherlock.Light">
+        <item name="actionBarItemBackground">@drawable/selectable_background_pdttheme</item>
+        <item name="actionBarStyle">@style/ActionBar.Transparent.Pdttheme</item>
+        <item name="android:checkboxStyle">@style/Theme.PhoneToDesktop.CheckBox</item>
+        <item name="android:progressBarStyleHorizontal">@style/Theme.PhoneToDesktop.ProgressBar</item>
     </style>
 
-    <style name="AppTheme.Translucent.NoTitlebar" parent="Theme.Sherlock.NoActionBar">
+    <style name="ActionBar.Transparent.Pdttheme" parent="@style/Widget.Sherlock.Light.ActionBar">
+        <item name="background">@drawable/ab_transparent_pdttheme</item>
+    </style>
+
+    <style name="Theme.PhoneToDesktop.Translucent.NoTitlebar" parent="@style/Theme.Sherlock.Light.NoActionBar">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowContentOverlay">@null</item>
+        <item name="android:checkboxStyle">@style/Theme.PhoneToDesktop.CheckBox</item>
+        <item name="android:progressBarStyleHorizontal">@style/Theme.PhoneToDesktop.ProgressBar</item>
     </style>
 
-    <style name="HomeButton" >
-        <item name="android:gravity">left|center_vertical</item>
-        <item name="android:drawablePadding">3dp</item>
-        <item name="android:minHeight">60dp</item>
-        <item name="android:background">@drawable/home_button</item>
+    <style name="Theme.PhoneToDesktop.ActivityOrDialog" parent="@style/Theme.PhoneToDesktop"></style>
+
+    <style name="Theme.PhoneToDesktop.HomeButton">
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:textStyle">italic</item>
+        <item name="android:textColor">@drawable/home_button_text</item>
+        <item name="android:background">@drawable/home_button_background</item>
+    </style>
+
+    <style name="Theme.PhoneToDesktop.PreviewText">
+        <item name="android:background">@drawable/background_preview</item>
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+
+    <style name="Theme.PhoneToDesktop.CheckBox" parent="android:Widget.CompoundButton.CheckBox">
+        <item name="android:button">@drawable/btn_check_holo_light</item>
+    </style>
+
+    <style name="Theme.PhoneToDesktop.ProgressBar" parent="android:Widget.ProgressBar.Horizontal">
+        <item name="android:progressDrawable">@drawable/progress_horizontal_holo_light</item>
+        <item name="android:indeterminateDrawable">@drawable/progress_indeterminate_horizontal_holo_light</item>
+        <item name="android:minHeight">16dip</item>
+        <item name="android:maxHeight">16dip</item>
     </style>
 
 </resources>

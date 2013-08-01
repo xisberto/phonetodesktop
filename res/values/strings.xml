@@ -11,56 +11,64 @@
 -->
 <resources>
 
-    <string name="hello">Welcome to Phone To Desktop</string>
     <string name="app_name">Phone To Desktop</string>
-    <string name="title_select_account">Select a Google account</string>
-    <string name="btn_how_it_works">How it works</string>
-    <string name="txt_authorize">Go to Preferences to authorize Phone To Desktop.</string>
+    <string name="filter_title">Phone To Desktop</string>
+    
+    <string name="txt_authorize">Phone To Desktop needs authorization to access your Google Tasks.</string>
+    <string name="txt_waiting_authorization">Waiting authorization process. It may take some time.</string>
     <string name="txt_authorized_to">Authorized to</string>
+    <string name="btn_authorize">Authorize your Google account</string>
+    <string name="btn_authorize_other">Authorize other Google account</string>
+    
+    <string name="txt_preview">Preview</string>
+    <string name="txt_options">Options</string>
+    <string name="txt_only_links">Send only links</string>
+    <string name="txt_unshorten">Unshorten links</string>
+    <string name="txt_get_titles">Add titles (if the links lead to web pages)</string>
+    <string name="send">Send</string>
+    
+    <string name="title_select_account">Select a Google account</string>
+    <string name="btn_how_it_works">See how it works</string>
+    <string name="btn_about">About Phone To Desktop</string>
+    
+    <string name="txt_error_timeout">Could not access server. Try again later.</string>
+    <string name="txt_sending">Sending links</string>
+    <string name="txt_error_sending">Could not send text</string>
+    <string name="txt_error_try_again">Click here to try again.</string>
+    <string name="txt_error_list">Could not get the list. Try again.</string>
+    <string name="txt_need_authorize">Your need first authorize Phone To Desktop.</string>
+    
     <string name="txt_check_preferences">Check Preferences on menu to change</string>
     <string name="btn_preferences">Preferences</string>
-    <string name="btn_authorize_again">Authorize other account</string>
-    <string name="btn_waiting_authorization">Waiting authorization</string>
-    <string name="txt_sending">Sending links</string>
-    <string name="txt_error_sending">Error sending link</string>
-    <string name="txt_error_credentials">There was an error with Google credentials. Please authorize Phone To Desktop again.</string>
-    <string name="txt_need_authorize">Your need first authorize Phone To Desktop.</string>
-    <string name="txt_timeout">Could not access server. Try again later.</string>
+    
     <string name="btn_back">Back</string>
     <string name="btn_next">Next</string>
-    <string name="txt_tutorial1">Phone To Desktop sends links and text from your Android device to your desktop computer</string>
-    <string name="txt_tutorial2">From any application which shares text, choose “share” option.</string>
-    <string name="txt_tutorial3">A list of applications which can receive text will be shown. Choose Phone To Desktop.</string>
-    <string name="txt_tutorial4">You will see a notification while Phone To Desktop sends the text.
+    <string name="txt_tutorial">Phone To Desktop sends links and text from your Android device to your desktop computer</string>
+    <string name="txt_tutorial_0">From any application which shares text, choose “share” option.</string>
+    <string name="txt_tutorial_1">A list of applications which can receive text will be shown. Choose Phone To Desktop.</string>
+    <string name="txt_tutorial_2">You will see a screen with a preview text and some options. Click Send when ready.</string>
+    <string name="txt_tutorial_3">There will be a notification while Phone To Desktop sends the text.
 When the text is successfully sent, the notification goes away.</string>
-    <string name="txt_tutorial5">To see your sent texts in your desktop or notebook, choose Tasks in Gmail.</string>
-    <string name="txt_tutorial6">You can see the list of sent texts under the "Phone To Desktop" list.</string>
-    <string name="about">About</string>
+    <string name="txt_tutorial_4">To see your sent texts in your desktop or notebook, choose Tasks in Gmail.</string>
+    <string name="txt_tutorial_5">You can see the list of sent texts under the "Phone To Desktop" list.</string>
+    
     <string name="link_about_message">https://github.com/xisberto/phonetodesktop</string>
-    <string name="txt_about_message">Phone To Desktop is free software (as in freedom).
-	    The source code is on GitHub.</string>
+    <string name="txt_about_message">Phone To Desktop is free software (as in freedom). The source code is on GitHub.</string>
     <string name="link_chrome_extension">https://chrome.google.com/webstore/detail/oifdfchgmkfglcccmkoofhbnmkdlbgag</string>
     <string name="txt_chrome_extension">Try our extension for Google Chrome.</string>
     <string name="txt_google_java_api">Phone To Desktop uses Google APIs Client for Java 1.10.0-beta and Google Tasks API 1.7.0-beta.</string>
     <string name="link_google_java_api">http://code.google.com/p/google-api-java-client/</string>
     <string name="txt_actionbarsherlock">Phone To Desktop uses ActionBarSherlock.</string>
     <string name="link_actionbarsherlock">http://actionbarsherlock.com/</string>
-    <string name="btn_share_this">Click to share the link</string>
+    <string name="btn_share_this">Share this link</string>
     <string name="img_about">Phone To Desktop logo</string>
     <string name="send_to">Send link to&#8230;</string>
+    
     <string name="btn_link_list">View sent texts</string>
     <string name="title_activity_link_list">Sent Texts List</string>
     <string name="txt_empty_list">Empty list</string>
     <string name="title_confirm">Confirm delete</string>
     <string name="txt_confirm">Do you want to delete this item?</string>
-    
-    <string name="title_what_to_send">Select what to send</string>
-
-    <string-array name="what_to_send">
-        <item>Send the entire text</item>
-        <item>Send only links</item>
-    </string-array>
-
-    <string name="check_save_option">Save this choice</string>
+    <string name="refresh">Refresh</string>
 
 </resources>

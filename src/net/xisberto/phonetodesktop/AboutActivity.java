@@ -13,17 +13,19 @@ package net.xisberto.phonetodesktop;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.MenuItem;
 
-public class AboutActivity extends SherlockFragmentActivity implements OnClickListener {
+public class AboutActivity extends SherlockFragmentActivity {
 
 	@Override
 	protected void onCreate(Bundle arg0) {
 		super.onCreate(arg0);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		setContentView(R.layout.layout_about);
 		
 		String versionName = "";
@@ -34,35 +36,27 @@ public class AboutActivity extends SherlockFragmentActivity implements OnClickLi
 		}
 		((TextView)findViewById(R.id.text_name_version)).setText(getResources().getString(R.string.app_name)+versionName);
 		
-		findViewById(R.id.btn_share_about_message).setOnClickListener(this);
-		findViewById(R.id.btn_share_chrome).setOnClickListener(this);
-		findViewById(R.id.btn_share_google_java_api).setOnClickListener(this);
-		findViewById(R.id.btn_share_actionbarsherlock).setOnClickListener(this);
-		
 	}
 
 	@Override
-	public void onClick(View v) {
-		Intent i = new Intent(Intent.ACTION_SEND);
-		i.setType("text/plain");
-		switch (v.getId()) {
-		case R.id.btn_share_about_message:
-			i.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.link_about_message));
-			break;
-		case R.id.btn_share_chrome:
-			i.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.link_chrome_extension));
-			break;
-		case R.id.btn_share_google_java_api:
-			i.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.link_google_java_api));
-			break;
-		case R.id.btn_share_actionbarsherlock:
-			i.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.link_actionbarsherlock));
-			break;
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			NavUtils.navigateUpFromSameTask(this);
+			return true;
+
 		default:
-			return;
+			return super.onOptionsItemSelected(item);
 		}
-		//Toast.makeText(getApplicationContext(), i.getStringExtra(Intent.EXTRA_TEXT), Toast.LENGTH_SHORT).show();
-		startActivity(Intent.createChooser(i, getResources().getString(R.string.send_to)));
+	}
+
+	public void onClick(View v) {
+		if (v.getTag() != null) {
+			Intent i = new Intent(Intent.ACTION_SEND);
+			i.setType("text/plain");
+			i.putExtra(Intent.EXTRA_TEXT, (String)v.getTag());
+			startActivity(Intent.createChooser(i, getResources().getString(R.string.send_to)));
+		}
 	}
 
 }
