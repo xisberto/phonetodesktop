@@ -31,6 +31,7 @@
     <string name="btn_how_it_works">See how it works</string>
     <string name="btn_about">About Phone To Desktop</string>
     
+    <string name="txt_no_links">No link detected</string>
     <string name="txt_error_timeout">Could not access server. Try again later.</string>
     <string name="txt_sending">Sending links</string>
     <string name="txt_error_sending">Could not send text</string>
