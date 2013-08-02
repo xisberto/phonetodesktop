@@ -183,8 +183,15 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 	}
 
 	private void processCheckBoxes() {
+		String links = filterLinks(text_to_send).trim();
+		if (links.equals("")) {
+			Toast.makeText(this, R.string.txt_no_links,
+					Toast.LENGTH_SHORT).show();
+			return;
+		}
+		
 		if (send_fragment.cb_only_links.isChecked()) {
-			text_to_send = filterLinks(text_from_extra);
+			text_to_send = links;
 		} else {
 			text_to_send = text_from_extra;
 		}
@@ -200,11 +207,10 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		send_fragment.setPreview(text_to_send);
 	}
 
-	private void unshortenLinks(String text) {
+	private void unshortenLinks(String links) {
 		if (cache_unshorten != null) {
 			onPostUnshorten(cache_unshorten);
 		} else {
-			String links = filterLinks(text).trim();
 			String[] parts = links.split(" ");
 			async_unshorten = new URLOptionsAsyncTask(this,
 					URLOptionsAsyncTask.TASK_UNSHORTEN);
@@ -212,11 +218,10 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		}
 	}
 
-	private void getTitles(String text) {
+	private void getTitles(String links) {
 		if (cache_titles != null) {
 			onPostGetTitle(cache_titles);
 		} else {
-			String links = filterLinks(text).trim();
 			String[] parts = links.split(" ");
 			async_titles = new URLOptionsAsyncTask(this,
 					URLOptionsAsyncTask.TASK_GET_TITLE);
@@ -238,8 +243,8 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 	public void onPostUnshorten(String[] result) {
 		if (result == null) {
 			if (!isFinishing()) {
-				Toast.makeText(this, R.string.txt_error_timeout, Toast.LENGTH_SHORT)
-						.show();
+				Toast.makeText(this, R.string.txt_error_timeout,
+						Toast.LENGTH_SHORT).show();
 			}
 			send_fragment.cb_unshorten.setChecked(false);
 			return;
@@ -259,8 +264,8 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 	public void onPostGetTitle(String[] result) {
 		if (result == null) {
 			if (!isFinishing()) {
-				Toast.makeText(this, R.string.txt_error_timeout, Toast.LENGTH_SHORT)
-						.show();
+				Toast.makeText(this, R.string.txt_error_timeout,
+						Toast.LENGTH_SHORT).show();
 			}
 			send_fragment.cb_get_titles.setChecked(false);
 			return;
