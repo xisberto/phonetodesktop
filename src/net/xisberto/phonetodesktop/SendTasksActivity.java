@@ -183,6 +183,7 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 	}
 
 	private void processCheckBoxes() {
+		text_to_send = text_from_extra;
 		String links = filterLinks(text_to_send).trim();
 		if (links.equals("")) {
 			Toast.makeText(this, R.string.txt_no_links,
@@ -197,11 +198,11 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		}
 
 		if (send_fragment.cb_unshorten.isChecked()) {
-			unshortenLinks(text_to_send);
+			unshortenLinks(links);
 		}
 
 		if (send_fragment.cb_get_titles.isChecked()) {
-			getTitles(text_to_send);
+			getTitles(links);
 		}
 
 		send_fragment.setPreview(text_to_send);
