@@ -17,6 +17,7 @@
     <string name="txt_authorize">O Phone To Desktop precisa de autorização para acessar suas Tarefas do Google.</string>
     <string name="txt_waiting_authorization">Esperando o processo de autorização. Pode demorar um pouco.</string>
     <string name="txt_authorized_to">Autorizado para</string>
+    <string name="txt_retry">Foi encontrado um erro ao tentar buscar os dados. Tentar novamente?</string>
     <string name="btn_authorize">Autorizar a sua conta Google</string>
     <string name="btn_authorize_other">Autorizar outra conta Google</string>
 

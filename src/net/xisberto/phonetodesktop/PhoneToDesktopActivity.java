@@ -14,12 +14,15 @@ import java.util.List;
 
 import net.xisberto.phonetodesktop.ListAsyncTask.TaskListTaskListener;
 import android.accounts.AccountManager;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -283,4 +286,49 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements
 		updateMainLayout(false);
 	}
 
+	@Override
+	public void showRetryMessage(int request) {
+		switch (request) {
+		case ListAsyncTask.REQUEST_LOAD_LISTS:
+			RetryDialog dialog = RetryDialog.newInstance(this);
+			dialog.show(getSupportFragmentManager(), "retry_dialog");
+			break;
+
+		default:
+			break;
+		}	
+	}
+
+	public static class RetryDialog extends DialogFragment implements DialogInterface.OnClickListener {
+		private PhoneToDesktopActivity activity;
+		
+		public static RetryDialog newInstance(PhoneToDesktopActivity act) {
+			RetryDialog dialog = new RetryDialog();
+			dialog.activity = act;
+			return dialog;
+		}
+
+		@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
+			AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity)
+					.setTitle(R.string.app_name)
+					.setMessage(R.string.txt_retry)
+					.setPositiveButton(android.R.string.yes, this)
+					.setNegativeButton(android.R.string.no, this);
+			return dialogBuilder.create();
+		}
+
+		@Override
+		public void onClick(DialogInterface dialog, int which) {
+			switch (which) {
+			case DialogInterface.BUTTON_POSITIVE:
+				activity.asyncRequestLists();
+				dialog.dismiss();
+			case DialogInterface.BUTTON_NEGATIVE:
+				activity.updateMainLayout(false);
+				dialog.dismiss();
+			}			
+		}
+		
+	}
 }
