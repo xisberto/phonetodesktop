@@ -91,6 +91,9 @@ public class ListAsyncTask extends AsyncTask<Integer, Void, String> {
 					PhoneToDesktopActivity.REQUEST_AUTHORIZATION);
 		} catch (IOException e) {
 			Utils.log(Log.getStackTraceString(e));
+		} catch (IllegalArgumentException iae) {
+			Utils.log(Log.getStackTraceString(iae));
+			return "RETRY";
 		}
 		return null;
 	}
@@ -99,7 +102,11 @@ public class ListAsyncTask extends AsyncTask<Integer, Void, String> {
 	protected void onPostExecute(String result) {
 		switch (request) {
 		case REQUEST_LOAD_LISTS:
-			listener.selectList(tasklists);
+			if (tasklists == null || result != null) {
+				listener.showRetryMessage(REQUEST_LOAD_LISTS);
+			} else {
+				listener.selectList(tasklists);
+			}
 			break;
 		case REQUEST_SAVE_LIST:
 			listener.saveList(result);
@@ -112,5 +119,7 @@ public class ListAsyncTask extends AsyncTask<Integer, Void, String> {
 		public void selectList(List<TaskList> tasklists);
 
 		public void saveList(String listId);
+		
+		public void showRetryMessage(int request);
 	}
 }
