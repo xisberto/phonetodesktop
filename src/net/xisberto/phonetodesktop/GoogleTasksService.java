@@ -37,7 +37,7 @@ import com.google.api.services.tasks.model.Task;
  */
 public class GoogleTasksService extends IntentService {
 	private static final int
-			NOTIFICATION_SEND = 0,
+			NOTIFICATION_SEND = 42,
 			NOTIFICATION_ERROR = 1,
 			NOTIFICATION_NEED_AUTHORIZE = 2;
 	
@@ -87,12 +87,12 @@ public class GoogleTasksService extends IntentService {
 				}
 			} catch (UserRecoverableAuthIOException userRecoverableException) {
 				Utils.log(Log.getStackTraceString(userRecoverableException));
-				cancelNotification(NOTIFICATION_SEND);
+				stopForeground(true);
 				showNotification(NOTIFICATION_NEED_AUTHORIZE);
 			} catch (IOException ioException) {
 				Utils.log(Log.getStackTraceString(ioException));
 				if (action.equals(Utils.ACTION_SEND_TASK)) {
-					cancelNotification(NOTIFICATION_SEND);
+					stopForeground(true);
 					showNotification(NOTIFICATION_ERROR);
 				} else {
 					Intent broadcast = new Intent(Utils.ACTION_LIST_TASKS);
@@ -101,7 +101,7 @@ public class GoogleTasksService extends IntentService {
 				}
 			} catch (NullPointerException npe) {
 				Utils.log(Log.getStackTraceString(npe));
-				cancelNotification(NOTIFICATION_SEND);
+				stopForeground(true);
 				showNotification(NOTIFICATION_NEED_AUTHORIZE);
 			}
 		}
@@ -130,7 +130,8 @@ public class GoogleTasksService extends IntentService {
 					.setSmallIcon(android.R.drawable.stat_sys_upload)
 					.setTicker(getString(R.string.txt_sending))
 					.setContentTitle(getString(R.string.txt_sending));
-			break;
+			startForeground(NOTIFICATION_SEND, builder.build());
+			return;
 		case NOTIFICATION_ERROR:
 			//On error, we create an intent to retry the send
 			intentContent.setClass(this, SendTasksActivity.class);
