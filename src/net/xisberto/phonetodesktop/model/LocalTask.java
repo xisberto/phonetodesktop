@@ -10,8 +10,8 @@
  ******************************************************************************/
 package net.xisberto.phonetodesktop.model;
 
+import android.os.Process;
 import net.xisberto.phonetodesktop.database.DatabaseHelper;
-import android.content.Context;
 
 public class LocalTask {
 
@@ -19,14 +19,28 @@ public class LocalTask {
 		ADDED, PROCESSING_UNSHORTEN, PROCESSING_TITLE, WAITING, SENDING, SENT;
 	}
 	
+	private long local_id;
 	private String description, title, google_id;
 	private Status status;
+	private DatabaseHelper helper;
 	
-	public LocalTask() {
+	public LocalTask(DatabaseHelper databaseHelper) {
+		this.local_id = -1;
 		this.google_id = "";
 		this.title = "";
 		this.description = "";
 		this.status = Status.ADDED;
+		this.helper = databaseHelper;
+		insert();
+	}
+	
+	public long getLocalId() {
+		return local_id;
+	}
+	
+	public LocalTask setLocalId(long local_id) {
+		this.local_id = local_id;
+		return this;
 	}
 
 	public String getDescription() {
@@ -65,29 +79,50 @@ public class LocalTask {
 		return this;
 	}
 	
-	public void persist(Context context, PersistCallback callback) {
-		new PersistThread(DatabaseHelper.getInstance(context), this, callback)
-				.start();
+	private void insert() {
+		new PersistThread(
+				helper, this,
+				PersistThread.ACTION_INSERT, null)
+		.start();
 	}
 	
-	public void persist(Context context) {
-		this.persist(context, null);
+	public void persist(PersistCallback callback) {
+		new PersistThread(
+				helper, this,
+				PersistThread.ACTION_UPDATE, callback)
+		.start();
+	}
+	
+	public void persist() {
+		this.persist(null);
 	}
 	
 	private class PersistThread extends Thread {
+		public static final int ACTION_INSERT = 1, ACTION_UPDATE = 2;
 		private DatabaseHelper helper;
 		private LocalTask task;
+		private int action;
 		private PersistCallback callback;
 		
-		public PersistThread(DatabaseHelper helper, LocalTask task, PersistCallback callback) {
+		public PersistThread(DatabaseHelper helper, LocalTask task, int action, PersistCallback callback) {
 			this.helper = helper;
 			this.task = task;
+			this.action = action;
 			this.callback = callback;
+			setPriority(Process.THREAD_PRIORITY_BACKGROUND);
 		}
 
 		@Override
 		public void run() {
-			helper.insert(task);
+			switch (action) {
+			case ACTION_INSERT:
+				long id = helper.insert(task);
+				task.setLocalId(id);
+				break;
+			case ACTION_UPDATE:
+				helper.update(task);
+				break;
+			}
 			if (callback != null) {
 				callback.done();
 			}

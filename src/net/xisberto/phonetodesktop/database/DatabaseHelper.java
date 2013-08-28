@@ -25,13 +25,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper {
 	public static final String DATABASE_NAME = "phonetodesktop";
 	public static final int DATABASE_VERSION = 1;
-	
+
 	private static DatabaseHelper instance;
 
 	private DatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
 	}
-	
+
 	public static synchronized DatabaseHelper getInstance(Context context) {
 		if (instance == null) {
 			instance = new DatabaseHelper(context.getApplicationContext());
@@ -49,7 +49,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		// TODO Auto-generated method stub
 
 	}
-	
+
 	private ContentValues contentValuesFromTask(LocalTask task) {
 		ContentValues cv = new ContentValues();
 		cv.put(TableTasks.COLUMN_GOOGLE_ID, task.getGoogleId());
@@ -58,43 +58,64 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		cv.put(TableTasks.COLUMN_STATUS, task.getStatus().name());
 		return cv;
 	}
-	
+
 	private LocalTask taskFromCursor(Cursor c) {
-		LocalTask result = new LocalTask();
-		result
-			.setGoogleId(c.getString(0))
-			.setTitle(c.getString(1))
-			.setDescription(c.getString(2))
-			.setStatus(Status.valueOf(c.getString(3)));
+		LocalTask result = new LocalTask(this);
+		result.setLocalId(c.getLong(0)).setGoogleId(c.getString(1))
+				.setTitle(c.getString(2)).setDescription(c.getString(3))
+				.setStatus(Status.valueOf(c.getString(4)));
 		return result;
 	}
-	
-	public void insert(LocalTask task) throws SQLException {
+
+	public long insert(LocalTask task) throws SQLException {
 		final ContentValues cv = contentValuesFromTask(task);
 		final SQLiteDatabase db = getWritableDatabase();
-		db.insertOrThrow(TableTasks.TABLE_NAME, null, cv);
-		
+		return db.insertOrThrow(TableTasks.TABLE_NAME, null, cv);
 	}
-	
+
 	public void update(LocalTask task) {
 		final SQLiteDatabase db = getWritableDatabase();
 		try {
 			final ContentValues cv = contentValuesFromTask(task);
-			db.update(TableTasks.TABLE_NAME, cv,
-					TableTasks.COLUMN_GOOGLE_ID+"=?",
-					new String[] {task.getGoogleId()});
+			db.update(TableTasks.TABLE_NAME, cv, "ROWID = ?",
+					new String[] { Long.toString(task.getLocalId()) });
 		} finally {
-			
+
 		}
 	}
-	
+
+	public int getTasksCount() {
+		final SQLiteDatabase db = getReadableDatabase();
+		final Cursor cursor = db.query(TableTasks.TABLE_NAME,
+				TableTasks.COLUMNS, null, null, null, null, "ROWID");
+		return cursor.getCount();
+	}
+
+	public LocalTask getTask(long local_id) {
+		final SQLiteDatabase db = getReadableDatabase();
+		final Cursor cursor = db.query(TableTasks.TABLE_NAME,
+				TableTasks.COLUMNS, "ROWID = ?",
+				new String[] { Long.toString(local_id) }, null, null, null);
+		try {
+			if (cursor.getCount() == 1) {
+				cursor.moveToFirst();
+				final LocalTask task = taskFromCursor(cursor);
+				return task;
+			} else {
+				return null;
+			}
+		} finally {
+			cursor.close();
+		}
+	}
+
 	public List<LocalTask> listTasks() {
 		List<LocalTask> tasks = new ArrayList<LocalTask>();
-		
+
 		final SQLiteDatabase db = getReadableDatabase();
-		final Cursor cursor = db.query(TableTasks.TABLE_NAME, TableTasks.COLUMNS,
-				null, null, null, null, "ROWID");
-		
+		final Cursor cursor = db.query(TableTasks.TABLE_NAME,
+				TableTasks.COLUMNS, null, null, null, null, "ROWID");
+
 		try {
 			while (cursor.moveToNext()) {
 				final LocalTask task = taskFromCursor(cursor);

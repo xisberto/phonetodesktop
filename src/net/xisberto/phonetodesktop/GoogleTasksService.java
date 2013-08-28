@@ -14,6 +14,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.xisberto.phonetodesktop.database.DatabaseHelper;
+import net.xisberto.phonetodesktop.model.LocalTask;
+import net.xisberto.phonetodesktop.model.LocalTask.PersistCallback;
+import net.xisberto.phonetodesktop.model.LocalTask.Status;
 import android.app.IntentService;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -41,6 +45,8 @@ public class GoogleTasksService extends IntentService {
 			NOTIFICATION_ERROR = 1,
 			NOTIFICATION_NEED_AUTHORIZE = 2;
 	
+	public static final String EXTRA_LOCAL_TASK_ID = "net.xisberto.phonetodesktop.EXTRA_LOCAL_TASK_ID";
+	
 	protected com.google.api.services.tasks.Tasks client;
 	private GoogleAccountCredential credential;
 	private HttpTransport transport;
@@ -48,6 +54,7 @@ public class GoogleTasksService extends IntentService {
 
 	private Preferences preferences;
 	private String list_id;
+	private long local_id;
 
 	public GoogleTasksService() {
 		super("GoogleTasksService");
@@ -78,6 +85,7 @@ public class GoogleTasksService extends IntentService {
 			try {
 				if (action.equals(Utils.ACTION_SEND_TASK)) {
 					showNotification(NOTIFICATION_SEND);
+					local_id = intent.getLongExtra(EXTRA_LOCAL_TASK_ID, -1);
 					handleActionSend(intent.getStringExtra(Intent.EXTRA_TEXT));
 					cancelNotification(NOTIFICATION_SEND);
 				} else if (action.equals(Utils.ACTION_LIST_TASKS)) {
@@ -177,6 +185,21 @@ public class GoogleTasksService extends IntentService {
 		Task new_task = new Task().setTitle(text);
 		client.tasks().insert(list_id, new_task).execute();
 		preferences.saveLastSentText("");
+		if (local_id != -1) {
+			final DatabaseHelper databaseHelper = DatabaseHelper.getInstance(this);
+			final LocalTask task = databaseHelper.getTask(local_id);
+			task.setStatus(Status.SENT)
+				.persist(new PersistCallback() {
+					@Override
+					public void done() {
+						LocalTask savedTask = databaseHelper.getTask(task.getLocalId());
+						if (savedTask != null) {
+							Utils.log("Sent task id: "+savedTask.getLocalId());
+							Utils.log("Saved status: "+savedTask.getStatus().toString());
+						}
+					}
+				});
+		}
 	}
 	
 	private void handleActionList() throws IOException,
