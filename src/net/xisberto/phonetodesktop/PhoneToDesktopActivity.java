@@ -148,17 +148,20 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.btn_how_it_works:
-			startActivity(new Intent(getApplicationContext(),
+			startActivity(new Intent(this,
 					TutorialActivity.class));
 			break;
 		case R.id.btn_about:
-			startActivity(new Intent(getApplicationContext(),
+			startActivity(new Intent(this,
 					AboutActivity.class));
 			break;
 		case R.id.btn_link_list:
-			startActivity(new Intent(getApplicationContext(),
+			startActivity(new Intent(this,
 					LinkListActivity.class));
 			break;
+		case R.id.btn_wait_list:
+			startActivity(new Intent(this,
+					WaitListActivity.class));
 		case R.id.btn_authorize:
 			updateMainLayout(true);
 			authorize();

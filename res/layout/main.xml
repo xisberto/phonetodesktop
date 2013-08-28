@@ -60,6 +60,13 @@
             android:text="@string/btn_link_list" />
 
         <Button
+            android:id="@+id/btn_wait_list"
+            style="@style/Theme.PhoneToDesktop.HomeButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_wait_list" />
+        
+        <Button
             android:id="@+id/btn_about"
             style="@style/Theme.PhoneToDesktop.HomeButton"
             android:layout_width="wrap_content"

@@ -108,17 +108,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			cursor.close();
 		}
 	}
+	
+	public Cursor listTasksAsCursor() {
+		SQLiteDatabase db = getReadableDatabase();
+		return db.query(TableTasks.TABLE_NAME,
+				TableTasks.COLUMNS, null, null, null, null, TableTasks.COLUMN_LOCAL_ID);
+	}
 
 	public List<LocalTask> listTasks() {
 		List<LocalTask> tasks = new ArrayList<LocalTask>();
 
-		final SQLiteDatabase db = getReadableDatabase();
-		final Cursor cursor = db.query(TableTasks.TABLE_NAME,
-				TableTasks.COLUMNS, null, null, null, null, TableTasks.COLUMN_LOCAL_ID);
-
+		Cursor cursor = listTasksAsCursor();
 		try {
 			while (cursor.moveToNext()) {
-				final LocalTask task = taskFromCursor(cursor);
+				LocalTask task = taskFromCursor(cursor);
 				tasks.add(task);
 			}
 		} finally {

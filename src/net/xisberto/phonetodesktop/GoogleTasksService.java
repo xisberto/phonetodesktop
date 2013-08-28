@@ -16,7 +16,6 @@ import java.util.List;
 
 import net.xisberto.phonetodesktop.database.DatabaseHelper;
 import net.xisberto.phonetodesktop.model.LocalTask;
-import net.xisberto.phonetodesktop.model.LocalTask.PersistCallback;
 import net.xisberto.phonetodesktop.model.LocalTask.Status;
 import android.app.IntentService;
 import android.app.NotificationManager;
@@ -55,6 +54,8 @@ public class GoogleTasksService extends IntentService {
 	private Preferences preferences;
 	private String list_id;
 	private long local_id;
+
+	private LocalTask task;
 
 	public GoogleTasksService() {
 		super("GoogleTasksService");
@@ -96,11 +97,13 @@ public class GoogleTasksService extends IntentService {
 			} catch (UserRecoverableAuthIOException userRecoverableException) {
 				Utils.log(Log.getStackTraceString(userRecoverableException));
 				stopForeground(true);
+				revertTaskToReady();
 				showNotification(NOTIFICATION_NEED_AUTHORIZE);
 			} catch (IOException ioException) {
 				Utils.log(Log.getStackTraceString(ioException));
 				if (action.equals(Utils.ACTION_SEND_TASK)) {
 					stopForeground(true);
+					revertTaskToReady();
 					showNotification(NOTIFICATION_ERROR);
 				} else {
 					Intent broadcast = new Intent(Utils.ACTION_LIST_TASKS);
@@ -110,16 +113,17 @@ public class GoogleTasksService extends IntentService {
 			} catch (NullPointerException npe) {
 				Utils.log(Log.getStackTraceString(npe));
 				stopForeground(true);
+				revertTaskToReady();
 				showNotification(NOTIFICATION_NEED_AUTHORIZE);
 			}
 		}
 	}
-	
+
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
 		Utils.log("Destroying service");
-		cancelNotification(NOTIFICATION_SEND);
+		stopForeground(true);
 	}
 
 	private void showNotification(int notif_id) {
@@ -186,19 +190,10 @@ public class GoogleTasksService extends IntentService {
 		client.tasks().insert(list_id, new_task).execute();
 		preferences.saveLastSentText("");
 		if (local_id != -1) {
-			final DatabaseHelper databaseHelper = DatabaseHelper.getInstance(this);
-			final LocalTask task = databaseHelper.getTask(local_id);
+			DatabaseHelper databaseHelper = DatabaseHelper.getInstance(this);
+			task = databaseHelper.getTask(local_id);
 			task.setStatus(Status.SENT)
-				.persist(new PersistCallback() {
-					@Override
-					public void done() {
-						LocalTask savedTask = databaseHelper.getTask(task.getLocalId());
-						if (savedTask != null) {
-							Utils.log("Sent task id: "+savedTask.getLocalId());
-							Utils.log("Saved status: "+savedTask.getStatus().toString());
-						}
-					}
-				});
+				.persist();
 		}
 	}
 	
@@ -226,4 +221,14 @@ public class GoogleTasksService extends IntentService {
 		client.tasks().delete(list_id, task_id).execute();
 		handleActionList();
 	}
+	
+	private void revertTaskToReady() {
+		if (local_id != -1) {
+			DatabaseHelper databaseHelper = DatabaseHelper.getInstance(this);
+			task = databaseHelper.getTask(local_id);
+			task.setStatus(Status.READY)
+				.persist();
+		}
+	}
+	
 }

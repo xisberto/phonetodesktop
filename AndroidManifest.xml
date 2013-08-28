@@ -38,13 +38,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="net.xisberto.phonetodesktop.TutorialActivity"
+        <activity
+            android:name="net.xisberto.phonetodesktop.TutorialActivity"
             android:parentActivityName="net.xisberto.phonetodesktop.PhoneToDesktopActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="net.xisberto.phonetodesktop.PhoneToDesktopActivity" />
         </activity>
-        <activity android:name="net.xisberto.phonetodesktop.AboutActivity"
+        <activity
+            android:name="net.xisberto.phonetodesktop.AboutActivity"
             android:parentActivityName="net.xisberto.phonetodesktop.PhoneToDesktopActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -76,6 +78,15 @@
             android:name="net.xisberto.phonetodesktop.GoogleTasksService"
             android:exported="false" >
         </service>
+
+        <activity
+            android:name="net.xisberto.phonetodesktop.WaitListActivity"
+            android:label="@string/title_activity_wait_list"
+            android:parentActivityName="net.xisberto.phonetodesktop.PhoneToDesktopActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="net.xisberto.phonetodesktop.PhoneToDesktopActivity" />
+        </activity>
     </application>
 
 </manifest>
