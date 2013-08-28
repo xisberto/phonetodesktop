@@ -77,7 +77,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		final SQLiteDatabase db = getWritableDatabase();
 		try {
 			final ContentValues cv = contentValuesFromTask(task);
-			db.update(TableTasks.TABLE_NAME, cv, "ROWID = ?",
+			db.update(TableTasks.TABLE_NAME, cv, TableTasks.COLUMN_LOCAL_ID + " = ?",
 					new String[] { Long.toString(task.getLocalId()) });
 		} finally {
 
@@ -87,14 +87,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public int getTasksCount() {
 		final SQLiteDatabase db = getReadableDatabase();
 		final Cursor cursor = db.query(TableTasks.TABLE_NAME,
-				TableTasks.COLUMNS, null, null, null, null, "ROWID");
+				TableTasks.COLUMNS, null, null, null, null, TableTasks.COLUMN_LOCAL_ID);
 		return cursor.getCount();
 	}
 
 	public LocalTask getTask(long local_id) {
 		final SQLiteDatabase db = getReadableDatabase();
 		final Cursor cursor = db.query(TableTasks.TABLE_NAME,
-				TableTasks.COLUMNS, "ROWID = ?",
+				TableTasks.COLUMNS, TableTasks.COLUMN_LOCAL_ID + " = ?",
 				new String[] { Long.toString(local_id) }, null, null, null);
 		try {
 			if (cursor.getCount() == 1) {
@@ -114,7 +114,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 		final SQLiteDatabase db = getReadableDatabase();
 		final Cursor cursor = db.query(TableTasks.TABLE_NAME,
-				TableTasks.COLUMNS, null, null, null, null, "ROWID");
+				TableTasks.COLUMNS, null, null, null, null, TableTasks.COLUMN_LOCAL_ID);
 
 		try {
 			while (cursor.moveToNext()) {

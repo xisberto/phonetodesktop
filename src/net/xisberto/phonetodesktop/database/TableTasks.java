@@ -13,16 +13,18 @@ package net.xisberto.phonetodesktop.database;
 public class TableTasks {
 	public static final String
 			TABLE_NAME = "Tasks",
+			COLUMN_LOCAL_ID = "_id",
 			COLUMN_GOOGLE_ID = "google_id",
 			COLUMN_TITLE = "title",
 			COLUMN_DESCRIPTION = "description",
 			COLUMN_STATUS = "status",
 			CREATE_SQL = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " ( " +
+					COLUMN_LOCAL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
 					COLUMN_GOOGLE_ID + " TEXT, " +
 					COLUMN_TITLE + " TEXT, " +
 					COLUMN_DESCRIPTION + " TEXT, " +
 					COLUMN_STATUS + " TEXT )";
 	public static final String[]
-			COLUMNS = {"ROWID", COLUMN_GOOGLE_ID, COLUMN_TITLE, COLUMN_DESCRIPTION, COLUMN_STATUS};
+			COLUMNS = {COLUMN_LOCAL_ID, COLUMN_GOOGLE_ID, COLUMN_TITLE, COLUMN_DESCRIPTION, COLUMN_STATUS};
 	
 }

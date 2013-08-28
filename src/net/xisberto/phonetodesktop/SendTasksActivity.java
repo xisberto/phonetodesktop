@@ -51,7 +51,7 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 			SAVE_CACHE_TITLES = "cache_titles";
 	private static final Pattern urlPattern = Pattern
 			.compile(
-					"\\b((?:https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])",
+					"\\b((?:https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])",
 					Pattern.CASE_INSENSITIVE | Pattern.MULTILINE
 							| Pattern.DOTALL);
 
@@ -274,11 +274,13 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 
 	@Override
 	public void setWaiting() {
+		Utils.log(this.toString());
 		send_fragment.setWaiting(true);
 	}
 
 	@Override
 	public void setDone() {
+		Utils.log(this.toString());
 		send_fragment.setWaiting(false);
 	}
 
@@ -301,7 +303,7 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 
 		cache_unshorten = result;
 		send_fragment.setPreview(text_to_send);
-		localTask.setTitle(text_to_send).setStatus(Status.WAITING)
+		localTask.setTitle(text_to_send).setStatus(Status.READY)
 				.persist(persistCallback);
 	}
 
@@ -330,7 +332,7 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 
 		cache_titles = result;
 		send_fragment.setPreview(text_to_send);
-		localTask.setTitle(text_to_send).setStatus(Status.WAITING)
+		localTask.setTitle(text_to_send).setStatus(Status.READY)
 				.persist(persistCallback);
 	}
 

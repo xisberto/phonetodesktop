@@ -16,7 +16,7 @@ import net.xisberto.phonetodesktop.database.DatabaseHelper;
 public class LocalTask {
 
 	public enum Status {
-		ADDED, PROCESSING_UNSHORTEN, PROCESSING_TITLE, WAITING, SENDING, SENT;
+		ADDED, PROCESSING_UNSHORTEN, PROCESSING_TITLE, READY, SENDING, SENT;
 	}
 	
 	private long local_id;
