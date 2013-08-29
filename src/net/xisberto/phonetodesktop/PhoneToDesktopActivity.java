@@ -74,6 +74,7 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements
 		setContentView(R.layout.main);
 
 		findViewById(R.id.btn_link_list).setOnClickListener(this);
+		findViewById(R.id.btn_wait_list).setOnClickListener(this);
 		findViewById(R.id.btn_how_it_works).setOnClickListener(this);
 		findViewById(R.id.btn_about).setOnClickListener(this);
 		findViewById(R.id.btn_authorize).setOnClickListener(this);
@@ -162,6 +163,7 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements
 		case R.id.btn_wait_list:
 			startActivity(new Intent(this,
 					WaitListActivity.class));
+			break;
 		case R.id.btn_authorize:
 			updateMainLayout(true);
 			authorize();

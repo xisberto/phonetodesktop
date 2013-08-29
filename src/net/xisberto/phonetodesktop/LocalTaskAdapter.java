@@ -16,10 +16,11 @@ public class LocalTaskAdapter extends ResourceCursorAdapter {
 	public void bindView(View view, Context context, Cursor cursor) {
 		TextView task_title = (TextView) view.findViewById(R.id.task_title);
 		TextView task_status = (TextView) view.findViewById(R.id.task_status);
-		
-		task_title.setText(cursor.getString(2));
-		String status = "Id: "+cursor.getString(0)
-				+ " Status: "+cursor.getString(4);
+
+		String title = cursor.getString(2) + cursor.getString(3);
+		task_title.setText(title);
+		String status = "Id: " + cursor.getString(0) + " Status: "
+				+ cursor.getString(4);
 		task_status.setText(status);
 	}
 

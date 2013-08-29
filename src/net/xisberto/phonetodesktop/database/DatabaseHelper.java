@@ -83,6 +83,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 		}
 	}
+	
+	public void delete(LocalTask task) {
+		final SQLiteDatabase db = getWritableDatabase();
+		try {
+			db.delete(TableTasks.TABLE_NAME, TableTasks.COLUMN_LOCAL_ID + " = ?",
+					new String[] { Long.toString(task.getLocalId())});
+		} finally {
+			
+		}
+	}
 
 	public int getTasksCount() {
 		final SQLiteDatabase db = getReadableDatabase();

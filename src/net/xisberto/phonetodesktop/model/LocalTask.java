@@ -11,6 +11,7 @@
 package net.xisberto.phonetodesktop.model;
 
 import android.os.Process;
+import net.xisberto.phonetodesktop.Utils;
 import net.xisberto.phonetodesktop.database.DatabaseHelper;
 
 public class LocalTask {
@@ -31,7 +32,6 @@ public class LocalTask {
 		this.description = "";
 		this.status = Status.ADDED;
 		this.helper = databaseHelper;
-		insert();
 	}
 	
 	public long getLocalId() {
@@ -79,17 +79,11 @@ public class LocalTask {
 		return this;
 	}
 	
-	private void insert() {
-		new PersistThread(
-				helper, this,
-				PersistThread.ACTION_INSERT, null)
-		.start();
-	}
-	
 	public void persist(PersistCallback callback) {
+		int action = (local_id == -1 ? PersistThread.ACTION_INSERT : PersistThread.ACTION_UPDATE);
 		new PersistThread(
 				helper, this,
-				PersistThread.ACTION_UPDATE, callback)
+				action, callback)
 		.start();
 	}
 	
@@ -97,8 +91,15 @@ public class LocalTask {
 		this.persist(null);
 	}
 	
+	public void delete() {
+		new PersistThread(
+				helper, this,
+				PersistThread.ACTION_DELETE, null)
+		.start();
+	}
+	
 	private class PersistThread extends Thread {
-		public static final int ACTION_INSERT = 1, ACTION_UPDATE = 2;
+		public static final int ACTION_INSERT = 1, ACTION_UPDATE = 2, ACTION_DELETE = 3;
 		private DatabaseHelper helper;
 		private LocalTask task;
 		private int action;
@@ -116,11 +117,17 @@ public class LocalTask {
 		public void run() {
 			switch (action) {
 			case ACTION_INSERT:
+				Utils.log("ACTION_INSERT");
 				long id = helper.insert(task);
 				task.setLocalId(id);
 				break;
 			case ACTION_UPDATE:
+				Utils.log("ACTION_UPDATE "+task.local_id);
 				helper.update(task);
+				break;
+			case ACTION_DELETE:
+				Utils.log("ACTION_DELETE "+task.local_id);
+				helper.delete(task);
 				break;
 			}
 			if (callback != null) {

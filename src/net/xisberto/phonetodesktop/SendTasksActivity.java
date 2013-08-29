@@ -171,8 +171,12 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		switch (item.getItemId()) {
 		case R.id.item_send:
 			sendText();
-		case R.id.item_cancel:
 			finish();
+			break;
+		case R.id.item_cancel:
+			localTask.delete();
+			finish();
+			break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -182,8 +186,12 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		switch (whichButton) {
 		case DialogInterface.BUTTON_POSITIVE:
 			sendText();
-		case DialogInterface.BUTTON_NEGATIVE:
 			finish();
+			break;
+		case DialogInterface.BUTTON_NEGATIVE:
+			localTask.delete();
+			finish();
+			break;
 		}
 	}
 
