@@ -197,9 +197,8 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 
 	private void sendText() {
 		Intent service = new Intent(this, GoogleTasksService.class);
-		service.setAction(Utils.ACTION_SEND_TASK);
-		service.putExtra(Intent.EXTRA_TEXT, text_to_send);
-		service.putExtra(GoogleTasksService.EXTRA_LOCAL_TASK_ID, localTask.getLocalId());
+		service.setAction(Utils.ACTION_SEND_SINGLE_TASK);
+		service.putExtra(Utils.EXTRA_TASK_ID, localTask.getLocalId());
 		startService(service);
 
 		localTask.setStatus(Status.SENDING).persist(persistCallback);

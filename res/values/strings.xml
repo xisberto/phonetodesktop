@@ -31,6 +31,7 @@
     <string name="txt_no_links">No link detected</string>
     <string name="txt_error_timeout">Could not access server. Try again later.</string>
     <string name="txt_sending">Sending links</string>
+    <string name="txt_sending_multiple">Sending link %1$d of %2$d</string>
     <string name="txt_error_sending">Could not send text</string>
     <string name="txt_error_try_again">Click here to try again.</string>
     <string name="txt_error_list">Could not get the list. Try again.</string>
@@ -66,5 +67,6 @@ When the text is successfully sent, the notification goes away.</string>
     <string name="txt_confirm">Do you want to delete this item?</string>
     <string name="refresh">Refresh</string>
     <string name="title_activity_wait_list">Waiting List</string>
+    <string name="action_sendall">Send all</string>
 
 </resources>

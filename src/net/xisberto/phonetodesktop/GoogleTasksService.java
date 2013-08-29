@@ -20,8 +20,12 @@ import net.xisberto.phonetodesktop.model.LocalTask.Status;
 import android.app.IntentService;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat.Builder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -44,8 +48,6 @@ public class GoogleTasksService extends IntentService {
 			NOTIFICATION_ERROR = 1,
 			NOTIFICATION_NEED_AUTHORIZE = 2;
 	
-	public static final String EXTRA_LOCAL_TASK_ID = "net.xisberto.phonetodesktop.EXTRA_LOCAL_TASK_ID";
-	
 	protected com.google.api.services.tasks.Tasks client;
 	private GoogleAccountCredential credential;
 	private HttpTransport transport;
@@ -53,9 +55,8 @@ public class GoogleTasksService extends IntentService {
 
 	private Preferences preferences;
 	private String list_id;
-	private long local_id;
 
-	private LocalTask task;
+	private Builder mBuilder;
 
 	public GoogleTasksService() {
 		super("GoogleTasksService");
@@ -83,12 +84,25 @@ public class GoogleTasksService extends IntentService {
 	protected void onHandleIntent(Intent intent) {
 		if (intent != null) {
 			final String action = intent.getAction();
+			long extra_id = intent.getLongExtra(Utils.EXTRA_TASK_ID, -1);
+			long[] tasks_ids = intent.getLongArrayExtra(Utils.EXTRA_TASKS_IDS);
 			try {
-				if (action.equals(Utils.ACTION_SEND_TASK)) {
-					showNotification(NOTIFICATION_SEND);
-					local_id = intent.getLongExtra(EXTRA_LOCAL_TASK_ID, -1);
-					handleActionSend(intent.getStringExtra(Intent.EXTRA_TEXT));
-					cancelNotification(NOTIFICATION_SEND);
+				if (action.equals(Utils.ACTION_SEND_SINGLE_TASK)) {
+					if (isOnline()) {
+						showNotification(NOTIFICATION_SEND);
+						handleActionSend(extra_id);
+						stopForeground(true);
+					} else {
+						revertTaskToReady(extra_id);
+					}
+				} else if (action.equals(Utils.ACTION_SEND_MULTIPLE_TASKS)) {
+					if (isOnline()) {
+						showNotification(NOTIFICATION_SEND);
+						handleActionSendMultiple(tasks_ids);
+						stopForeground(true);
+					} else {
+						revertTaskToReady(tasks_ids);
+					}
 				} else if (action.equals(Utils.ACTION_LIST_TASKS)) {
 					handleActionList();
 				} else if (action.equals(Utils.ACTION_REMOVE_TASK)) {
@@ -97,13 +111,13 @@ public class GoogleTasksService extends IntentService {
 			} catch (UserRecoverableAuthIOException userRecoverableException) {
 				Utils.log(Log.getStackTraceString(userRecoverableException));
 				stopForeground(true);
-				revertTaskToReady();
+				revertTaskToReady(extra_id);
 				showNotification(NOTIFICATION_NEED_AUTHORIZE);
 			} catch (IOException ioException) {
 				Utils.log(Log.getStackTraceString(ioException));
-				if (action.equals(Utils.ACTION_SEND_TASK)) {
+				if (action.equals(Utils.ACTION_SEND_SINGLE_TASK)) {
 					stopForeground(true);
-					revertTaskToReady();
+					revertTaskToReady(extra_id);
 					showNotification(NOTIFICATION_ERROR);
 				} else {
 					Intent broadcast = new Intent(Utils.ACTION_LIST_TASKS);
@@ -113,7 +127,7 @@ public class GoogleTasksService extends IntentService {
 			} catch (NullPointerException npe) {
 				Utils.log(Log.getStackTraceString(npe));
 				stopForeground(true);
-				revertTaskToReady();
+				revertTaskToReady(extra_id);
 				showNotification(NOTIFICATION_NEED_AUTHORIZE);
 			}
 		}
@@ -127,7 +141,7 @@ public class GoogleTasksService extends IntentService {
 	}
 
 	private void showNotification(int notif_id) {
-		NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+		mBuilder = new NotificationCompat.Builder(this)
 				.setWhen(System.currentTimeMillis());
 		
 		Intent intentContent = new Intent();
@@ -138,11 +152,11 @@ public class GoogleTasksService extends IntentService {
 			//Set an empty Intent for the notification
 			pendingContent = PendingIntent.getActivity(
 					this, 0, intentContent, PendingIntent.FLAG_CANCEL_CURRENT);
-			builder.setContentIntent(pendingContent)
+			mBuilder.setContentIntent(pendingContent)
 					.setSmallIcon(android.R.drawable.stat_sys_upload)
 					.setTicker(getString(R.string.txt_sending))
 					.setContentTitle(getString(R.string.txt_sending));
-			startForeground(NOTIFICATION_SEND, builder.build());
+			startForeground(NOTIFICATION_SEND, mBuilder.build());
 			return;
 		case NOTIFICATION_ERROR:
 			//On error, we create an intent to retry the send
@@ -152,7 +166,7 @@ public class GoogleTasksService extends IntentService {
 			intentContent.putExtra(Intent.EXTRA_TEXT, preferences.loadLastSentText());
 			PendingIntent pendingError = PendingIntent.getActivity(
 					this, 0, intentContent, PendingIntent.FLAG_CANCEL_CURRENT);
-			builder.setContentIntent(pendingError)
+			mBuilder.setContentIntent(pendingError)
 					.setAutoCancel(true)
 					.setSmallIcon(android.R.drawable.stat_notify_error)
 					.setTicker(getString(R.string.txt_error_sending))
@@ -165,7 +179,7 @@ public class GoogleTasksService extends IntentService {
 			intentContent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			PendingIntent pendingAuthorize = PendingIntent.getActivity(
 					this, 0, intentContent, PendingIntent.FLAG_CANCEL_CURRENT);
-			builder.setContentIntent(pendingAuthorize)
+			mBuilder.setContentIntent(pendingAuthorize)
 					.setAutoCancel(true)
 					.setSmallIcon(android.R.drawable.stat_notify_error)
 					.setTicker(getString(R.string.txt_error_sending))
@@ -177,28 +191,43 @@ public class GoogleTasksService extends IntentService {
 			break;
 		}
 		((NotificationManager)getSystemService(NOTIFICATION_SERVICE))
-			.notify(notif_id, builder.build());
+			.notify(notif_id, mBuilder.build());
 	}
 
-	private void cancelNotification(int notif_id) {
-		((NotificationManager)getSystemService(NOTIFICATION_SERVICE)).cancel(notif_id);
-	}
-
-	private void handleActionSend(String text) throws IOException,
-			UserRecoverableAuthIOException {
-		Task new_task = new Task().setTitle(text);
-		client.tasks().insert(list_id, new_task).execute();
-		preferences.saveLastSentText("");
-		if (local_id != -1) {
+	private void handleActionSend(long task_local_id)
+			throws UserRecoverableAuthIOException, IOException {
+		if (task_local_id != -1) {
 			DatabaseHelper databaseHelper = DatabaseHelper.getInstance(this);
-			task = databaseHelper.getTask(local_id);
+			LocalTask task = databaseHelper.getTask(task_local_id);
+			
+			Task new_task = new Task().setTitle(task.getTitle());
+			client.tasks().insert(list_id, new_task).execute();
+			
+			preferences.saveLastSentText("");
+			
 			task.setStatus(Status.SENT)
 				.persist();
 		}
 	}
 	
-	private void handleActionList() throws IOException,
-			UserRecoverableAuthIOException {
+	private void handleActionSendMultiple(long[] tasks_ids)
+			throws UserRecoverableAuthIOException, IOException {
+		Intent intent = new Intent(this, WaitListActivity.class);
+		PendingIntent pending = PendingIntent.getActivity(this, 0,
+				intent, PendingIntent.FLAG_UPDATE_CURRENT);
+		mBuilder.setContentIntent(pending);
+		for (int i = 0; i < tasks_ids.length; i++) {
+			String contentText = getString(R.string.txt_sending_multiple);
+			contentText = String.format(contentText, i+1, tasks_ids.length);
+			mBuilder.setContentText(contentText);
+			((NotificationManager)getSystemService(NOTIFICATION_SERVICE))
+				.notify(NOTIFICATION_SEND, mBuilder.build());
+			handleActionSend(tasks_ids[i]);
+		}
+	}
+	
+	private void handleActionList()
+			throws UserRecoverableAuthIOException, IOException {
 		List<Task> list = client.tasks().list(list_id).execute().getItems();
 		
 		if (list != null) {
@@ -216,19 +245,27 @@ public class GoogleTasksService extends IntentService {
 		}
 	}
 	
-	private void handleActionRemove(String task_id) throws IOException,
-			UserRecoverableAuthIOException {
+	private void handleActionRemove(String task_id)
+			throws UserRecoverableAuthIOException, IOException {
 		client.tasks().delete(list_id, task_id).execute();
 		handleActionList();
 	}
 	
-	private void revertTaskToReady() {
-		if (local_id != -1) {
+	private void revertTaskToReady(long... local_ids) {
+		if (local_ids != null) {
 			DatabaseHelper databaseHelper = DatabaseHelper.getInstance(this);
-			task = databaseHelper.getTask(local_id);
-			task.setStatus(Status.READY)
-				.persist();
+			databaseHelper.setStatus(Status.READY, local_ids);
 		}
+	}
+	
+	private boolean isOnline() {
+	    ConnectivityManager cm =
+	        (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+	    NetworkInfo netInfo = cm.getActiveNetworkInfo();
+	    if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+	        return true;
+	    }
+	    return false;
 	}
 	
 }

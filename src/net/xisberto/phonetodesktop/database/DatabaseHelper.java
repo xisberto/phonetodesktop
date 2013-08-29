@@ -70,7 +70,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public long insert(LocalTask task) throws SQLException {
 		final ContentValues cv = contentValuesFromTask(task);
 		final SQLiteDatabase db = getWritableDatabase();
-		return db.insertOrThrow(TableTasks.TABLE_NAME, null, cv);
+		try {
+			long result = db.insertOrThrow(TableTasks.TABLE_NAME, null, cv);
+			return result;
+		} finally {
+		}
 	}
 
 	public void update(LocalTask task) {
@@ -80,7 +84,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			db.update(TableTasks.TABLE_NAME, cv, TableTasks.COLUMN_LOCAL_ID + " = ?",
 					new String[] { Long.toString(task.getLocalId()) });
 		} finally {
-
 		}
 	}
 	
@@ -90,23 +93,46 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			db.delete(TableTasks.TABLE_NAME, TableTasks.COLUMN_LOCAL_ID + " = ?",
 					new String[] { Long.toString(task.getLocalId())});
 		} finally {
-			
+		}
+	}
+	
+	public void setStatus(Status status, long... ids) {
+		if (ids != null && ids.length > 0) {
+			final SQLiteDatabase db = getWritableDatabase();
+			try {
+				ContentValues cv = new ContentValues();
+				String whereClause = TableTasks.COLUMN_LOCAL_ID + " IN (";
+				for (int i = 0; i < ids.length; i ++) {
+					if (i != ids.length-1) {
+						whereClause += ids[i] + ", ";
+					} else {
+						whereClause += ids[i] + ")";
+					}
+				}
+				cv.put(TableTasks.COLUMN_STATUS, status.name());
+				db.update(TableTasks.TABLE_NAME, cv,
+						whereClause, null);
+			} finally {
+			}
 		}
 	}
 
 	public int getTasksCount() {
 		final SQLiteDatabase db = getReadableDatabase();
-		final Cursor cursor = db.query(TableTasks.TABLE_NAME,
-				TableTasks.COLUMNS, null, null, null, null, TableTasks.COLUMN_LOCAL_ID);
-		return cursor.getCount();
+		try {
+			final Cursor cursor = db.query(TableTasks.TABLE_NAME,
+					TableTasks.COLUMNS, null, null, null, null, TableTasks.COLUMN_LOCAL_ID);
+			return cursor.getCount();
+		} finally {
+		}
 	}
 
 	public LocalTask getTask(long local_id) {
 		final SQLiteDatabase db = getReadableDatabase();
-		final Cursor cursor = db.query(TableTasks.TABLE_NAME,
-				TableTasks.COLUMNS, TableTasks.COLUMN_LOCAL_ID + " = ?",
-				new String[] { Long.toString(local_id) }, null, null, null);
 		try {
+			final Cursor cursor = db.query(TableTasks.TABLE_NAME,
+					TableTasks.COLUMNS, TableTasks.COLUMN_LOCAL_ID + " = ?",
+					new String[] { Long.toString(local_id) }, null, null, null);
 			if (cursor.getCount() == 1) {
 				cursor.moveToFirst();
 				final LocalTask task = taskFromCursor(cursor);
@@ -115,20 +141,55 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				return null;
 			}
 		} finally {
-			cursor.close();
 		}
 	}
 	
 	public Cursor listTasksAsCursor() {
+		final SQLiteDatabase db = getReadableDatabase();
+		try {
+			return db.query(TableTasks.TABLE_NAME,
+					TableTasks.COLUMNS, null, null, null, null, TableTasks.COLUMN_LOCAL_ID);
+		} finally {
+		}
+	}
+	
+	public Cursor listTasksAsCursor(Status status) {
+		final SQLiteDatabase db = getReadableDatabase();
+		try {
+			return db.query(TableTasks.TABLE_NAME, TableTasks.COLUMNS,
+					TableTasks.COLUMN_STATUS + " = ?",
+					new String[] { status.name() },
+					null, null, null);
+		} finally {
+		}
+	}
+	
+	public Cursor listTaskQueueAsCursor() {
 		SQLiteDatabase db = getReadableDatabase();
-		return db.query(TableTasks.TABLE_NAME,
-				TableTasks.COLUMNS, null, null, null, null, TableTasks.COLUMN_LOCAL_ID);
+		return db.query(TableTasks.TABLE_NAME, TableTasks.COLUMNS,
+				TableTasks.COLUMN_STATUS + " != ?",
+				new String[] { Status.SENT.name() },
+				null, null, null);
 	}
 
 	public List<LocalTask> listTasks() {
 		List<LocalTask> tasks = new ArrayList<LocalTask>();
 
 		Cursor cursor = listTasksAsCursor();
+		try {
+			while (cursor.moveToNext()) {
+				LocalTask task = taskFromCursor(cursor);
+				tasks.add(task);
+			}
+		} finally {
+			cursor.close();
+		}
+		return tasks;
+	}
+	
+	public List<LocalTask> listTasks(Status status) {
+		List<LocalTask> tasks = new ArrayList<LocalTask>();
+		Cursor cursor = listTasksAsCursor(status);
 		try {
 			while (cursor.moveToNext()) {
 				LocalTask task = taskFromCursor(cursor);

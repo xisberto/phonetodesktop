@@ -24,7 +24,8 @@ public class Utils {
 			ACTION_AUTHENTICATE = "net.xisberto.phonetodesktop.action.AUTHENTICATE",
 			ACTION_LOAD_LISTS = "net.xisberto.phonetodesktop.action.LOAD_LISTS",
 			ACTION_SAVE_LIST = "net.xisberto.phonetodesktop.action.SAVE_LISTS",
-			ACTION_SEND_TASK = "net.xisberto.phonetodesktop.action.SEND_TASK",
+			ACTION_SEND_SINGLE_TASK = "net.xisberto.phonetodesktop.action.SEND_SINGLE_TASK",
+			ACTION_SEND_MULTIPLE_TASKS = "net.xisberto.phonetodesktop.action.SEND_MULTIPLE_TASKS",
 			ACTION_LIST_TASKS = "net.xisberto.phonetodesktop.action.LIST_TASKS",
 			ACTION_REMOVE_TASK = "net.xisberto.phonetodesktop.action.REMOVE_TASK",
 			ACTION_SHOW_AVAILABILITY_ERROR = "net.xisberto.phonetodesktop.action.SHOW_AVAILABILITY_ERROR",
@@ -38,6 +39,7 @@ public class Utils {
 			EXTRA_IDS = "net.xisberto.phonetodesktop.extra.IDS",
 			EXTRA_ERROR_TEXT = "net.xisberto.phonetodesktop.extra.ERROR_TEXT",
 			EXTRA_TASK_ID = "net.xisberto.phonetodesktop.extra.TASK_ID",
+			EXTRA_TASKS_IDS = "net.xisberto.phonetodesktop.extra.TASKS_IDS",
 			LIST_TITLE = "PhoneToDesktop";
 	
 	public static void log(String message) {
