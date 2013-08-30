@@ -148,7 +148,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		final SQLiteDatabase db = getReadableDatabase();
 		try {
 			return db.query(TableTasks.TABLE_NAME,
-					TableTasks.COLUMNS, null, null, null, null, TableTasks.COLUMN_LOCAL_ID);
+					TableTasks.COLUMNS,
+					null, null, null, null,
+					TableTasks.COLUMN_LOCAL_ID + " DESC");
 		} finally {
 		}
 	}

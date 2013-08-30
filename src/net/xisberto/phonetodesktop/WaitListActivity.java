@@ -1,17 +1,30 @@
 package net.xisberto.phonetodesktop;
 
 import net.xisberto.phonetodesktop.database.DatabaseHelper;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.LocalBroadcastManager;
 
 import com.actionbarsherlock.app.SherlockListActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
 public class WaitListActivity extends SherlockListActivity {
+	LocalTaskAdapter adapter;
+	BroadcastReceiver receiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			Utils.log("WaitListActivity received broadcast");
+			new ListLocalTask().execute();
+		}
+	};
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -19,9 +32,20 @@ public class WaitListActivity extends SherlockListActivity {
 		Utils.log("Thread id: "+android.os.Process.myTid());
 		Utils.log(" priority "+ android.os.Process.getThreadPriority(android.os.Process.myTid()));
 		
-		ListLocalTask tasker = new ListLocalTask();
-		tasker.execute();
-		
+		new ListLocalTask().execute();
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		LocalBroadcastManager.getInstance(this).registerReceiver(
+				receiver, new IntentFilter(Utils.ACTION_LIST_LOCAL_TASKS));
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
 	}
 
 	@Override
@@ -66,8 +90,12 @@ public class WaitListActivity extends SherlockListActivity {
 		protected void onPostExecute(Cursor result) {
 			switch (action) {
 			case ACTION_LIST:
-				getListView().setAdapter(
-						new LocalTaskAdapter(WaitListActivity.this, result));
+				if (adapter == null) {
+					adapter = new LocalTaskAdapter(WaitListActivity.this, result);
+					getListView().setAdapter(adapter);
+				} else {
+					adapter.changeCursor(result);
+				}
 				break;
 			case ACTION_SEND_ALL:
 				if (result.getCount() == 0) {

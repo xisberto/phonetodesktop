@@ -223,6 +223,8 @@ public class GoogleTasksService extends IntentService {
 			((NotificationManager)getSystemService(NOTIFICATION_SERVICE))
 				.notify(NOTIFICATION_SEND, mBuilder.build());
 			handleActionSend(tasks_ids[i]);
+			LocalBroadcastManager.getInstance(this)
+				.sendBroadcast(new Intent(Utils.ACTION_LIST_LOCAL_TASKS));
 		}
 	}
 	

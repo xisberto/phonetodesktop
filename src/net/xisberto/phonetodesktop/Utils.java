@@ -27,6 +27,7 @@ public class Utils {
 			ACTION_SEND_SINGLE_TASK = "net.xisberto.phonetodesktop.action.SEND_SINGLE_TASK",
 			ACTION_SEND_MULTIPLE_TASKS = "net.xisberto.phonetodesktop.action.SEND_MULTIPLE_TASKS",
 			ACTION_LIST_TASKS = "net.xisberto.phonetodesktop.action.LIST_TASKS",
+			ACTION_LIST_LOCAL_TASKS = "net.xisberto.phonetodesktop.action.LIST_LOCAL_TASKS",
 			ACTION_REMOVE_TASK = "net.xisberto.phonetodesktop.action.REMOVE_TASK",
 			ACTION_SHOW_AVAILABILITY_ERROR = "net.xisberto.phonetodesktop.action.SHOW_AVAILABILITY_ERROR",
 			ACTION_SHOW_USER_RECOVERABLE = "net.xisberto.phonetodesktop.action.SHOW_USER_RECOVERABLE",
