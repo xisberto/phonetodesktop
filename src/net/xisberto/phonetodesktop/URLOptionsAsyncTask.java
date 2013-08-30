@@ -65,7 +65,7 @@ public class URLOptionsAsyncTask extends AsyncTask<String, Void, String[]> {
 				return null;
 			}
 		} catch (IOException ioe) {
-			Log.e(URLOptionsAsyncTask.class.getName(), ioe.getMessage());
+			Log.e(URLOptionsAsyncTask.class.getName(), Log.getStackTraceString(ioe));
 			return null;
 		} catch (NullPointerException npe) {
 			Log.e(URLOptionsAsyncTask.class.getName(), Log.getStackTraceString(npe));
