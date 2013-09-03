@@ -51,7 +51,7 @@ public class LocalTask {
 		this.google_id = "";
 		this.title = "";
 		this.description = "";
-		this.options = EnumSet.of(null);
+		this.options = EnumSet.noneOf(Options.class);
 		this.status = Status.ADDED;
 		this.helper = databaseHelper;
 	}

@@ -19,8 +19,8 @@ public class LocalTaskAdapter extends ResourceCursorAdapter {
 
 		String title = cursor.getString(2) + cursor.getString(3);
 		task_title.setText(title);
-		String status = "Id: " + cursor.getString(0) + " Status: "
-				+ cursor.getString(4);
+		String status = "Options: " + cursor.getInt(4) + " Status: "
+				+ cursor.getString(5);
 		task_status.setText(status);
 	}
 
