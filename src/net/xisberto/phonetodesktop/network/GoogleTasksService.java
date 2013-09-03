@@ -19,7 +19,6 @@ import net.xisberto.phonetodesktop.Preferences;
 import net.xisberto.phonetodesktop.R;
 import net.xisberto.phonetodesktop.Utils;
 import net.xisberto.phonetodesktop.WaitListActivity;
-import net.xisberto.phonetodesktop.R.string;
 import net.xisberto.phonetodesktop.database.DatabaseHelper;
 import net.xisberto.phonetodesktop.model.LocalTask;
 import net.xisberto.phonetodesktop.model.LocalTask.Status;
@@ -93,7 +92,12 @@ public class GoogleTasksService extends IntentService {
 					if (isOnline()) {
 						startForeground(NOTIFICATION_SEND,
 								buildNotification(NOTIFICATION_SEND).build());
-						handleActionSend(extra_id);
+
+						DatabaseHelper databaseHelper = DatabaseHelper
+								.getInstance(this);
+						LocalTask task = databaseHelper.getTask(extra_id);
+						handleActionSend(task);
+
 						stopForeground(true);
 					} else {
 						revertTaskToReady(extra_id);
@@ -158,7 +162,7 @@ public class GoogleTasksService extends IntentService {
 	private NotificationCompat.Builder buildNotification(int notif_id) {
 		Builder builder = new NotificationCompat.Builder(this).setWhen(System
 				.currentTimeMillis());
-		//The default notification send the user to the waiting list
+		// The default notification send the user to the waiting list
 		Intent intentContent = new Intent(this, WaitListActivity.class);
 		intentContent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
 				| Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -180,7 +184,8 @@ public class GoogleTasksService extends IntentService {
 					.setContentText(getString(R.string.txt_error_try_again));
 			return builder;
 		case NOTIFICATION_NEED_AUTHORIZE:
-			//When authorization is need, send the user to authorization process
+			// When authorization is need, send the user to authorization
+			// process
 			intentContent.setClass(this, PhoneToDesktopActivity.class);
 			intentContent.setAction(Utils.ACTION_AUTHENTICATE);
 			intentContent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
@@ -199,32 +204,36 @@ public class GoogleTasksService extends IntentService {
 		}
 	}
 
-	private void handleActionSend(long task_local_id)
+	private void handleActionSend(LocalTask task)
 			throws UserRecoverableAuthIOException, IOException {
-		if (task_local_id != -1) {
-			DatabaseHelper databaseHelper = DatabaseHelper.getInstance(this);
-			LocalTask task = databaseHelper.getTask(task_local_id);
 
-			task.setStatus(Status.SENDING).persist();
+		processOptions(task);
 
-			Task new_task = new Task().setTitle(task.getTitle());
-			client.tasks().insert(list_id, new_task).execute();
+		task.setStatus(Status.SENDING).persist();
 
-			task.setStatus(Status.SENT).persist();
-		}
+		Task new_task = new Task().setTitle(task.getTitle());
+		client.tasks().insert(list_id, new_task).execute();
+
+		task.setStatus(Status.SENT).persist();
 	}
 
 	private void handleActionSendMultiple(long... tasks_ids)
 			throws UserRecoverableAuthIOException, IOException {
 		Builder builder = buildNotification(NOTIFICATION_SEND);
 
-		for (int i = 0; i < tasks_ids.length; i++) {
+		int i = 0;
+		for (long task_id : tasks_ids) {
 			String contentText = getString(R.string.txt_sending_multiple);
 			contentText = String.format(contentText, i + 1, tasks_ids.length);
 			builder.setContentText(contentText);
 			((NotificationManager) getSystemService(NOTIFICATION_SERVICE))
 					.notify(NOTIFICATION_SEND, builder.build());
-			handleActionSend(tasks_ids[i]);
+
+			DatabaseHelper databaseHelper = DatabaseHelper.getInstance(this);
+			LocalTask task = databaseHelper.getTask(task_id);
+
+			handleActionSend(task);
+
 			LocalBroadcastManager.getInstance(this).sendBroadcast(
 					new Intent(Utils.ACTION_LIST_LOCAL_TASKS));
 		}
@@ -259,6 +268,38 @@ public class GoogleTasksService extends IntentService {
 		if (local_ids != null) {
 			DatabaseHelper databaseHelper = DatabaseHelper.getInstance(this);
 			databaseHelper.setStatus(Status.READY, local_ids);
+		}
+	}
+
+	private void processOptions(LocalTask task) throws IOException {
+		URLOptions urlOptions = new URLOptions();
+		String[] parts;
+		switch (task.getStatus()) {
+		case PROCESSING_UNSHORTEN:
+			parts = urlOptions.unshorten(task.getTitle());
+			task.setTitle(Utils.replace(task.getTitle(), parts));
+			if (!task.hasOption(LocalTask.OPTION_GETTITLES)) {
+				task.setStatus(Status.READY).persist();
+				break;
+			}
+		case PROCESSING_TITLE:
+			parts = urlOptions.getTitles(task.getTitle());
+			task.setTitle(Utils.appendInBrackets(task.getTitle(), parts))
+					.setStatus(Status.READY).persist();
+			break;
+		case READY:
+			if (task.hasOption(LocalTask.OPTION_UNSHORTEN)) {
+				task.setStatus(Status.PROCESSING_UNSHORTEN).persist();
+				parts = urlOptions.unshorten(task.getTitle());
+				task.setTitle(Utils.replace(task.getTitle(), parts));
+			}
+			if (task.hasOption(LocalTask.OPTION_GETTITLES)) {
+				task.setStatus(Status.PROCESSING_TITLE).persist();
+				parts = urlOptions.getTitles(task.getTitle());
+				task.setTitle(Utils.appendInBrackets(task.getTitle(), parts));
+			}
+			task.setStatus(Status.READY).persist();
+			break;
 		}
 	}
 

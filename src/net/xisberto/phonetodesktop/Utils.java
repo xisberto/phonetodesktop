@@ -13,6 +13,8 @@ package net.xisberto.phonetodesktop;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.util.Log;
 
@@ -57,5 +59,35 @@ public class Utils {
 			e.printStackTrace();
 			return -1;
 		}
+	}
+
+	public static final Pattern urlPattern = Pattern
+	.compile(
+			"\\b((?:https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])",
+			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE
+					| Pattern.DOTALL);
+	
+	public static String appendInBrackets(String text, String[] parts) {
+		int index = 0;
+		Matcher matcher = Utils.urlPattern.matcher(text);
+		while (matcher.find()) {
+			if (!matcher.group().equals(parts[index])) {
+				// don't replace when we have the URL and not a title
+				text = text.replace(matcher.group(),
+						matcher.group() + " [" + parts[index] + "]");
+			}
+			index++;
+		}
+		return text;
+	}
+	
+	public static String replace(String text, String[] parts) {
+		int index = 0;
+		Matcher matcher = Utils.urlPattern.matcher(text);
+		while (matcher.find()) {
+			text = text.replace(matcher.group(), parts[index]);
+			index++;
+		}
+		return text;
 	}
 }

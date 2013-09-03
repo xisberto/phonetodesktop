@@ -11,7 +11,6 @@
 package net.xisberto.phonetodesktop;
 
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import net.xisberto.phonetodesktop.database.DatabaseHelper;
 import net.xisberto.phonetodesktop.model.LocalTask;
@@ -51,12 +50,6 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 	private URLOptionsAsyncTask async_titles;
 	private static final String SAVE_CACHE_UNSHORTEN = "cache_unshorten",
 			SAVE_CACHE_TITLES = "cache_titles";
-	private static final Pattern urlPattern = Pattern
-			.compile(
-					"\\b((?:https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])",
-					Pattern.CASE_INSENSITIVE | Pattern.MULTILINE
-							| Pattern.DOTALL);
-
 	private PersistCallback persistCallback = new PersistCallback() {
 		@Override
 		public void done() {
@@ -221,7 +214,7 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 	 */
 	private String filterLinks(String text) {
 		String result = "";
-		Matcher matcher = urlPattern.matcher(text);
+		Matcher matcher = Utils.urlPattern.matcher(text);
 		while (matcher.find()) {
 			result += matcher.group() + " ";
 		}
@@ -303,13 +296,8 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 			send_fragment.cb_unshorten.setChecked(false);
 			return;
 		}
-		int index = 0;
-		Matcher matcher = urlPattern.matcher(text_to_send);
-		while (matcher.find()) {
-			text_to_send = text_to_send.replace(matcher.group(), result[index]);
-			index++;
-		}
-
+		text_to_send = Utils.replace(text_to_send, result);
+		
 		cache_unshorten = result;
 		send_fragment.setPreview(text_to_send);
 		localTask.setTitle(text_to_send).setStatus(Status.READY)
@@ -328,16 +316,7 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		}
 
 		Utils.log("Got " + result.length + " titles");
-		int index = 0;
-		Matcher matcher = urlPattern.matcher(text_to_send);
-		while (matcher.find()) {
-			if (!matcher.group().equals(result[index])) {
-				// don't replace when we have the URL and not a title
-				text_to_send = text_to_send.replace(matcher.group(),
-						matcher.group() + " [" + result[index] + "]");
-			}
-			index++;
-		}
+		text_to_send = Utils.appendInBrackets(text_to_send, result);
 
 		cache_titles = result;
 		send_fragment.setPreview(text_to_send);
