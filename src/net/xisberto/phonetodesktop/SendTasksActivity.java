@@ -14,6 +14,7 @@ import java.util.regex.Matcher;
 
 import net.xisberto.phonetodesktop.database.DatabaseHelper;
 import net.xisberto.phonetodesktop.model.LocalTask;
+import net.xisberto.phonetodesktop.model.LocalTask.Options;
 import net.xisberto.phonetodesktop.model.LocalTask.PersistCallback;
 import net.xisberto.phonetodesktop.model.LocalTask.Status;
 import net.xisberto.phonetodesktop.network.GoogleTasksService;
@@ -232,16 +233,19 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		}
 
 		if (send_fragment.cb_only_links.isChecked()) {
+			localTask.addOption(Options.OPTION_ONLY_LINKS);
 			text_to_send = links;
 		} else {
 			text_to_send = text_from_extra;
 		}
 
 		if (send_fragment.cb_unshorten.isChecked()) {
+			localTask.addOption(Options.OPTION_UNSHORTEN).persist();
 			unshortenLinks(links);
 		}
 
 		if (send_fragment.cb_get_titles.isChecked()) {
+			localTask.addOption(Options.OPTION_GETTITLES).persist();
 			getTitles(links);
 		}
 
@@ -300,7 +304,9 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		
 		cache_unshorten = result;
 		send_fragment.setPreview(text_to_send);
-		localTask.setTitle(text_to_send).setStatus(Status.READY)
+		localTask.setTitle(text_to_send)
+				.setStatus(Status.READY)
+				.removeOption(Options.OPTION_UNSHORTEN)
 				.persist(persistCallback);
 	}
 
@@ -320,7 +326,9 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 
 		cache_titles = result;
 		send_fragment.setPreview(text_to_send);
-		localTask.setTitle(text_to_send).setStatus(Status.READY)
+		localTask.setTitle(text_to_send)
+				.setStatus(Status.READY)
+				.removeOption(Options.OPTION_GETTITLES)
 				.persist(persistCallback);
 	}
 

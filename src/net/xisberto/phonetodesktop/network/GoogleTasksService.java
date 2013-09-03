@@ -21,6 +21,7 @@ import net.xisberto.phonetodesktop.Utils;
 import net.xisberto.phonetodesktop.WaitListActivity;
 import net.xisberto.phonetodesktop.database.DatabaseHelper;
 import net.xisberto.phonetodesktop.model.LocalTask;
+import net.xisberto.phonetodesktop.model.LocalTask.Options;
 import net.xisberto.phonetodesktop.model.LocalTask.Status;
 import android.app.IntentService;
 import android.app.NotificationManager;
@@ -275,30 +276,35 @@ public class GoogleTasksService extends IntentService {
 		URLOptions urlOptions = new URLOptions();
 		String[] parts;
 		switch (task.getStatus()) {
+		case READY:
+			if (task.hasOption(Options.OPTION_UNSHORTEN)) {
+				task.setStatus(Status.PROCESSING_UNSHORTEN).persist();
+				parts = urlOptions.unshorten(task.getTitle());
+				task.setTitle(Utils.replace(task.getTitle(), parts))
+						.removeOption(Options.OPTION_UNSHORTEN);
+			}
+			if (task.hasOption(Options.OPTION_GETTITLES)) {
+				task.setStatus(Status.PROCESSING_TITLE).persist();
+				parts = urlOptions.getTitles(task.getTitle());
+				task.setTitle(Utils.appendInBrackets(task.getTitle(), parts))
+						.removeOption(Options.OPTION_GETTITLES);
+			}
+			task.setStatus(Status.READY).persist();
+			break;
 		case PROCESSING_UNSHORTEN:
 			parts = urlOptions.unshorten(task.getTitle());
-			task.setTitle(Utils.replace(task.getTitle(), parts));
-			if (!task.hasOption(LocalTask.OPTION_GETTITLES)) {
+			task.setTitle(Utils.replace(task.getTitle(), parts))
+					.removeOption(Options.OPTION_UNSHORTEN);
+			if (!task.hasOption(Options.OPTION_GETTITLES)) {
 				task.setStatus(Status.READY).persist();
 				break;
 			}
 		case PROCESSING_TITLE:
 			parts = urlOptions.getTitles(task.getTitle());
 			task.setTitle(Utils.appendInBrackets(task.getTitle(), parts))
-					.setStatus(Status.READY).persist();
-			break;
-		case READY:
-			if (task.hasOption(LocalTask.OPTION_UNSHORTEN)) {
-				task.setStatus(Status.PROCESSING_UNSHORTEN).persist();
-				parts = urlOptions.unshorten(task.getTitle());
-				task.setTitle(Utils.replace(task.getTitle(), parts));
-			}
-			if (task.hasOption(LocalTask.OPTION_GETTITLES)) {
-				task.setStatus(Status.PROCESSING_TITLE).persist();
-				parts = urlOptions.getTitles(task.getTitle());
-				task.setTitle(Utils.appendInBrackets(task.getTitle(), parts));
-			}
-			task.setStatus(Status.READY).persist();
+					.removeOption(Options.OPTION_GETTITLES)
+					.setStatus(Status.READY)
+					.persist();
 			break;
 		}
 	}
