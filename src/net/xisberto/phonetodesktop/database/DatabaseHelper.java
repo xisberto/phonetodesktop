@@ -46,7 +46,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -55,7 +54,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		cv.put(TableTasks.COLUMN_GOOGLE_ID, task.getGoogleId());
 		cv.put(TableTasks.COLUMN_TITLE, task.getTitle());
 		cv.put(TableTasks.COLUMN_DESCRIPTION, task.getDescription());
-		cv.put(TableTasks.COLUMN_OPTIONS, task.getOptions());
+		cv.put(TableTasks.COLUMN_OPTIONS, task.getOptionsAsInt());
 		cv.put(TableTasks.COLUMN_STATUS, task.getStatus().name());
 		return cv;
 	}

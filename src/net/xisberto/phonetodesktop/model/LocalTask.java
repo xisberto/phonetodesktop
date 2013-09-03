@@ -10,15 +10,31 @@
  ******************************************************************************/
 package net.xisberto.phonetodesktop.model;
 
+import java.util.EnumSet;
+
 import net.xisberto.phonetodesktop.Utils;
 import net.xisberto.phonetodesktop.database.DatabaseHelper;
 import android.os.Process;
 
 public class LocalTask {
-	public static final int
-	OPTION_ONLY_LINKS = 1,
-	OPTION_UNSHORTEN = 2,
-	OPTION_GETTITLES = 4;
+	
+	public enum Options {
+		OPTION_ONLY_LINKS(1),
+		OPTION_UNSHORTEN(2),
+		OPTION_GETTITLES(4);
+		private int value;
+		private Options(int val) {
+			value = val;
+		}
+		private static Options fromValue(int i) {
+			for (Options opt : values()) {
+				if (opt.value == i) {
+					return opt;
+				}
+			}
+			return null;
+		}
+	}
 	
 	public enum Status {
 		ADDED, PROCESSING_UNSHORTEN, PROCESSING_TITLE, READY, SENDING, SENT;
@@ -26,7 +42,7 @@ public class LocalTask {
 	
 	private long local_id;
 	private String description, title, google_id;
-	private int options;
+	private EnumSet<Options> options;
 	private Status status;
 	private DatabaseHelper helper;
 	
@@ -35,7 +51,7 @@ public class LocalTask {
 		this.google_id = "";
 		this.title = "";
 		this.description = "";
-		this.options = 0;
+		this.options = EnumSet.of(null);
 		this.status = Status.ADDED;
 		this.helper = databaseHelper;
 	}
@@ -76,17 +92,50 @@ public class LocalTask {
 		return this;
 	}
 	
-	public int getOptions() {
+	public boolean hasOption(Options option) {
+		return options.contains(option);
+	}
+	
+	public EnumSet<Options> getOptions() {
 		return options;
 	}
 	
-	public LocalTask setOptions(int options) {
-		this.options = options;
+	public int getOptionsAsInt() {
+		if (options.size() == 0) {
+			return 0;
+		}
+		int result = 0;
+		for (Options opt : options) {
+			result |= opt.value;
+		}
+		return result;
+	}
+	
+	public LocalTask setOptions(int opts) {
+		for (Options option : options) {
+			if ((opts & option.value) == option.value) {
+				addOption(option);
+			}
+		}
 		return this;
 	}
 	
-	public boolean hasOption(int option) {
-		return ((options & option) == option);
+	public LocalTask addOption(Options option) {
+		options.add(option);
+		return this;
+	}
+	
+	public LocalTask addOption(int opt) {
+		Options new_opt = Options.fromValue(opt);
+		if (new_opt != null) {
+			options.add(new_opt);
+		}
+		return this;
+	}
+	
+	public LocalTask removeOption(Options option) {
+		options.remove(option);
+		return this;
 	}
 	
 	public Status getStatus() {
