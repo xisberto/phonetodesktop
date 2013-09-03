@@ -33,12 +33,12 @@ public class WaitListActivity extends SherlockListActivity {
 		Utils.log("Thread id: "+android.os.Process.myTid());
 		Utils.log(" priority "+ android.os.Process.getThreadPriority(android.os.Process.myTid()));
 		
-		new ListLocalTask().execute();
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
+		new ListLocalTask().execute();
 		LocalBroadcastManager.getInstance(this).registerReceiver(
 				receiver, new IntentFilter(Utils.ACTION_LIST_LOCAL_TASKS));
 	}
