@@ -1,6 +1,7 @@
 package net.xisberto.phonetodesktop;
 
 import net.xisberto.phonetodesktop.database.DatabaseHelper;
+import net.xisberto.phonetodesktop.network.GoogleTasksService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;

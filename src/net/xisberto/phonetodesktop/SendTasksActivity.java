@@ -13,11 +13,13 @@ package net.xisberto.phonetodesktop;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.xisberto.phonetodesktop.URLOptionsAsyncTask.URLOptionsListener;
 import net.xisberto.phonetodesktop.database.DatabaseHelper;
 import net.xisberto.phonetodesktop.model.LocalTask;
 import net.xisberto.phonetodesktop.model.LocalTask.PersistCallback;
 import net.xisberto.phonetodesktop.model.LocalTask.Status;
+import net.xisberto.phonetodesktop.network.GoogleTasksService;
+import net.xisberto.phonetodesktop.network.URLOptionsAsyncTask;
+import net.xisberto.phonetodesktop.network.URLOptionsAsyncTask.URLOptionsListener;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;

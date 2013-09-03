@@ -76,7 +76,7 @@
         </activity>
 
         <service
-            android:name="net.xisberto.phonetodesktop.GoogleTasksService"
+            android:name="net.xisberto.phonetodesktop.network.GoogleTasksService"
             android:exported="false" >
         </service>
 

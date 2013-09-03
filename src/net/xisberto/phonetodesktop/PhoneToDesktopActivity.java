@@ -12,7 +12,8 @@ package net.xisberto.phonetodesktop;
 
 import java.util.List;
 
-import net.xisberto.phonetodesktop.ListAsyncTask.TaskListTaskListener;
+import net.xisberto.phonetodesktop.network.ListAsyncTask;
+import net.xisberto.phonetodesktop.network.ListAsyncTask.TaskListTaskListener;
 import android.accounts.AccountManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
