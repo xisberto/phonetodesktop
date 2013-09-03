@@ -55,15 +55,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		cv.put(TableTasks.COLUMN_GOOGLE_ID, task.getGoogleId());
 		cv.put(TableTasks.COLUMN_TITLE, task.getTitle());
 		cv.put(TableTasks.COLUMN_DESCRIPTION, task.getDescription());
+		cv.put(TableTasks.COLUMN_OPTIONS, task.getOptions());
 		cv.put(TableTasks.COLUMN_STATUS, task.getStatus().name());
 		return cv;
 	}
 
 	private LocalTask taskFromCursor(Cursor c) {
 		LocalTask result = new LocalTask(this);
-		result.setLocalId(c.getLong(0)).setGoogleId(c.getString(1))
-				.setTitle(c.getString(2)).setDescription(c.getString(3))
-				.setStatus(Status.valueOf(c.getString(4)));
+		result
+				.setLocalId(c.getLong(0))
+				.setGoogleId(c.getString(1))
+				.setTitle(c.getString(2))
+				.setDescription(c.getString(3))
+				.setOptions(c.getInt(4))
+				.setStatus(Status.valueOf(c.getString(5)));
 		return result;
 	}
 

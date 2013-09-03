@@ -10,18 +10,23 @@
  ******************************************************************************/
 package net.xisberto.phonetodesktop.model;
 
-import android.os.Process;
 import net.xisberto.phonetodesktop.Utils;
 import net.xisberto.phonetodesktop.database.DatabaseHelper;
+import android.os.Process;
 
 public class LocalTask {
-
+	public static final int
+	OPTION_ONLY_LINKS = 1,
+	OPTION_UNSHORTEN = 2,
+	OPTION_GETTITLES = 4;
+	
 	public enum Status {
 		ADDED, PROCESSING_UNSHORTEN, PROCESSING_TITLE, READY, SENDING, SENT;
 	}
 	
 	private long local_id;
 	private String description, title, google_id;
+	private int options;
 	private Status status;
 	private DatabaseHelper helper;
 	
@@ -30,6 +35,7 @@ public class LocalTask {
 		this.google_id = "";
 		this.title = "";
 		this.description = "";
+		this.options = 0;
 		this.status = Status.ADDED;
 		this.helper = databaseHelper;
 	}
@@ -69,7 +75,20 @@ public class LocalTask {
 		this.google_id = id;
 		return this;
 	}
-
+	
+	public int getOptions() {
+		return options;
+	}
+	
+	public LocalTask setOptions(int options) {
+		this.options = options;
+		return this;
+	}
+	
+	public boolean hasOption(int option) {
+		return ((options & option) == option);
+	}
+	
 	public Status getStatus() {
 		return status;
 	}
