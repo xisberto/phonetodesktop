@@ -292,7 +292,8 @@ public class GoogleTasksService extends IntentService {
 			task.setStatus(Status.READY).persist();
 			break;
 		case PROCESSING_UNSHORTEN:
-			parts = urlOptions.unshorten(task.getTitle());
+			parts = Utils.filterLinks(task.getTitle()).split(" ");
+			parts = urlOptions.unshorten(parts);
 			task.setTitle(Utils.replace(task.getTitle(), parts))
 					.removeOption(Options.OPTION_UNSHORTEN);
 			if (!task.hasOption(Options.OPTION_GETTITLES)) {
@@ -300,7 +301,8 @@ public class GoogleTasksService extends IntentService {
 				break;
 			}
 		case PROCESSING_TITLE:
-			parts = urlOptions.getTitles(task.getTitle());
+			parts = Utils.filterLinks(task.getTitle()).split(" ");
+			parts = urlOptions.getTitles(parts);
 			task.setTitle(Utils.appendInBrackets(task.getTitle(), parts))
 					.removeOption(Options.OPTION_GETTITLES)
 					.setStatus(Status.READY)
