@@ -90,4 +90,24 @@ public class Utils {
 		}
 		return text;
 	}
+
+
+	/**
+	 * Filter the URLs in {@code text} and return them separated by spaces
+	 * 
+	 * @param text
+	 *            the text to search the URLs in
+	 * @return the found URLs separated by space
+	 */
+	public static String filterLinks(String text) {
+		String result = "";
+		Matcher matcher = Utils.urlPattern.matcher(text);
+		while (matcher.find()) {
+			result += matcher.group() + " ";
+		}
+	
+		return result;
+	}
+
+
 }

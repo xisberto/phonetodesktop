@@ -10,8 +10,6 @@
  ******************************************************************************/
 package net.xisberto.phonetodesktop;
 
-import java.util.regex.Matcher;
-
 import net.xisberto.phonetodesktop.database.DatabaseHelper;
 import net.xisberto.phonetodesktop.model.LocalTask;
 import net.xisberto.phonetodesktop.model.LocalTask.Options;
@@ -155,6 +153,13 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 	}
 
 	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		//TODO delete the localTask when exiting the activity
+		//localTask.delete();
+	}
+
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		if (!getResources().getBoolean(R.bool.is_tablet)) {
 			getSupportMenuInflater().inflate(R.menu.activity_send, menu);
@@ -206,26 +211,9 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		prefs.saveLastSentText(text_to_send);
 	}
 
-	/**
-	 * Filter the URLs in {@code text} and return them separated by spaces
-	 * 
-	 * @param text
-	 *            the text to search the URLs in
-	 * @return the found URLs separated by space
-	 */
-	private String filterLinks(String text) {
-		String result = "";
-		Matcher matcher = Utils.urlPattern.matcher(text);
-		while (matcher.find()) {
-			result += matcher.group() + " ";
-		}
-
-		return result;
-	}
-
 	private void processCheckBoxes() {
 		text_to_send = text_from_extra;
-		String links = filterLinks(text_to_send).trim();
+		String links = Utils.filterLinks(text_to_send).trim();
 		if (links.equals("")) {
 			Toast.makeText(this, R.string.txt_no_links, Toast.LENGTH_SHORT)
 					.show();
@@ -236,17 +224,22 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 			localTask.addOption(Options.OPTION_ONLY_LINKS);
 			text_to_send = links;
 		} else {
+			localTask.removeOption(Options.OPTION_ONLY_LINKS);
 			text_to_send = text_from_extra;
 		}
 
 		if (send_fragment.cb_unshorten.isChecked()) {
 			localTask.addOption(Options.OPTION_UNSHORTEN).persist();
 			unshortenLinks(links);
+		} else {
+			localTask.removeOption(Options.OPTION_UNSHORTEN);
 		}
 
 		if (send_fragment.cb_get_titles.isChecked()) {
 			localTask.addOption(Options.OPTION_GETTITLES).persist();
 			getTitles(links);
+		} else {
+			localTask.removeOption(Options.OPTION_GETTITLES);
 		}
 
 		send_fragment.setPreview(text_to_send);
