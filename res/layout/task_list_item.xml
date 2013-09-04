@@ -30,6 +30,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:onClick="onClick"
-        android:src="@drawable/ic_menu_delete" />
+        android:src="@drawable/ic_action_delete" />
 
 </LinearLayout>

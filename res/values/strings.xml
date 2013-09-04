@@ -68,5 +68,7 @@ When the text is successfully sent, the notification goes away.</string>
     <string name="refresh">Refresh</string>
     <string name="title_activity_wait_list">Waiting List</string>
     <string name="action_sendall">Send all</string>
+    <string name="action_delete_multiple">Delete selected</string>
+    <string name="action_send_multiple">Send selected</string>
 
 </resources>

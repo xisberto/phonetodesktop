@@ -25,6 +25,8 @@
         <item name="android:actionBarStyle">@style/ActionBar.Transparent.Pdttheme</item>
         <item name="android:checkboxStyle">@style/Theme.PhoneToDesktop.CheckBox</item>
         <item name="android:progressBarStyleHorizontal">@style/Theme.PhoneToDesktop.ProgressBar</item>
+        <item name="android:listChoiceBackgroundIndicator">@drawable/list_selector_holo_light</item>
+        <item name="android:activatedBackgroundIndicator">@drawable/activated_background_holo_light</item>
     </style>
 
     <style name="ActionBar.Transparent.Pdttheme" parent="@style/Widget.Sherlock.Light.ActionBar">

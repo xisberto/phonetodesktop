@@ -6,6 +6,7 @@
     android:minHeight="?android:attr/listPreferredItemHeight"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
+    android:background="@drawable/listitem_background_pdttheme"
     tools:context=".WaitListActivity" >
 
     <TextView

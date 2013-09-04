@@ -11,13 +11,22 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.SparseArray;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockListActivity;
+import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
-public class WaitListActivity extends SherlockListActivity {
+public class WaitListActivity extends SherlockListActivity implements OnItemClickListener {
 	LocalTaskAdapter adapter;
+	ActionMode actionMode;
+	SparseArray<Long> selectedItems;
+	
 	BroadcastReceiver receiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -29,15 +38,16 @@ public class WaitListActivity extends SherlockListActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		Utils.log("Thread id: "+android.os.Process.myTid());
-		Utils.log(" priority "+ android.os.Process.getThreadPriority(android.os.Process.myTid()));
-		
+		selectedItems = new SparseArray<Long>();
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
+		
+		getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+		getListView().setOnItemClickListener(this);
+		
 		new ListLocalTask().execute();
 		LocalBroadcastManager.getInstance(this).registerReceiver(
 				receiver, new IntentFilter(Utils.ACTION_LIST_LOCAL_TASKS));
@@ -67,6 +77,31 @@ public class WaitListActivity extends SherlockListActivity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
+
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		Utils.log("Item id: "+id);
+
+		if (selectedItems.get(position) == null) {
+			selectedItems.put(position, id);
+			getListView().setItemChecked(position, true);
+		} else {
+			selectedItems.remove(position);
+			getListView().setItemChecked(position, false);
+		}
+		
+		Utils.log("selectedItems: "+selectedItems.size());
+		
+		if (selectedItems.size() > 0) {
+			if (actionMode == null) {
+				actionMode = startActionMode(new ActionModeCallback());
+			}
+		} else {
+			if (actionMode != null) {
+				actionMode.finish();
+			}
+		}
+	}
 	
 	private class ListLocalTask extends AsyncTask<Long, Void, Cursor> {
 		private static final int ACTION_LIST = 1, ACTION_SEND_ALL = 2;
@@ -74,9 +109,6 @@ public class WaitListActivity extends SherlockListActivity {
 
 		@Override
 		protected Cursor doInBackground(Long... params) {
-			Utils.log("Thread id: "+android.os.Process.myTid());
-			Utils.log(" priority "+ android.os.Process.getThreadPriority(android.os.Process.myTid()));
-
 			DatabaseHelper databaseHelper = DatabaseHelper.getInstance(WaitListActivity.this);
 			if (params.length < 1) {
 				action = ACTION_LIST;
@@ -115,9 +147,52 @@ public class WaitListActivity extends SherlockListActivity {
 			default:
 				break;
 			}
+		}
+	}
+	
+	private final class ActionModeCallback implements ActionMode.Callback {
+
+		@Override
+		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+			getSupportMenuInflater().inflate(R.menu.cab_wait_list, menu);
+			return true;
+		}
+
+		@Override
+		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+			return false;
+		}
+
+		@Override
+		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+			long[] selected_ids = new long[selectedItems.size()];
+			for (int i = 0; i < selected_ids.length; i++) {
+				selected_ids[i] = selectedItems.get(selectedItems.keyAt(i));
+			}
+			switch (item.getItemId()) {
+			case R.id.action_delete_multiple:
+				
+				return true;
+			case R.id.action_send_multiple:
+				
+				return true;
+			default:
+				return false;
+			}
+		}
+
+		@Override
+		public void onDestroyActionMode(ActionMode mode) {
+			for (int i = 0; i < getListView().getAdapter().getCount(); i++) {
+                getListView().setItemChecked(i, false);
+			}
 			
+			selectedItems.clear();
+ 
+            if (mode == actionMode) {
+                actionMode = null;
+            }			
 		}
 		
 	}
-
 }
