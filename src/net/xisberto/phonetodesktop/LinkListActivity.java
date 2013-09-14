@@ -205,7 +205,7 @@ public class LinkListActivity extends SherlockFragmentActivity implements
 			return new AlertDialog.Builder(getActivity())
 					.setTitle(R.string.title_confirm)
 					.setMessage(R.string.txt_confirm)
-					.setPositiveButton(android.R.string.yes,
+					.setPositiveButton(R.string.btn_delete,
 							new DialogInterface.OnClickListener() {
 								@Override
 								public void onClick(DialogInterface arg0,
@@ -214,7 +214,7 @@ public class LinkListActivity extends SherlockFragmentActivity implements
 											.deleteTask(getArguments()
 													.getString("task_id"));
 								}
-							}).setNegativeButton(android.R.string.no, null)
+							}).setNegativeButton(android.R.string.cancel, null)
 					.create();
 		}
 	}

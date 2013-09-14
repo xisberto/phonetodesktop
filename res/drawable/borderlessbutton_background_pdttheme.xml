@@ -17,11 +17,8 @@
      limitations under the License.
 -->
 
-<resources>
-    <color name="phonetodesktop_pressed">#CC669900</color>
-    <color name="phonetodesktop_listitem_pressed">#88669900</color>
-    <color name="phonetodesktop_highlight">#FF669900</color>
-    <color name="phonetodesktop_selected">#33669900</color>
-    
-    <color name="phonetodesktop_pressed_light">#88669900</color>
-</resources>
+<selector xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:state_pressed="false" android:state_focused="true" android:drawable="@color/phonetodesktop_pressed_light" />
+    <item android:state_pressed="true" android:drawable="@color/phonetodesktop_pressed_light" />
+    <item android:drawable="@android:color/transparent" />
+</selector>
