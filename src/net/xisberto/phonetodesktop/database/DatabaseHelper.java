@@ -11,6 +11,7 @@
 package net.xisberto.phonetodesktop.database;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import net.xisberto.phonetodesktop.model.LocalTask;
@@ -70,6 +71,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				.setStatus(Status.valueOf(c.getString(5)));
 		return result;
 	}
+	
+	private String whereColumnIn(String column, long[] array) {
+		Long[] Larray = Arrays.asList(array).toArray(new Long[array.length]);
+		return whereColumnIn(column, Larray);
+	}
+	
+	private String whereColumnIn(String column, Long[] array) {
+		String whereClause = column + " IN (";
+		for (int i = 0; i < array.length; i ++) {
+			if (i != array.length-1) {
+				whereClause += array[i] + ", ";
+			} else {
+				whereClause += array[i] + ")";
+			}
+		}
+		return whereClause;
+	}
 
 	public long insert(LocalTask task) throws SQLException {
 		final ContentValues cv = contentValuesFromTask(task);
@@ -100,19 +118,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		}
 	}
 	
+	public void delete(Long[] ids) {
+		final SQLiteDatabase db = getWritableDatabase();
+		try {
+			db.delete(TableTasks.TABLE_NAME, whereColumnIn(TableTasks.COLUMN_LOCAL_ID, ids),
+					null);
+		} finally {
+		}
+	}
+	
 	public void setStatus(Status status, long... ids) {
 		if (ids != null && ids.length > 0) {
 			final SQLiteDatabase db = getWritableDatabase();
 			try {
 				ContentValues cv = new ContentValues();
-				String whereClause = TableTasks.COLUMN_LOCAL_ID + " IN (";
-				for (int i = 0; i < ids.length; i ++) {
-					if (i != ids.length-1) {
-						whereClause += ids[i] + ", ";
-					} else {
-						whereClause += ids[i] + ")";
-					}
-				}
+				String whereClause = whereColumnIn(TableTasks.COLUMN_LOCAL_ID, ids);
 				cv.put(TableTasks.COLUMN_STATUS, status.name());
 				db.update(TableTasks.TABLE_NAME, cv,
 						whereClause, null);
@@ -160,7 +180,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 	
 	public Cursor listTasksAsCursor(Status status) {
-		final SQLiteDatabase db = getReadableDatabase();
+		SQLiteDatabase db = getReadableDatabase();
 		try {
 			return db.query(TableTasks.TABLE_NAME, TableTasks.COLUMNS,
 					TableTasks.COLUMN_STATUS + " = ?",
@@ -176,6 +196,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				TableTasks.COLUMN_STATUS + " != ?",
 				new String[] { Status.SENT.name() },
 				null, null, null);
+	}
+	
+	public Cursor listTasksAsCursorById(Long[] ids) {
+		SQLiteDatabase db = getReadableDatabase();
+		try {
+			return db.query(TableTasks.TABLE_NAME, TableTasks.COLUMNS,
+					whereColumnIn(TableTasks.COLUMN_LOCAL_ID, ids),
+					null, null, null, null);
+		} finally {
+		}
 	}
 
 	public List<LocalTask> listTasks() {

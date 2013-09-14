@@ -4,6 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:minHeight="?android:attr/listPreferredItemHeight"
+    android:paddingLeft="4dp"
+    android:paddingRight="4dp"
     android:paddingTop="8dp"
     android:paddingBottom="8dp"
     android:background="@drawable/listitem_background_pdttheme"

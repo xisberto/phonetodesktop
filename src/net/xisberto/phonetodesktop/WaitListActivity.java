@@ -31,7 +31,7 @@ public class WaitListActivity extends SherlockListActivity implements OnItemClic
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			Utils.log("WaitListActivity received broadcast");
-			new ListLocalTask().execute();
+			new ListLocalTask(ListLocalTask.ACTION_LIST).execute();
 		}
 	};
 	
@@ -50,7 +50,7 @@ public class WaitListActivity extends SherlockListActivity implements OnItemClic
 		getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 		getListView().setOnItemClickListener(this);
 		
-		new ListLocalTask().execute();
+		new ListLocalTask(ListLocalTask.ACTION_LIST).execute();
 		LocalBroadcastManager.getInstance(this).registerReceiver(
 				receiver, new IntentFilter(Utils.ACTION_LIST_LOCAL_TASKS));
 	}
@@ -74,8 +74,7 @@ public class WaitListActivity extends SherlockListActivity implements OnItemClic
 			NavUtils.navigateUpFromSameTask(this);
 			return true;
 		case R.id.action_sendall:
-			ListLocalTask tasker = new ListLocalTask();
-			tasker.execute(0l);
+			new ListLocalTask(ListLocalTask.ACTION_SEND_ALL).execute();
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -108,17 +107,26 @@ public class WaitListActivity extends SherlockListActivity implements OnItemClic
 	}
 	
 	private class ListLocalTask extends AsyncTask<Long, Void, Cursor> {
-		private static final int ACTION_LIST = 1, ACTION_SEND_ALL = 2;
+		private static final int ACTION_LIST = 1, ACTION_SEND_ALL = 2,
+				ACTION_DELETE_SELECTED = 3, ACTION_SEND_SELECTED = 4;
 		private int action;
+		
+		public ListLocalTask(int action) {
+			this.action = action;
+		}
 
 		@Override
 		protected Cursor doInBackground(Long... params) {
 			DatabaseHelper databaseHelper = DatabaseHelper.getInstance(WaitListActivity.this);
-			if (params.length < 1) {
-				action = ACTION_LIST;
-				return databaseHelper.listTasksAsCursor();
-			} else {
-				action = ACTION_SEND_ALL;
+			switch (action) {
+			case ACTION_SEND_SELECTED:
+				return databaseHelper.listTasksAsCursorById(params);
+			case ACTION_DELETE_SELECTED:
+				databaseHelper.delete(params);
+			case ACTION_LIST:
+			case ACTION_SEND_ALL:
+				return databaseHelper.listTaskQueueAsCursor();
+			default:
 				return databaseHelper.listTaskQueueAsCursor();
 			}
 		}
@@ -127,6 +135,7 @@ public class WaitListActivity extends SherlockListActivity implements OnItemClic
 		protected void onPostExecute(Cursor result) {
 			switch (action) {
 			case ACTION_LIST:
+			case ACTION_DELETE_SELECTED:
 				if (adapter == null) {
 					adapter = new LocalTaskAdapter(WaitListActivity.this, result);
 					getListView().setAdapter(adapter);
@@ -135,6 +144,7 @@ public class WaitListActivity extends SherlockListActivity implements OnItemClic
 				}
 				break;
 			case ACTION_SEND_ALL:
+			case ACTION_SEND_SELECTED:
 				if (result.getCount() == 0) {
 					return;
 				}
@@ -169,20 +179,22 @@ public class WaitListActivity extends SherlockListActivity implements OnItemClic
 
 		@Override
 		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-			long[] selected_ids = new long[selectedItems.size()];
+			Long[] selected_ids = new Long[selectedItems.size()];
 			for (int i = 0; i < selected_ids.length; i++) {
 				selected_ids[i] = selectedItems.get(selectedItems.keyAt(i));
 			}
 			switch (item.getItemId()) {
 			case R.id.action_delete_multiple:
-				
-				return true;
+				new ListLocalTask(ListLocalTask.ACTION_DELETE_SELECTED)
+						.execute(selected_ids);
+				break;
 			case R.id.action_send_multiple:
-				
-				return true;
-			default:
-				return false;
+				new ListLocalTask(ListLocalTask.ACTION_SEND_SELECTED)
+						.execute(selected_ids);
+				break;
 			}
+			actionMode.finish();
+			return true;
 		}
 
 		@Override
