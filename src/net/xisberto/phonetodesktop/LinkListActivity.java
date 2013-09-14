@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import net.xisberto.phonetodesktop.network.GoogleTasksService;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
@@ -23,6 +22,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.LocalBroadcastManager;
@@ -201,9 +201,13 @@ public class LinkListActivity extends SherlockFragmentActivity implements
 		}
 
 		@Override
+		public void onCreate(Bundle savedInstanceState) {
+			super.onCreate(savedInstanceState);
+		}
+
+		@Override
 		public Dialog onCreateDialog(Bundle savedInstanceState) {
-			return new AlertDialog.Builder(getActivity())
-					.setTitle(R.string.title_confirm)
+			AlertDialog dialog = new AlertDialog.Builder(getActivity())
 					.setMessage(R.string.txt_confirm)
 					.setPositiveButton(R.string.btn_delete,
 							new DialogInterface.OnClickListener() {
@@ -216,6 +220,21 @@ public class LinkListActivity extends SherlockFragmentActivity implements
 								}
 							}).setNegativeButton(android.R.string.cancel, null)
 					.create();
+
+			//We will color the dialog's buttons only on Honeycomb+ devices
+			//On older platforms, we use the default dialog themes
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+				dialog.show();
+				dialog.getButton(DialogInterface.BUTTON_POSITIVE)
+						.setBackgroundResource(
+								R.drawable.borderlessbutton_background_pdttheme);
+				dialog.getButton(DialogInterface.BUTTON_NEGATIVE)
+						.setBackgroundResource(
+								R.drawable.borderlessbutton_background_pdttheme);
+			}
+
+			return dialog;
 		}
+
 	}
 }
