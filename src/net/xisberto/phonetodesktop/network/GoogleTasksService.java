@@ -49,7 +49,8 @@ import com.google.api.services.tasks.model.Task;
  * <p>
  */
 public class GoogleTasksService extends IntentService {
-	private static final int NOTIFICATION_SEND = 42, NOTIFICATION_ERROR = 1,
+	private static final int NOTIFICATION_SEND = 42,
+			NOTIFICATION_SEND_LATER = 3, NOTIFICATION_ERROR = 1,
 			NOTIFICATION_NEED_AUTHORIZE = 2;
 
 	protected com.google.api.services.tasks.Tasks client;
@@ -89,28 +90,28 @@ public class GoogleTasksService extends IntentService {
 			long extra_id = intent.getLongExtra(Utils.EXTRA_TASK_ID, -1);
 			long[] tasks_ids = intent.getLongArrayExtra(Utils.EXTRA_TASKS_IDS);
 			try {
-				if (action.equals(Utils.ACTION_SEND_SINGLE_TASK)) {
+				if (action.equals(Utils.ACTION_SEND_TASKS)) {
 					if (isOnline()) {
 						startForeground(NOTIFICATION_SEND,
 								buildNotification(NOTIFICATION_SEND).build());
 
-						DatabaseHelper databaseHelper = DatabaseHelper
-								.getInstance(this);
-						LocalTask task = databaseHelper.getTask(extra_id);
-						handleActionSend(task);
+						if (tasks_ids.length == 1) {
+							DatabaseHelper databaseHelper = DatabaseHelper
+									.getInstance(this);
+							LocalTask task = databaseHelper.getTask(extra_id);
+							handleActionSend(task);
+						} else {
+							handleActionSendMultiple(tasks_ids);
+						}
 
-						stopForeground(true);
-					} else {
-						revertTaskToReady(extra_id);
-					}
-				} else if (action.equals(Utils.ACTION_SEND_MULTIPLE_TASKS)) {
-					if (isOnline()) {
-						startForeground(NOTIFICATION_SEND,
-								buildNotification(NOTIFICATION_SEND).build());
-						handleActionSendMultiple(tasks_ids);
 						stopForeground(true);
 					} else {
 						revertTaskToReady(tasks_ids);
+						((NotificationManager) getSystemService(NOTIFICATION_SERVICE))
+								.notify(NOTIFICATION_NEED_AUTHORIZE,
+										buildNotification(
+												NOTIFICATION_SEND_LATER)
+												.build());
 					}
 				} else if (action.equals(Utils.ACTION_LIST_TASKS)) {
 					handleActionList();
@@ -128,7 +129,7 @@ public class GoogleTasksService extends IntentService {
 										.build());
 			} catch (IOException ioException) {
 				Utils.log(Log.getStackTraceString(ioException));
-				if (action.equals(Utils.ACTION_SEND_SINGLE_TASK)) {
+				if (action.equals(Utils.ACTION_SEND_TASKS)) {
 					stopForeground(true);
 					revertTaskToReady(extra_id);
 					((NotificationManager) getSystemService(NOTIFICATION_SERVICE))
@@ -176,6 +177,13 @@ public class GoogleTasksService extends IntentService {
 			builder.setSmallIcon(android.R.drawable.stat_sys_upload)
 					.setTicker(getString(R.string.txt_sending))
 					.setContentTitle(getString(R.string.txt_sending));
+			return builder;
+		case NOTIFICATION_SEND_LATER:
+			builder.setAutoCancel(true)
+					.setSmallIcon(android.R.drawable.stat_notify_error)
+					.setTicker(getString(R.string.txt_error_no_connection))
+					.setContentTitle(getString(R.string.txt_error_no_connection))
+					.setContentText(getString(R.string.txt_error_try_again));
 			return builder;
 		case NOTIFICATION_ERROR:
 			builder.setAutoCancel(true)
@@ -294,8 +302,8 @@ public class GoogleTasksService extends IntentService {
 		case PROCESSING_UNSHORTEN:
 			parts = Utils.filterLinks(task.getTitle()).split(" ");
 			parts = urlOptions.unshorten(parts);
-			task.setTitle(Utils.replace(task.getTitle(), parts))
-					.removeOption(Options.OPTION_UNSHORTEN);
+			task.setTitle(Utils.replace(task.getTitle(), parts)).removeOption(
+					Options.OPTION_UNSHORTEN);
 			if (!task.hasOption(Options.OPTION_GETTITLES)) {
 				task.setStatus(Status.READY).persist();
 				break;
@@ -305,8 +313,7 @@ public class GoogleTasksService extends IntentService {
 			parts = urlOptions.getTitles(parts);
 			task.setTitle(Utils.appendInBrackets(task.getTitle(), parts))
 					.removeOption(Options.OPTION_GETTITLES)
-					.setStatus(Status.READY)
-					.persist();
+					.setStatus(Status.READY).persist();
 			break;
 		}
 	}

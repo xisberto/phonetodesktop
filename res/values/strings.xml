@@ -37,6 +37,7 @@
     <string name="txt_sending">Sending links</string>
     <string name="txt_sending_multiple">Sending link %1$d of %2$d</string>
     <string name="txt_error_sending">Could not send text</string>
+    <string name="txt_error_no_connection">No internet connection</string>
     <string name="txt_error_try_again">Click here to try again.</string>
     <string name="txt_error_list">Could not get the list. Try again.</string>
     <string name="txt_need_authorize">You need first authorize Phone To Desktop.</string>

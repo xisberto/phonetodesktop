@@ -144,7 +144,7 @@ public class WaitListActivity extends SherlockListActivity implements OnItemClic
 					tasks_ids[i] = result.getLong(0);
 				}
 				Intent service = new Intent(WaitListActivity.this, GoogleTasksService.class);
-				service.setAction(Utils.ACTION_SEND_MULTIPLE_TASKS);
+				service.setAction(Utils.ACTION_SEND_TASKS);
 				service.putExtra(Utils.EXTRA_TASKS_IDS, tasks_ids);
 				startService(service);
 				break;
