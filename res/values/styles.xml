@@ -23,6 +23,8 @@
     <style name="Theme.PhoneToDesktop" parent="@style/Theme.Sherlock.Light">
         <item name="actionBarItemBackground">@drawable/selectable_background_pdttheme</item>
         <item name="actionBarStyle">@style/ActionBar.Transparent.Pdttheme</item>
+        <item name="actionModeBackground">@drawable/cab_background_top_pdttheme</item>
+        <item name="actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Pdttheme</item>
         <item name="android:checkboxStyle">@style/Theme.PhoneToDesktop.CheckBox</item>
         <item name="android:progressBarStyleHorizontal">@style/Theme.PhoneToDesktop.ProgressBar</item>
         <item name="android:listViewStyle">@style/Theme.PhoneToDesktop.ListView</item>
@@ -30,6 +32,10 @@
 
     <style name="ActionBar.Transparent.Pdttheme" parent="@style/Widget.Sherlock.Light.ActionBar">
         <item name="background">@drawable/ab_transparent_pdttheme</item>
+    </style>
+    
+    <style name="ActionButton.CloseMode.Pdttheme" parent="@style/Widget.Sherlock.Light.ActionButton.CloseMode">
+        <item name="android:background">@drawable/btn_cab_done_pdttheme</item>
     </style>
 
     <style name="Theme.PhoneToDesktop.Translucent.NoTitlebar" parent="@style/Theme.Sherlock.Light.NoActionBar">
