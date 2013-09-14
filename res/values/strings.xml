@@ -81,5 +81,9 @@ When the text is successfully sent, the notification goes away.</string>
     <string name="action_sendall">Send all</string>
     <string name="action_delete_multiple">Delete selected items</string>
     <string name="action_send_multiple">Send selected items</string>
+    <plurals name="txt_selected_items">
+        <item quantity="one">%d selected item</item>
+        <item quantity="other">%d selected items</item>
+    </plurals>
 
 </resources>

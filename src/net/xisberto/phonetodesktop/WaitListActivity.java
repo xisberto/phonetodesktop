@@ -38,6 +38,8 @@ public class WaitListActivity extends SherlockListActivity implements OnItemClic
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		setContentView(R.layout.activity_link_list);
 		selectedItems = new SparseArray<Long>();
 	}
 
@@ -90,12 +92,14 @@ public class WaitListActivity extends SherlockListActivity implements OnItemClic
 			getListView().setItemChecked(position, false);
 		}
 		
-		Utils.log("selectedItems: "+selectedItems.size());
-		
 		if (selectedItems.size() > 0) {
+			String title = getResources().getQuantityString(
+					R.plurals.txt_selected_items, selectedItems.size());
+			title = String.format(title, selectedItems.size());
 			if (actionMode == null) {
 				actionMode = startActionMode(new ActionModeCallback());
 			}
+			actionMode.setTitle(title);
 		} else {
 			if (actionMode != null) {
 				actionMode.finish();

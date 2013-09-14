@@ -158,11 +158,10 @@ public class LinkListActivity extends SherlockFragmentActivity implements
 		}
 		updateActionBar();
 
-		TextView text = (TextView) findViewById(R.id.textView_linkList);
-		ListView list_view = (ListView) findViewById(R.id.listView_linkList);
+		TextView text = (TextView) findViewById(android.R.id.empty);
+		ListView list_view = (ListView) findViewById(android.R.id.list);
 
 		if (!updating) {
-			findViewById(R.id.progressBar_linkList).setVisibility(View.GONE);
 			if ((titles == null) || (titles.size() < 1)) {
 				text.setText(R.string.txt_empty_list);
 				list_view.setVisibility(View.GONE);
@@ -184,7 +183,6 @@ public class LinkListActivity extends SherlockFragmentActivity implements
 				text.setVisibility(View.GONE);
 			}
 		} else {
-			findViewById(R.id.progressBar_linkList).setVisibility(View.VISIBLE);
 			list_view.setVisibility(View.GONE);
 			text.setVisibility(View.GONE);
 		}

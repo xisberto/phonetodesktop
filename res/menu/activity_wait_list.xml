@@ -3,7 +3,7 @@
     <item 
         android:id="@+id/action_sendall"
         android:title="@string/send"
-        android:icon="@android:drawable/ic_menu_send"
+        android:icon="@drawable/ic_action_send_all"
         android:showAsAction="always"
         />
 
