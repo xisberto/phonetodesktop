@@ -134,6 +134,12 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		super.onBackPressed();
 		//TODO delete the localTask when exiting the activity
 		//localTask.delete();
+		//During beta, we will inform the user that the task will be saved
+		Toast.makeText(this, 
+				"Saving this task on Waiting List " +
+				"(after beta period, the task will be discarded)",
+				Toast.LENGTH_LONG)
+				.show();
 	}
 
 	@Override
