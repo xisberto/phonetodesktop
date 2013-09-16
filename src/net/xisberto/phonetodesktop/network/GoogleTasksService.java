@@ -22,6 +22,7 @@ import net.xisberto.phonetodesktop.WaitListActivity;
 import net.xisberto.phonetodesktop.database.DatabaseHelper;
 import net.xisberto.phonetodesktop.model.LocalTask;
 import net.xisberto.phonetodesktop.model.LocalTask.Options;
+import net.xisberto.phonetodesktop.model.LocalTask.PersistCallback;
 import net.xisberto.phonetodesktop.model.LocalTask.Status;
 import android.app.IntentService;
 import android.app.NotificationManager;
@@ -215,14 +216,23 @@ public class GoogleTasksService extends IntentService {
 	private void handleActionSend(LocalTask task)
 			throws UserRecoverableAuthIOException, IOException {
 
+		PersistCallback callback = new PersistCallback() {
+			@Override
+			public void done() {
+				LocalBroadcastManager.getInstance(GoogleTasksService.this).sendBroadcast(
+						new Intent(Utils.ACTION_LIST_LOCAL_TASKS));		
+			}
+		};
+		
 		processOptions(task);
 
-		task.setStatus(Status.SENDING).persist();
-
+		task.setStatus(Status.SENDING).persist(callback);
+		
 		Task new_task = new Task().setTitle(task.getTitle());
 		client.tasks().insert(list_id, new_task).execute();
 
-		task.setStatus(Status.SENT).persist();
+		task.setStatus(Status.SENT).persist(callback);
+		
 	}
 
 	private void handleActionSendMultiple(long... tasks_ids)
@@ -242,8 +252,7 @@ public class GoogleTasksService extends IntentService {
 
 			handleActionSend(task);
 
-			LocalBroadcastManager.getInstance(this).sendBroadcast(
-					new Intent(Utils.ACTION_LIST_LOCAL_TASKS));
+			
 		}
 	}
 
