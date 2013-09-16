@@ -11,7 +11,6 @@
 package net.xisberto.phonetodesktop.database;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import net.xisberto.phonetodesktop.model.LocalTask;
@@ -73,11 +72,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 	
 	private String whereColumnIn(String column, long[] array) {
-		Long[] Larray = Arrays.asList(array).toArray(new Long[array.length]);
+		Long[] Larray = new Long[array.length];
+		for (int i = 0; i < Larray.length; i++) {
+			Larray[i] = array[i];
+		}
 		return whereColumnIn(column, Larray);
 	}
 	
 	private String whereColumnIn(String column, Long[] array) {
+		
 		String whereClause = column + " IN (";
 		for (int i = 0; i < array.length; i ++) {
 			if (i != array.length-1) {

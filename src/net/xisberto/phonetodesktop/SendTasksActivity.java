@@ -13,7 +13,6 @@ package net.xisberto.phonetodesktop;
 import net.xisberto.phonetodesktop.database.DatabaseHelper;
 import net.xisberto.phonetodesktop.model.LocalTask;
 import net.xisberto.phonetodesktop.model.LocalTask.Options;
-import net.xisberto.phonetodesktop.model.LocalTask.PersistCallback;
 import net.xisberto.phonetodesktop.model.LocalTask.Status;
 import net.xisberto.phonetodesktop.network.GoogleTasksService;
 import net.xisberto.phonetodesktop.network.URLOptionsAsyncTask;
@@ -24,7 +23,6 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Process;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -49,27 +47,6 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 	private URLOptionsAsyncTask async_titles;
 	private static final String SAVE_CACHE_UNSHORTEN = "cache_unshorten",
 			SAVE_CACHE_TITLES = "cache_titles";
-	private PersistCallback persistCallback = new PersistCallback() {
-		@Override
-		public void done() {
-			Thread t = new Thread(new Runnable() {
-				@Override
-				public void run() {
-					Utils.log("Local tasks finished");
-					Utils.log("Current task id: "+localTask.getLocalId());
-					if (localTask.getLocalId() != -1) {
-						LocalTask savedTask = databaseHelper.getTask(localTask.getLocalId());
-						if (savedTask != null) {
-							Utils.log("Saved task id: "+savedTask.getLocalId());
-							Utils.log("Saved status: "+savedTask.getStatus().toString());
-						}
-					}
-				}
-			});
-			t.setPriority(Process.THREAD_PRIORITY_BACKGROUND);
-			t.start();
-		}
-	};
 	private DatabaseHelper databaseHelper;
 	private LocalTask localTask;
 
@@ -86,7 +63,7 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 			databaseHelper = DatabaseHelper
 					.getInstance(getApplicationContext());
 			localTask = new LocalTask(databaseHelper);
-			localTask.setTitle(text_to_send).persist(persistCallback);
+			localTask.setTitle(text_to_send).persist();
 
 			send_fragment = (SendFragment) getSupportFragmentManager()
 					.findFragmentByTag("send_fragment");
@@ -202,8 +179,6 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		service.putExtra(Utils.EXTRA_TASKS_IDS, new long[] {localTask.getLocalId()});
 		startService(service);
 
-		localTask.setStatus(Status.SENDING).persist(persistCallback);
-
 		Preferences prefs = new Preferences(this);
 		prefs.saveOnlyLinks(send_fragment.cb_only_links.isChecked());
 		prefs.saveUnshorten(send_fragment.cb_unshorten.isChecked());
@@ -249,8 +224,7 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		if (cache_unshorten != null) {
 			onPostUnshorten(cache_unshorten);
 		} else {
-			localTask.setStatus(Status.PROCESSING_UNSHORTEN).persist(
-					persistCallback);
+			localTask.setStatus(Status.PROCESSING_UNSHORTEN).persist();
 			String[] parts = links.split(" ");
 			async_unshorten = new URLOptionsAsyncTask(this,
 					URLOptionsAsyncTask.TASK_UNSHORTEN);
@@ -262,8 +236,7 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		if (cache_titles != null) {
 			onPostGetTitle(cache_titles);
 		} else {
-			localTask.setStatus(Status.PROCESSING_TITLE).persist(
-					persistCallback);
+			localTask.setStatus(Status.PROCESSING_TITLE).persist();
 			String[] parts = links.split(" ");
 			async_titles = new URLOptionsAsyncTask(this,
 					URLOptionsAsyncTask.TASK_GET_TITLE);
@@ -300,7 +273,7 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		localTask.setTitle(text_to_send)
 				.setStatus(Status.READY)
 				.removeOption(Options.OPTION_UNSHORTEN)
-				.persist(persistCallback);
+				.persist();
 	}
 
 	@Override
@@ -322,7 +295,7 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		localTask.setTitle(text_to_send)
 				.setStatus(Status.READY)
 				.removeOption(Options.OPTION_GETTITLES)
-				.persist(persistCallback);
+				.persist();
 	}
 
 	public static class SendFragment extends SherlockDialogFragment implements

@@ -87,7 +87,6 @@ public class GoogleTasksService extends IntentService {
 	protected void onHandleIntent(Intent intent) {
 		if (intent != null) {
 			final String action = intent.getAction();
-			long extra_id = intent.getLongExtra(Utils.EXTRA_TASK_ID, -1);
 			long[] tasks_ids = intent.getLongArrayExtra(Utils.EXTRA_TASKS_IDS);
 			try {
 				if (action.equals(Utils.ACTION_SEND_TASKS)) {
@@ -98,7 +97,7 @@ public class GoogleTasksService extends IntentService {
 						if (tasks_ids.length == 1) {
 							DatabaseHelper databaseHelper = DatabaseHelper
 									.getInstance(this);
-							LocalTask task = databaseHelper.getTask(extra_id);
+							LocalTask task = databaseHelper.getTask(tasks_ids[0]);
 							handleActionSend(task);
 						} else {
 							handleActionSendMultiple(tasks_ids);
@@ -122,7 +121,7 @@ public class GoogleTasksService extends IntentService {
 			} catch (UserRecoverableAuthIOException userRecoverableException) {
 				Utils.log(Log.getStackTraceString(userRecoverableException));
 				stopForeground(true);
-				revertTaskToReady(extra_id);
+				revertTaskToReady(tasks_ids);
 				((NotificationManager) getSystemService(NOTIFICATION_SERVICE))
 						.notify(NOTIFICATION_NEED_AUTHORIZE,
 								buildNotification(NOTIFICATION_NEED_AUTHORIZE)
@@ -131,7 +130,7 @@ public class GoogleTasksService extends IntentService {
 				Utils.log(Log.getStackTraceString(ioException));
 				if (action.equals(Utils.ACTION_SEND_TASKS)) {
 					stopForeground(true);
-					revertTaskToReady(extra_id);
+					revertTaskToReady(tasks_ids);
 					((NotificationManager) getSystemService(NOTIFICATION_SERVICE))
 							.notify(NOTIFICATION_ERROR,
 									buildNotification(NOTIFICATION_ERROR)
@@ -146,7 +145,7 @@ public class GoogleTasksService extends IntentService {
 			} catch (NullPointerException npe) {
 				Utils.log(Log.getStackTraceString(npe));
 				stopForeground(true);
-				revertTaskToReady(extra_id);
+				revertTaskToReady(tasks_ids);
 				((NotificationManager) getSystemService(NOTIFICATION_SERVICE))
 						.notify(NOTIFICATION_NEED_AUTHORIZE,
 								buildNotification(NOTIFICATION_NEED_AUTHORIZE)
