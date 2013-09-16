@@ -3,13 +3,13 @@
 
     <item
         android:id="@+id/action_delete_multiple"
-        android:showAsAction="always"
+        android:showAsAction="ifRoom"
         android:title="@string/action_delete_multiple"
         android:icon="@drawable/ic_action_delete">
     </item>
     <item
         android:id="@+id/action_send_multiple"
-        android:showAsAction="always"
+        android:showAsAction="ifRoom"
         android:title="@string/action_send_multiple"
         android:icon="@drawable/ic_action_send">
     </item>
