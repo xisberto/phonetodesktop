@@ -22,6 +22,7 @@ import net.xisberto.phonetodesktop.WaitListActivity;
 import net.xisberto.phonetodesktop.database.DatabaseHelper;
 import net.xisberto.phonetodesktop.model.LocalTask;
 import net.xisberto.phonetodesktop.model.LocalTask.Options;
+import net.xisberto.phonetodesktop.model.LocalTask.PersistCallback;
 import net.xisberto.phonetodesktop.model.LocalTask.Status;
 import android.app.IntentService;
 import android.app.NotificationManager;
@@ -87,7 +88,6 @@ public class GoogleTasksService extends IntentService {
 	protected void onHandleIntent(Intent intent) {
 		if (intent != null) {
 			final String action = intent.getAction();
-			long extra_id = intent.getLongExtra(Utils.EXTRA_TASK_ID, -1);
 			long[] tasks_ids = intent.getLongArrayExtra(Utils.EXTRA_TASKS_IDS);
 			try {
 				if (action.equals(Utils.ACTION_SEND_TASKS)) {
@@ -98,7 +98,7 @@ public class GoogleTasksService extends IntentService {
 						if (tasks_ids.length == 1) {
 							DatabaseHelper databaseHelper = DatabaseHelper
 									.getInstance(this);
-							LocalTask task = databaseHelper.getTask(extra_id);
+							LocalTask task = databaseHelper.getTask(tasks_ids[0]);
 							handleActionSend(task);
 						} else {
 							handleActionSendMultiple(tasks_ids);
@@ -122,7 +122,7 @@ public class GoogleTasksService extends IntentService {
 			} catch (UserRecoverableAuthIOException userRecoverableException) {
 				Utils.log(Log.getStackTraceString(userRecoverableException));
 				stopForeground(true);
-				revertTaskToReady(extra_id);
+				revertTaskToReady(tasks_ids);
 				((NotificationManager) getSystemService(NOTIFICATION_SERVICE))
 						.notify(NOTIFICATION_NEED_AUTHORIZE,
 								buildNotification(NOTIFICATION_NEED_AUTHORIZE)
@@ -131,7 +131,7 @@ public class GoogleTasksService extends IntentService {
 				Utils.log(Log.getStackTraceString(ioException));
 				if (action.equals(Utils.ACTION_SEND_TASKS)) {
 					stopForeground(true);
-					revertTaskToReady(extra_id);
+					revertTaskToReady(tasks_ids);
 					((NotificationManager) getSystemService(NOTIFICATION_SERVICE))
 							.notify(NOTIFICATION_ERROR,
 									buildNotification(NOTIFICATION_ERROR)
@@ -146,7 +146,7 @@ public class GoogleTasksService extends IntentService {
 			} catch (NullPointerException npe) {
 				Utils.log(Log.getStackTraceString(npe));
 				stopForeground(true);
-				revertTaskToReady(extra_id);
+				revertTaskToReady(tasks_ids);
 				((NotificationManager) getSystemService(NOTIFICATION_SERVICE))
 						.notify(NOTIFICATION_NEED_AUTHORIZE,
 								buildNotification(NOTIFICATION_NEED_AUTHORIZE)
@@ -216,14 +216,23 @@ public class GoogleTasksService extends IntentService {
 	private void handleActionSend(LocalTask task)
 			throws UserRecoverableAuthIOException, IOException {
 
+		PersistCallback callback = new PersistCallback() {
+			@Override
+			public void done() {
+				LocalBroadcastManager.getInstance(GoogleTasksService.this).sendBroadcast(
+						new Intent(Utils.ACTION_LIST_LOCAL_TASKS));		
+			}
+		};
+		
 		processOptions(task);
 
-		task.setStatus(Status.SENDING).persist();
-
+		task.setStatus(Status.SENDING).persist(callback);
+		
 		Task new_task = new Task().setTitle(task.getTitle());
 		client.tasks().insert(list_id, new_task).execute();
 
-		task.setStatus(Status.SENT).persist();
+		task.setStatus(Status.SENT).persist(callback);
+		
 	}
 
 	private void handleActionSendMultiple(long... tasks_ids)
@@ -243,8 +252,7 @@ public class GoogleTasksService extends IntentService {
 
 			handleActionSend(task);
 
-			LocalBroadcastManager.getInstance(this).sendBroadcast(
-					new Intent(Utils.ACTION_LIST_LOCAL_TASKS));
+			
 		}
 	}
 
