@@ -105,14 +105,14 @@ public class LocalTask {
 			return 0;
 		}
 		int result = 0;
-		for (Options opt : options) {
+		for (Options opt : Options.values()) {
 			result |= opt.value;
 		}
 		return result;
 	}
 	
 	public LocalTask setOptions(int opts) {
-		for (Options option : options) {
+		for (Options option : Options.values()) {
 			if ((opts & option.value) == option.value) {
 				addOption(option);
 			}
