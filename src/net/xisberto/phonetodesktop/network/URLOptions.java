@@ -26,81 +26,10 @@ public class URLOptions {
 			"charset=([-_a-zA-Z0-9]+)", Pattern.CASE_INSENSITIVE
 					| Pattern.DOTALL);
 
-<<<<<<< HEAD:src/net/xisberto/phonetodesktop/URLOptionsAsyncTask.java
-	private int task;
-	private URLOptionsListener listener;
-
-	public URLOptionsAsyncTask(URLOptionsListener listener, int task) {
-		super();
-		this.task = task;
-		this.listener = listener;
-	}
-
-	@Override
-	protected void onPreExecute() {
-		listener.setWaiting();
-	}
-
-	@Override
-	protected String[] doInBackground(String... params) {
-		try {
-			switch (task) {
-			case TASK_UNSHORTEN:
-				return unshorten(params);
-			case TASK_GET_TITLE:
-				return getTitles(params);
-			default:
-				return null;
-			}
-		} catch (IOException ioe) {
-			Log.e(URLOptionsAsyncTask.class.getName(), Log.getStackTraceString(ioe));
-			return null;
-		} catch (NullPointerException npe) {
-			Log.e(URLOptionsAsyncTask.class.getName(), Log.getStackTraceString(npe));
-			return null;
-		}
-	}
-
-	@Override
-	protected void onPostExecute(String[] result) {
-		switch (task) {
-		case TASK_UNSHORTEN:
-			listener.onPostUnshorten(result);
-			break;
-		case TASK_GET_TITLE:
-			listener.onPostGetTitle(result);
-			break;
-		default:
-			break;
-		}
-		listener.setDone();
-	}
-
-	@Override
-	protected void onCancelled() {
-		super.onCancelled();
-		listener.setDone();
-	}
-
-	@Override
-	protected void onCancelled(String[] result) {
-		switch (task) {
-		case TASK_UNSHORTEN:
-			listener.onPostUnshorten(null);
-			break;
-		case TASK_GET_TITLE:
-			listener.onPostGetTitle(null);
-			break;
-		default:
-			break;
-		}
-		listener.setDone();
-=======
 	private boolean isCancelled = false;
 	
 	protected void cancel() {
 		isCancelled = true;
->>>>>>> enhancement#4:src/net/xisberto/phonetodesktop/network/URLOptions.java
 	}
 
 	protected String[] unshorten(String... params) throws IOException {
