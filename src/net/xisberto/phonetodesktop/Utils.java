@@ -26,6 +26,8 @@ public class Utils {
 			ACTION_AUTHENTICATE = "net.xisberto.phonetodesktop.action.AUTHENTICATE",
 			ACTION_LOAD_LISTS = "net.xisberto.phonetodesktop.action.LOAD_LISTS",
 			ACTION_SAVE_LIST = "net.xisberto.phonetodesktop.action.SAVE_LISTS",
+			ACTION_PROCESS_TASK = "net.xisberto.phonetodesktop.action.PROCESS_TASK",
+			ACTION_RESULT_PROCESS_TASK = "net.xisberto.phonetodesktop.action.RESULT_PROCESS_TASK",
 			ACTION_SEND_TASKS = "net.xisberto.phonetodesktop.action.SEND_TASKS",
 			ACTION_LIST_TASKS = "net.xisberto.phonetodesktop.action.LIST_TASKS",
 			ACTION_LIST_LOCAL_TASKS = "net.xisberto.phonetodesktop.action.LIST_LOCAL_TASKS",

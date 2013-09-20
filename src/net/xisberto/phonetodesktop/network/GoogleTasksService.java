@@ -90,7 +90,19 @@ public class GoogleTasksService extends IntentService {
 			final String action = intent.getAction();
 			long[] tasks_ids = intent.getLongArrayExtra(Utils.EXTRA_TASKS_IDS);
 			try {
-				if (action.equals(Utils.ACTION_SEND_TASKS)) {
+				if (action.equals(Utils.ACTION_PROCESS_TASK)) {
+					Intent result = new Intent(Utils.ACTION_RESULT_PROCESS_TASK);
+					long task_id = intent.getLongExtra(Utils.EXTRA_TASK_ID, -1);
+					LocalTask task = DatabaseHelper.getInstance(this).getTask(task_id);
+					if (isOnline()) {
+						processOptions(task);
+					} else {
+						revertTaskToReady(tasks_ids);
+					}
+					result.putExtra(Utils.EXTRA_TASK_ID, task.getLocalId());
+					LocalBroadcastManager.getInstance(this)
+							.sendBroadcast(result);
+				} else if (action.equals(Utils.ACTION_SEND_TASKS)) {
 					if (isOnline()) {
 						startForeground(NOTIFICATION_SEND,
 								buildNotification(NOTIFICATION_SEND).build());
@@ -108,7 +120,7 @@ public class GoogleTasksService extends IntentService {
 					} else {
 						revertTaskToReady(tasks_ids);
 						((NotificationManager) getSystemService(NOTIFICATION_SERVICE))
-								.notify(NOTIFICATION_NEED_AUTHORIZE,
+								.notify(NOTIFICATION_SEND_LATER,
 										buildNotification(
 												NOTIFICATION_SEND_LATER)
 												.build());
@@ -251,8 +263,6 @@ public class GoogleTasksService extends IntentService {
 			LocalTask task = databaseHelper.getTask(task_id);
 
 			handleActionSend(task);
-
-			
 		}
 	}
 
@@ -292,16 +302,19 @@ public class GoogleTasksService extends IntentService {
 		URLOptions urlOptions = new URLOptions();
 		String[] parts;
 		switch (task.getStatus()) {
+		case ADDED:
 		case READY:
 			if (task.hasOption(Options.OPTION_UNSHORTEN)) {
 				task.setStatus(Status.PROCESSING_UNSHORTEN).persist();
-				parts = urlOptions.unshorten(task.getTitle());
+				String links = Utils.filterLinks(task.getTitle()).trim();
+				parts = urlOptions.unshorten(links.split(" "));
 				task.setTitle(Utils.replace(task.getTitle(), parts))
 						.removeOption(Options.OPTION_UNSHORTEN);
 			}
 			if (task.hasOption(Options.OPTION_GETTITLES)) {
 				task.setStatus(Status.PROCESSING_TITLE).persist();
-				parts = urlOptions.getTitles(task.getTitle());
+				String links = Utils.filterLinks(task.getTitle()).trim();
+				parts = urlOptions.getTitles(links.split(" "));
 				task.setTitle(Utils.appendInBrackets(task.getTitle(), parts))
 						.removeOption(Options.OPTION_GETTITLES);
 			}
