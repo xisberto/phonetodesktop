@@ -12,7 +12,8 @@ package net.xisberto.phonetodesktop;
 
 import java.util.List;
 
-import net.xisberto.phonetodesktop.ListAsyncTask.TaskListTaskListener;
+import net.xisberto.phonetodesktop.network.ListAsyncTask;
+import net.xisberto.phonetodesktop.network.ListAsyncTask.TaskListTaskListener;
 import android.accounts.AccountManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -74,6 +75,7 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements
 		setContentView(R.layout.main);
 
 		findViewById(R.id.btn_link_list).setOnClickListener(this);
+		findViewById(R.id.btn_wait_list).setOnClickListener(this);
 		findViewById(R.id.btn_how_it_works).setOnClickListener(this);
 		findViewById(R.id.btn_about).setOnClickListener(this);
 		findViewById(R.id.btn_authorize).setOnClickListener(this);
@@ -148,16 +150,20 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.btn_how_it_works:
-			startActivity(new Intent(getApplicationContext(),
+			startActivity(new Intent(this,
 					TutorialActivity.class));
 			break;
 		case R.id.btn_about:
-			startActivity(new Intent(getApplicationContext(),
+			startActivity(new Intent(this,
 					AboutActivity.class));
 			break;
 		case R.id.btn_link_list:
-			startActivity(new Intent(getApplicationContext(),
+			startActivity(new Intent(this,
 					LinkListActivity.class));
+			break;
+		case R.id.btn_wait_list:
+			startActivity(new Intent(this,
+					WaitListActivity.class));
 			break;
 		case R.id.btn_authorize:
 			updateMainLayout(true);

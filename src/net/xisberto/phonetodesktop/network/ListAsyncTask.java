@@ -8,10 +8,14 @@
  * Contributors:
  *     Humberto Fraga <xisberto@gmail.com> - initial API and implementation
  ******************************************************************************/
-package net.xisberto.phonetodesktop;
+package net.xisberto.phonetodesktop.network;
 
 import java.io.IOException;
 import java.util.List;
+
+import net.xisberto.phonetodesktop.PhoneToDesktopActivity;
+import net.xisberto.phonetodesktop.Preferences;
+import net.xisberto.phonetodesktop.Utils;
 
 import android.os.AsyncTask;
 import android.util.Log;

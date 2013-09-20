@@ -71,8 +71,9 @@
     <string name="btn_link_list">Ver textos enviados</string>
     <string name="title_activity_link_list">Lista de textos</string>
     <string name="txt_empty_list">Lista vazia</string>
-    <string name="title_confirm">Confirmar deleção</string>
-    <string name="txt_confirm">Você deseja apagar este item?</string>
+    <string name="btn_delete">Remover</string>
+    <string name="title_confirm">Confirmar remoção</string>
+    <string name="txt_confirm">Você deseja remover este item?</string>
     <string name="refresh">Refresh</string>
     
 </resources>

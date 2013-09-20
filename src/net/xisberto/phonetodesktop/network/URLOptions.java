@@ -1,14 +1,4 @@
-/*******************************************************************************
- * Copyright (c) 2013 Humberto Fraga <xisberto@gmail.com>.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Public License v3.0
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/gpl.html
- * 
- * Contributors:
- *     Humberto Fraga <xisberto@gmail.com> - initial API and implementation
- ******************************************************************************/
-package net.xisberto.phonetodesktop;
+package net.xisberto.phonetodesktop.network;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,6 +10,8 @@ import java.nio.charset.Charset;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.xisberto.phonetodesktop.Utils;
+
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -27,18 +19,14 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import android.os.AsyncTask;
-import android.util.Log;
-
-public class URLOptionsAsyncTask extends AsyncTask<String, Void, String[]> {
-
-	public static final int TASK_UNSHORTEN = 0, TASK_GET_TITLE = 1;
+public class URLOptions {
 	private static final Pattern TITLE_TAG = Pattern.compile(
 			"\\<title>(.*?)\\</title>", Pattern.CASE_INSENSITIVE
 					| Pattern.DOTALL), CHARSET_HEADER = Pattern.compile(
 			"charset=([-_a-zA-Z0-9]+)", Pattern.CASE_INSENSITIVE
 					| Pattern.DOTALL);
 
+<<<<<<< HEAD:src/net/xisberto/phonetodesktop/URLOptionsAsyncTask.java
 	private int task;
 	private URLOptionsListener listener;
 
@@ -107,9 +95,15 @@ public class URLOptionsAsyncTask extends AsyncTask<String, Void, String[]> {
 			break;
 		}
 		listener.setDone();
+=======
+	private boolean isCancelled = false;
+	
+	protected void cancel() {
+		isCancelled = true;
+>>>>>>> enhancement#4:src/net/xisberto/phonetodesktop/network/URLOptions.java
 	}
 
-	private String[] unshorten(String... params) throws IOException {
+	protected String[] unshorten(String... params) throws IOException {
 		String[] result = params.clone();
 		for (int i = 0; i < params.length; i++) {
 			Utils.log("unshorten " + params[i]);
@@ -119,7 +113,7 @@ public class URLOptionsAsyncTask extends AsyncTask<String, Void, String[]> {
 			InputStream instr = connection.getInputStream();
 			instr.close();
 			
-			if (isCancelled()) {
+			if (isCancelled) {
 				return result;
 			}
 
@@ -129,7 +123,7 @@ public class URLOptionsAsyncTask extends AsyncTask<String, Void, String[]> {
 		return result;
 	}
 
-	private String[] getTitles(String... params) throws IOException,
+	protected String[] getTitles(String... params) throws IOException,
 			NullPointerException {
 		String[] result = params.clone();
 		for (int i = 0; i < params.length; i++) {
@@ -143,7 +137,7 @@ public class URLOptionsAsyncTask extends AsyncTask<String, Void, String[]> {
 				result[i] = params[i];
 			}
 			
-			if (isCancelled()) {
+			if (isCancelled) {
 				return result;
 			}
 		}
@@ -168,7 +162,7 @@ public class URLOptionsAsyncTask extends AsyncTask<String, Void, String[]> {
 		HttpUriRequest request = new HttpGet(url);
 		HttpResponse response = client.execute(request);
 		
-		if (isCancelled()) {
+		if (isCancelled) {
 			return null;
 		}
 
@@ -215,7 +209,7 @@ public class URLOptionsAsyncTask extends AsyncTask<String, Void, String[]> {
 					String result = matcher.group(1).replaceAll("[\\s\\<>]+", " ").trim();
 					return result;
 				}
-				if (isCancelled()) {
+				if (isCancelled) {
 					reader.close();
 					return null;
 				}
@@ -224,15 +218,4 @@ public class URLOptionsAsyncTask extends AsyncTask<String, Void, String[]> {
 		}
 		return null;
 	}
-
-	public interface URLOptionsListener {
-		public void setWaiting();
-
-		public void setDone();
-
-		public void onPostUnshorten(String[] result);
-
-		public void onPostGetTitle(String[] result);
-	}
-
 }

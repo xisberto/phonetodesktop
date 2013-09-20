@@ -10,10 +10,13 @@
  ******************************************************************************/
 package net.xisberto.phonetodesktop;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import net.xisberto.phonetodesktop.URLOptionsAsyncTask.URLOptionsListener;
+import net.xisberto.phonetodesktop.database.DatabaseHelper;
+import net.xisberto.phonetodesktop.model.LocalTask;
+import net.xisberto.phonetodesktop.model.LocalTask.Options;
+import net.xisberto.phonetodesktop.model.LocalTask.Status;
+import net.xisberto.phonetodesktop.network.GoogleTasksService;
+import net.xisberto.phonetodesktop.network.URLOptionsAsyncTask;
+import net.xisberto.phonetodesktop.network.URLOptionsAsyncTask.URLOptionsListener;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -44,11 +47,8 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 	private URLOptionsAsyncTask async_titles;
 	private static final String SAVE_CACHE_UNSHORTEN = "cache_unshorten",
 			SAVE_CACHE_TITLES = "cache_titles";
-	private static final Pattern urlPattern = Pattern
-			.compile(
-					"\\b((?:https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])",
-					Pattern.CASE_INSENSITIVE | Pattern.MULTILINE
-							| Pattern.DOTALL);
+	private DatabaseHelper databaseHelper;
+	private LocalTask localTask;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +59,11 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 				&& getIntent().hasExtra(Intent.EXTRA_TEXT)) {
 			text_from_extra = getIntent().getStringExtra(Intent.EXTRA_TEXT);
 			text_to_send = text_from_extra;
+
+			databaseHelper = DatabaseHelper
+					.getInstance(getApplicationContext());
+			localTask = new LocalTask(databaseHelper);
+			localTask.setTitle(text_to_send).persist();
 
 			send_fragment = (SendFragment) getSupportFragmentManager()
 					.findFragmentByTag("send_fragment");
@@ -125,6 +130,19 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 	}
 
 	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		//TODO delete the localTask when exiting the activity
+		//localTask.delete();
+		//During beta, we will inform the user that the task will be saved
+		Toast.makeText(this, 
+				"Saving this task on Waiting List " +
+				"(after beta period, the task will be discarded)",
+				Toast.LENGTH_LONG)
+				.show();
+	}
+
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		if (!getResources().getBoolean(R.bool.is_tablet)) {
 			getSupportMenuInflater().inflate(R.menu.activity_send, menu);
@@ -137,8 +155,12 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		switch (item.getItemId()) {
 		case R.id.item_send:
 			sendText();
-		case R.id.item_cancel:
 			finish();
+			break;
+		case R.id.item_cancel:
+			localTask.delete();
+			finish();
+			break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -148,16 +170,21 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		switch (whichButton) {
 		case DialogInterface.BUTTON_POSITIVE:
 			sendText();
-		case DialogInterface.BUTTON_NEGATIVE:
 			finish();
+			break;
+		case DialogInterface.BUTTON_NEGATIVE:
+			localTask.delete();
+			finish();
+			break;
 		}
 	}
 
 	private void sendText() {
 		Intent service = new Intent(this, GoogleTasksService.class);
-		service.setAction(Utils.ACTION_SEND_TASK);
-		service.putExtra(Intent.EXTRA_TEXT, text_to_send);
+		service.setAction(Utils.ACTION_SEND_TASKS);
+		service.putExtra(Utils.EXTRA_TASKS_IDS, new long[] {localTask.getLocalId()});
 		startService(service);
+
 		Preferences prefs = new Preferences(this);
 		prefs.saveOnlyLinks(send_fragment.cb_only_links.isChecked());
 		prefs.saveUnshorten(send_fragment.cb_unshorten.isChecked());
@@ -165,44 +192,35 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		prefs.saveLastSentText(text_to_send);
 	}
 
-	/**
-	 * Filter the URLs in {@code text} and return them separated by spaces
-	 * 
-	 * @param text
-	 *            the text to search the URLs in
-	 * @return the found URLs separated by space
-	 */
-	private String filterLinks(String text) {
-		String result = "";
-		Matcher matcher = urlPattern.matcher(text);
-		while (matcher.find()) {
-			result += matcher.group() + " ";
-		}
-
-		return result;
-	}
-
 	private void processCheckBoxes() {
 		text_to_send = text_from_extra;
-		String links = filterLinks(text_to_send).trim();
+		String links = Utils.filterLinks(text_to_send).trim();
 		if (links.equals("")) {
-			Toast.makeText(this, R.string.txt_no_links,
-					Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, R.string.txt_no_links, Toast.LENGTH_SHORT)
+					.show();
 			return;
 		}
-		
+
 		if (send_fragment.cb_only_links.isChecked()) {
+			localTask.addOption(Options.OPTION_ONLY_LINKS);
 			text_to_send = links;
 		} else {
+			localTask.removeOption(Options.OPTION_ONLY_LINKS);
 			text_to_send = text_from_extra;
 		}
 
 		if (send_fragment.cb_unshorten.isChecked()) {
+			localTask.addOption(Options.OPTION_UNSHORTEN).persist();
 			unshortenLinks(links);
+		} else {
+			localTask.removeOption(Options.OPTION_UNSHORTEN);
 		}
 
 		if (send_fragment.cb_get_titles.isChecked()) {
+			localTask.addOption(Options.OPTION_GETTITLES).persist();
 			getTitles(links);
+		} else {
+			localTask.removeOption(Options.OPTION_GETTITLES);
 		}
 
 		send_fragment.setPreview(text_to_send);
@@ -212,6 +230,7 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		if (cache_unshorten != null) {
 			onPostUnshorten(cache_unshorten);
 		} else {
+			localTask.setStatus(Status.PROCESSING_UNSHORTEN).persist();
 			String[] parts = links.split(" ");
 			async_unshorten = new URLOptionsAsyncTask(this,
 					URLOptionsAsyncTask.TASK_UNSHORTEN);
@@ -223,6 +242,7 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		if (cache_titles != null) {
 			onPostGetTitle(cache_titles);
 		} else {
+			localTask.setStatus(Status.PROCESSING_TITLE).persist();
 			String[] parts = links.split(" ");
 			async_titles = new URLOptionsAsyncTask(this,
 					URLOptionsAsyncTask.TASK_GET_TITLE);
@@ -232,11 +252,13 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 
 	@Override
 	public void setWaiting() {
+		Utils.log(this.toString());
 		send_fragment.setWaiting(true);
 	}
 
 	@Override
 	public void setDone() {
+		Utils.log(this.toString());
 		send_fragment.setWaiting(false);
 	}
 
@@ -250,15 +272,14 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 			send_fragment.cb_unshorten.setChecked(false);
 			return;
 		}
-		int index = 0;
-		Matcher matcher = urlPattern.matcher(text_to_send);
-		while (matcher.find()) {
-			text_to_send = text_to_send.replace(matcher.group(), result[index]);
-			index++;
-		}
-
+		text_to_send = Utils.replace(text_to_send, result);
+		
 		cache_unshorten = result;
 		send_fragment.setPreview(text_to_send);
+		localTask.setTitle(text_to_send)
+				.setStatus(Status.READY)
+				.removeOption(Options.OPTION_UNSHORTEN)
+				.persist();
 	}
 
 	@Override
@@ -273,19 +294,14 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		}
 
 		Utils.log("Got " + result.length + " titles");
-		int index = 0;
-		Matcher matcher = urlPattern.matcher(text_to_send);
-		while (matcher.find()) {
-			if (!matcher.group().equals(result[index])) {
-				// don't replace when we have the URL and not a title
-				text_to_send = text_to_send.replace(matcher.group(),
-						matcher.group() + " [" + result[index] + "]");
-			}
-			index++;
-		}
+		text_to_send = Utils.appendInBrackets(text_to_send, result);
 
 		cache_titles = result;
 		send_fragment.setPreview(text_to_send);
+		localTask.setTitle(text_to_send)
+				.setStatus(Status.READY)
+				.removeOption(Options.OPTION_GETTITLES)
+				.persist();
 	}
 
 	public static class SendFragment extends SherlockDialogFragment implements
