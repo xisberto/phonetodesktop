@@ -33,6 +33,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.Builder;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -61,7 +62,7 @@ public class GoogleTasksService extends IntentService {
 
 	private Preferences preferences;
 	private String list_id;
-	
+
 	private String[] cache_unshorten, cache_titles;
 
 	public GoogleTasksService() {
@@ -94,8 +95,10 @@ public class GoogleTasksService extends IntentService {
 			try {
 				if (action.equals(Utils.ACTION_PROCESS_TASK)) {
 					long task_id = intent.getLongExtra(Utils.EXTRA_TASK_ID, -1);
-					LocalTask task = DatabaseHelper.getInstance(this).getTask(task_id);
-					final Intent result = new Intent(Utils.ACTION_RESULT_PROCESS_TASK);
+					LocalTask task = DatabaseHelper.getInstance(this).getTask(
+							task_id);
+					final Intent result = new Intent(
+							Utils.ACTION_RESULT_PROCESS_TASK);
 					result.putExtra(Utils.EXTRA_TASK_ID, task.getLocalId());
 					if (isOnline()) {
 						processOptions(task);
@@ -103,19 +106,23 @@ public class GoogleTasksService extends IntentService {
 							@Override
 							public void run() {
 								if (cache_unshorten != null) {
-									result.putExtra(Utils.EXTRA_CACHE_UNSHORTEN, cache_unshorten);
+									result.putExtra(
+											Utils.EXTRA_CACHE_UNSHORTEN,
+											cache_unshorten);
 								}
 								if (cache_unshorten != null) {
-									result.putExtra(Utils.EXTRA_CACHE_TITLES, cache_titles);
+									result.putExtra(Utils.EXTRA_CACHE_TITLES,
+											cache_titles);
 								}
-								LocalBroadcastManager.getInstance(GoogleTasksService.this)
-										.sendBroadcast(result);
+								LocalBroadcastManager.getInstance(
+										GoogleTasksService.this).sendBroadcast(
+										result);
 							}
 						});
 					} else {
 						revertTaskToReady(tasks_ids);
-						LocalBroadcastManager.getInstance(this)
-								.sendBroadcast(result);
+						LocalBroadcastManager.getInstance(this).sendBroadcast(
+								result);
 					}
 				} else if (action.equals(Utils.ACTION_SEND_TASKS)) {
 					if (isOnline()) {
@@ -125,7 +132,8 @@ public class GoogleTasksService extends IntentService {
 						if (tasks_ids.length == 1) {
 							DatabaseHelper databaseHelper = DatabaseHelper
 									.getInstance(this);
-							LocalTask task = databaseHelper.getTask(tasks_ids[0]);
+							LocalTask task = databaseHelper
+									.getTask(tasks_ids[0]);
 							handleActionSend(task);
 						} else {
 							handleActionSendMultiple(tasks_ids);
@@ -193,10 +201,11 @@ public class GoogleTasksService extends IntentService {
 				.currentTimeMillis());
 		// The default notification send the user to the waiting list
 		Intent intentContent = new Intent(this, WaitListActivity.class);
-		intentContent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-				| Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		PendingIntent pendingContent = PendingIntent.getActivity(this, 0,
-				intentContent, PendingIntent.FLAG_CANCEL_CURRENT);
+		TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+		stackBuilder.addParentStack(WaitListActivity.class);
+		stackBuilder.addNextIntent(intentContent);
+		PendingIntent pendingContent = stackBuilder.getPendingIntent(0,
+				PendingIntent.FLAG_UPDATE_CURRENT);
 		builder.setContentIntent(pendingContent);
 
 		switch (notif_id) {
@@ -209,7 +218,8 @@ public class GoogleTasksService extends IntentService {
 			builder.setAutoCancel(true)
 					.setSmallIcon(android.R.drawable.stat_notify_error)
 					.setTicker(getString(R.string.txt_error_no_connection))
-					.setContentTitle(getString(R.string.txt_error_no_connection))
+					.setContentTitle(
+							getString(R.string.txt_error_no_connection))
 					.setContentText(getString(R.string.txt_error_try_again));
 			return builder;
 		case NOTIFICATION_ERROR:
@@ -246,20 +256,21 @@ public class GoogleTasksService extends IntentService {
 		PersistCallback callback = new PersistCallback() {
 			@Override
 			public void run() {
-				LocalBroadcastManager.getInstance(GoogleTasksService.this).sendBroadcast(
-						new Intent(Utils.ACTION_LIST_LOCAL_TASKS));		
+				LocalBroadcastManager.getInstance(GoogleTasksService.this)
+						.sendBroadcast(
+								new Intent(Utils.ACTION_LIST_LOCAL_TASKS));
 			}
 		};
-		
+
 		processOptions(task);
 
 		task.setStatus(Status.SENDING).persist(callback);
-		
+
 		Task new_task = new Task().setTitle(task.getTitle());
 		client.tasks().insert(list_id, new_task).execute();
 
 		task.setStatus(Status.SENT).persist(callback);
-		
+
 	}
 
 	private void handleActionSendMultiple(long... tasks_ids)
