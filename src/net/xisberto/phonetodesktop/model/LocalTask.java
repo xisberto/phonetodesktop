@@ -105,7 +105,7 @@ public class LocalTask {
 			return 0;
 		}
 		int result = 0;
-		for (Options opt : Options.values()) {
+		for (Options opt : options) {
 			result |= opt.value;
 		}
 		return result;
@@ -115,6 +115,8 @@ public class LocalTask {
 		for (Options option : Options.values()) {
 			if ((opts & option.value) == option.value) {
 				addOption(option);
+			} else {
+				removeOption(option);
 			}
 		}
 		return this;

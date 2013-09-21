@@ -225,6 +225,8 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 					.show();
 			return;
 		}
+		
+		localTask.setOptions(0);
 
 		if (send_fragment.cb_only_links.isChecked()) {
 			localTask.addOption(Options.OPTION_ONLY_LINKS);
