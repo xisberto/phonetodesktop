@@ -61,6 +61,8 @@ public class GoogleTasksService extends IntentService {
 
 	private Preferences preferences;
 	private String list_id;
+	
+	private String[] cache_unshorten, cache_titles;
 
 	public GoogleTasksService() {
 		super("GoogleTasksService");
@@ -90,7 +92,32 @@ public class GoogleTasksService extends IntentService {
 			final String action = intent.getAction();
 			long[] tasks_ids = intent.getLongArrayExtra(Utils.EXTRA_TASKS_IDS);
 			try {
-				if (action.equals(Utils.ACTION_SEND_TASKS)) {
+				if (action.equals(Utils.ACTION_PROCESS_TASK)) {
+					long task_id = intent.getLongExtra(Utils.EXTRA_TASK_ID, -1);
+					LocalTask task = DatabaseHelper.getInstance(this).getTask(task_id);
+					final Intent result = new Intent(Utils.ACTION_RESULT_PROCESS_TASK);
+					result.putExtra(Utils.EXTRA_TASK_ID, task.getLocalId());
+					if (isOnline()) {
+						processOptions(task);
+						task.persist(new PersistCallback() {
+							@Override
+							public void run() {
+								if (cache_unshorten != null) {
+									result.putExtra(Utils.EXTRA_CACHE_UNSHORTEN, cache_unshorten);
+								}
+								if (cache_unshorten != null) {
+									result.putExtra(Utils.EXTRA_CACHE_TITLES, cache_titles);
+								}
+								LocalBroadcastManager.getInstance(GoogleTasksService.this)
+										.sendBroadcast(result);
+							}
+						});
+					} else {
+						revertTaskToReady(tasks_ids);
+						LocalBroadcastManager.getInstance(this)
+								.sendBroadcast(result);
+					}
+				} else if (action.equals(Utils.ACTION_SEND_TASKS)) {
 					if (isOnline()) {
 						startForeground(NOTIFICATION_SEND,
 								buildNotification(NOTIFICATION_SEND).build());
@@ -108,7 +135,7 @@ public class GoogleTasksService extends IntentService {
 					} else {
 						revertTaskToReady(tasks_ids);
 						((NotificationManager) getSystemService(NOTIFICATION_SERVICE))
-								.notify(NOTIFICATION_NEED_AUTHORIZE,
+								.notify(NOTIFICATION_SEND_LATER,
 										buildNotification(
 												NOTIFICATION_SEND_LATER)
 												.build());
@@ -218,7 +245,7 @@ public class GoogleTasksService extends IntentService {
 
 		PersistCallback callback = new PersistCallback() {
 			@Override
-			public void done() {
+			public void run() {
 				LocalBroadcastManager.getInstance(GoogleTasksService.this).sendBroadcast(
 						new Intent(Utils.ACTION_LIST_LOCAL_TASKS));		
 			}
@@ -251,8 +278,6 @@ public class GoogleTasksService extends IntentService {
 			LocalTask task = databaseHelper.getTask(task_id);
 
 			handleActionSend(task);
-
-			
 		}
 	}
 
@@ -291,37 +316,46 @@ public class GoogleTasksService extends IntentService {
 	private void processOptions(LocalTask task) throws IOException {
 		URLOptions urlOptions = new URLOptions();
 		String[] parts;
+		cache_unshorten = null;
+		cache_titles = null;
 		switch (task.getStatus()) {
+		case ADDED:
 		case READY:
 			if (task.hasOption(Options.OPTION_UNSHORTEN)) {
 				task.setStatus(Status.PROCESSING_UNSHORTEN).persist();
-				parts = urlOptions.unshorten(task.getTitle());
+				String links = Utils.filterLinks(task.getTitle()).trim();
+				parts = urlOptions.unshorten(links.split(" "));
+				cache_unshorten = parts.clone();
 				task.setTitle(Utils.replace(task.getTitle(), parts))
 						.removeOption(Options.OPTION_UNSHORTEN);
 			}
 			if (task.hasOption(Options.OPTION_GETTITLES)) {
 				task.setStatus(Status.PROCESSING_TITLE).persist();
-				parts = urlOptions.getTitles(task.getTitle());
+				String links = Utils.filterLinks(task.getTitle()).trim();
+				parts = urlOptions.getTitles(links.split(" "));
+				cache_titles = parts.clone();
 				task.setTitle(Utils.appendInBrackets(task.getTitle(), parts))
 						.removeOption(Options.OPTION_GETTITLES);
 			}
-			task.setStatus(Status.READY).persist();
+			task.setStatus(Status.READY);
 			break;
 		case PROCESSING_UNSHORTEN:
 			parts = Utils.filterLinks(task.getTitle()).split(" ");
 			parts = urlOptions.unshorten(parts);
+			cache_unshorten = parts.clone();
 			task.setTitle(Utils.replace(task.getTitle(), parts)).removeOption(
 					Options.OPTION_UNSHORTEN);
 			if (!task.hasOption(Options.OPTION_GETTITLES)) {
-				task.setStatus(Status.READY).persist();
+				task.setStatus(Status.READY);
 				break;
 			}
 		case PROCESSING_TITLE:
 			parts = Utils.filterLinks(task.getTitle()).split(" ");
 			parts = urlOptions.getTitles(parts);
+			cache_titles = parts.clone();
 			task.setTitle(Utils.appendInBrackets(task.getTitle(), parts))
 					.removeOption(Options.OPTION_GETTITLES)
-					.setStatus(Status.READY).persist();
+					.setStatus(Status.READY);
 			break;
 		}
 	}
