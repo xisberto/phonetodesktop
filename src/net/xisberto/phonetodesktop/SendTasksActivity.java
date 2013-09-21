@@ -13,16 +13,18 @@ package net.xisberto.phonetodesktop;
 import net.xisberto.phonetodesktop.database.DatabaseHelper;
 import net.xisberto.phonetodesktop.model.LocalTask;
 import net.xisberto.phonetodesktop.model.LocalTask.Options;
-import net.xisberto.phonetodesktop.model.LocalTask.Status;
+import net.xisberto.phonetodesktop.model.LocalTask.PersistCallback;
 import net.xisberto.phonetodesktop.network.GoogleTasksService;
-import net.xisberto.phonetodesktop.network.URLOptionsAsyncTask;
-import net.xisberto.phonetodesktop.network.URLOptionsAsyncTask.URLOptionsListener;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -37,33 +39,45 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
 public class SendTasksActivity extends SherlockFragmentActivity implements
-		URLOptionsListener, android.content.DialogInterface.OnClickListener {
+		android.content.DialogInterface.OnClickListener {
 
-	private String text_from_extra, text_to_send;
+	private String text_from_extra;
 	private String[] cache_unshorten = null, cache_titles = null;
 	private SendFragment send_fragment;
-	private boolean restoreFromPreferences;
-	private URLOptionsAsyncTask async_unshorten;
-	private URLOptionsAsyncTask async_titles;
-	private static final String SAVE_CACHE_UNSHORTEN = "cache_unshorten",
-			SAVE_CACHE_TITLES = "cache_titles";
+	private boolean restoreFromPreferences, isWaiting = false;
+	private static final String
+			SAVE_CACHE_UNSHORTEN = "cache_unshorten",
+			SAVE_CACHE_TITLES = "cache_titles",
+			SAVE_LOCAL_TASK_ID = "local_task_id",
+			SAVE_IS_WAITING = "is_waiting";
 	private DatabaseHelper databaseHelper;
 	private LocalTask localTask;
 
+	private BroadcastReceiver receiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			long taskId = intent.getLongExtra(Utils.EXTRA_TASK_ID, -1);
+			if (taskId != -1) {
+				cache_unshorten = intent.getStringArrayExtra(Utils.EXTRA_CACHE_UNSHORTEN);
+				cache_titles = intent.getStringArrayExtra(Utils.EXTRA_CACHE_TITLES);
+				localTask = databaseHelper.getTask(taskId);
+				send_fragment.setPreview(localTask.getTitle());
+				setDone();
+			}
+		}
+	};
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Utils.log("onCreate");
+		Utils.log("onCreate " + this.toString());
 
 		if (getIntent().getAction().equals(Intent.ACTION_SEND)
 				&& getIntent().hasExtra(Intent.EXTRA_TEXT)) {
 			text_from_extra = getIntent().getStringExtra(Intent.EXTRA_TEXT);
-			text_to_send = text_from_extra;
 
 			databaseHelper = DatabaseHelper
 					.getInstance(getApplicationContext());
-			localTask = new LocalTask(databaseHelper);
-			localTask.setTitle(text_to_send).persist();
 
 			send_fragment = (SendFragment) getSupportFragmentManager()
 					.findFragmentByTag("send_fragment");
@@ -90,8 +104,13 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 			cache_unshorten = savedInstanceState
 					.getStringArray(SAVE_CACHE_UNSHORTEN);
 			cache_titles = savedInstanceState.getStringArray(SAVE_CACHE_TITLES);
+			long local_id = savedInstanceState.getLong(SAVE_LOCAL_TASK_ID);
+			localTask = databaseHelper.getTask(local_id);
+			isWaiting = savedInstanceState.getBoolean(SAVE_IS_WAITING);
 			restoreFromPreferences = false;
 		} else {
+			localTask = new LocalTask(this);
+			localTask.setTitle(text_from_extra).persist();
 			restoreFromPreferences = true;
 		}
 
@@ -106,7 +125,13 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 			send_fragment.cb_unshorten.setChecked(prefs.loadUnshorten());
 			send_fragment.cb_get_titles.setChecked(prefs.loadGetTitles());
 		}
-		processCheckBoxes();
+		if (! isWaiting) {
+			Utils.log("not waiting, processCheckBoxes");
+			processCheckBoxes();
+		} else {
+			Utils.log("waiting, setWaiting");
+			setWaiting();
+		}
 	}
 
 	@Override
@@ -114,19 +139,37 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		super.onSaveInstanceState(outState);
 		outState.putStringArray(SAVE_CACHE_UNSHORTEN, cache_unshorten);
 		outState.putStringArray(SAVE_CACHE_TITLES, cache_titles);
+		outState.putBoolean(SAVE_IS_WAITING, isWaiting);
+		outState.putLong(SAVE_LOCAL_TASK_ID, localTask.getLocalId());
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		LocalBroadcastManager.getInstance(this)
+				.unregisterReceiver(receiver);
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		LocalBroadcastManager.getInstance(this)
+				.registerReceiver(
+						receiver,
+						new IntentFilter(Utils.ACTION_RESULT_PROCESS_TASK));
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		if (isFinishing()) {
-			if (async_unshorten != null) {
-				async_unshorten.cancel(true);
-			}
-			if (async_titles != null) {
-				async_titles.cancel(true);
-			}
-		}
+//		if (isFinishing()) {
+//			if (async_unshorten != null) {
+//				async_unshorten.cancel(true);
+//			}
+//			if (async_titles != null) {
+//				async_titles.cancel(true);
+//			}
+//		}
 	}
 
 	@Override
@@ -189,119 +232,76 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		prefs.saveOnlyLinks(send_fragment.cb_only_links.isChecked());
 		prefs.saveUnshorten(send_fragment.cb_unshorten.isChecked());
 		prefs.saveGetTitles(send_fragment.cb_get_titles.isChecked());
-		prefs.saveLastSentText(text_to_send);
 	}
 
 	private void processCheckBoxes() {
-		text_to_send = text_from_extra;
-		String links = Utils.filterLinks(text_to_send).trim();
+		String links = Utils.filterLinks(text_from_extra).trim();
 		if (links.equals("")) {
 			Toast.makeText(this, R.string.txt_no_links, Toast.LENGTH_SHORT)
 					.show();
 			return;
 		}
+		
+		localTask.setOptions(0);
 
 		if (send_fragment.cb_only_links.isChecked()) {
-			localTask.addOption(Options.OPTION_ONLY_LINKS);
-			text_to_send = links;
+			localTask.setTitle(links);
 		} else {
-			localTask.removeOption(Options.OPTION_ONLY_LINKS);
-			text_to_send = text_from_extra;
+			localTask.setTitle(text_from_extra);
 		}
 
 		if (send_fragment.cb_unshorten.isChecked()) {
-			localTask.addOption(Options.OPTION_UNSHORTEN).persist();
-			unshortenLinks(links);
+			if (cache_unshorten != null) {
+				localTask.setTitle(Utils.replace(
+						localTask.getTitle(),
+						cache_unshorten));
+			} else {
+				localTask.addOption(Options.OPTION_UNSHORTEN);
+			}
 		} else {
 			localTask.removeOption(Options.OPTION_UNSHORTEN);
 		}
 
 		if (send_fragment.cb_get_titles.isChecked()) {
-			localTask.addOption(Options.OPTION_GETTITLES).persist();
-			getTitles(links);
+			if (cache_titles != null) {
+				localTask.setTitle(Utils.appendInBrackets(
+						localTask.getTitle(),
+						cache_titles));
+			} else {
+				localTask.addOption(Options.OPTION_GETTITLES);
+			}
 		} else {
 			localTask.removeOption(Options.OPTION_GETTITLES);
 		}
 
-		send_fragment.setPreview(text_to_send);
+		localTask.persist(new PersistCallback() {
+			@Override
+			public void run() {
+				if (localTask.hasOption(Options.OPTION_UNSHORTEN)
+						|| localTask.hasOption(Options.OPTION_GETTITLES)) {
+					//Only start service if there's some option to process
+					Intent service = new Intent(SendTasksActivity.this, GoogleTasksService.class);
+					service.setAction(Utils.ACTION_PROCESS_TASK);
+					service.putExtra(Utils.EXTRA_TASK_ID, localTask.getLocalId());
+					startService(service);
+					setWaiting();
+				}
+			}
+		});
+		
+		send_fragment.setPreview(localTask.getTitle());
 	}
 
-	private void unshortenLinks(String links) {
-		if (cache_unshorten != null) {
-			onPostUnshorten(cache_unshorten);
-		} else {
-			localTask.setStatus(Status.PROCESSING_UNSHORTEN).persist();
-			String[] parts = links.split(" ");
-			async_unshorten = new URLOptionsAsyncTask(this,
-					URLOptionsAsyncTask.TASK_UNSHORTEN);
-			async_unshorten.execute(parts);
-		}
-	}
-
-	private void getTitles(String links) {
-		if (cache_titles != null) {
-			onPostGetTitle(cache_titles);
-		} else {
-			localTask.setStatus(Status.PROCESSING_TITLE).persist();
-			String[] parts = links.split(" ");
-			async_titles = new URLOptionsAsyncTask(this,
-					URLOptionsAsyncTask.TASK_GET_TITLE);
-			async_titles.execute(parts);
-		}
-	}
-
-	@Override
 	public void setWaiting() {
-		Utils.log(this.toString());
+		Utils.log("Waiting " + this.toString());
+		isWaiting = true;
 		send_fragment.setWaiting(true);
 	}
 
-	@Override
 	public void setDone() {
-		Utils.log(this.toString());
+		Utils.log("Done " + this.toString());
+		isWaiting = false;
 		send_fragment.setWaiting(false);
-	}
-
-	@Override
-	public void onPostUnshorten(String[] result) {
-		if (result == null) {
-			if (!isFinishing()) {
-				Toast.makeText(this, R.string.txt_error_timeout,
-						Toast.LENGTH_SHORT).show();
-			}
-			send_fragment.cb_unshorten.setChecked(false);
-			return;
-		}
-		text_to_send = Utils.replace(text_to_send, result);
-		
-		cache_unshorten = result;
-		send_fragment.setPreview(text_to_send);
-		localTask.setTitle(text_to_send)
-				.setStatus(Status.READY)
-				.removeOption(Options.OPTION_UNSHORTEN)
-				.persist();
-	}
-
-	@Override
-	public void onPostGetTitle(String[] result) {
-		if (result == null) {
-			if (!isFinishing()) {
-				Toast.makeText(this, R.string.txt_error_timeout,
-						Toast.LENGTH_SHORT).show();
-			}
-			send_fragment.cb_get_titles.setChecked(false);
-			return;
-		}
-
-		Utils.log("Got " + result.length + " titles");
-		text_to_send = Utils.appendInBrackets(text_to_send, result);
-
-		cache_titles = result;
-		send_fragment.setPreview(text_to_send);
-		localTask.setTitle(text_to_send)
-				.setStatus(Status.READY)
-				.removeOption(Options.OPTION_GETTITLES)
-				.persist();
 	}
 
 	public static class SendFragment extends SherlockDialogFragment implements
@@ -344,7 +344,6 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
-			Utils.log("onCreateView");
 			if (getDialog() == null) {
 				return createView(inflater, container);
 			} else {
@@ -358,7 +357,6 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		}
 
 		private View createView(LayoutInflater inflater, ViewGroup container) {
-			Utils.log("createView");
 			v = inflater.inflate(R.layout.layout_send_task, container, false);
 			((TextView) v.findViewById(R.id.text_preview))
 					.setText(getArguments().getString(Intent.EXTRA_TEXT));

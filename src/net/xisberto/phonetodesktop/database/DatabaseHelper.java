@@ -27,9 +27,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public static final int DATABASE_VERSION = 1;
 
 	private static DatabaseHelper instance;
+	
+	private Context context;
 
 	private DatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
+		this.context = context;
 	}
 
 	public static synchronized DatabaseHelper getInstance(Context context) {
@@ -60,7 +63,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	private LocalTask taskFromCursor(Cursor c) {
-		LocalTask result = new LocalTask(this);
+		LocalTask result = new LocalTask(context);
 		result
 				.setLocalId(c.getLong(0))
 				.setGoogleId(c.getString(1))

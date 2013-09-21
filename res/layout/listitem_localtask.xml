@@ -24,7 +24,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/task_title" />
+        android:layout_below="@+id/task_title"
+        android:visibility="gone" />
 
     <ProgressBar
         android:id="@+id/progress"
