@@ -44,6 +44,8 @@ public class Utils {
 			EXTRA_ERROR_TEXT = "net.xisberto.phonetodesktop.extra.ERROR_TEXT",
 			EXTRA_TASK_ID = "net.xisberto.phonetodesktop.extra.TASK_ID",
 			EXTRA_TASKS_IDS = "net.xisberto.phonetodesktop.extra.TASKS_IDS",
+			EXTRA_CACHE_UNSHORTEN = "net.xisberto.phonetodesktop.extra.TASKS_CACHE_UNSHORTEN",
+			EXTRA_CACHE_TITLES = "net.xisberto.phonetodesktop.extra.TASKS_CACHE_TITLES",
 			LIST_TITLE = "PhoneToDesktop";
 	
 	public static void log(String message) {

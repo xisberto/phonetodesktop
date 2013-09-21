@@ -41,12 +41,15 @@ import com.actionbarsherlock.view.MenuItem;
 public class SendTasksActivity extends SherlockFragmentActivity implements
 		android.content.DialogInterface.OnClickListener {
 
-	private String text_from_extra;//, text_to_send;
+	private String text_from_extra;
 	private String[] cache_unshorten = null, cache_titles = null;
 	private SendFragment send_fragment;
-	private boolean restoreFromPreferences;
-	private static final String SAVE_CACHE_UNSHORTEN = "cache_unshorten",
-			SAVE_CACHE_TITLES = "cache_titles";
+	private boolean restoreFromPreferences, isWaiting = false;
+	private static final String
+			SAVE_CACHE_UNSHORTEN = "cache_unshorten",
+			SAVE_CACHE_TITLES = "cache_titles",
+			SAVE_LOCAL_TASK_ID = "local_task_id",
+			SAVE_IS_WAITING = "is_waiting";
 	private DatabaseHelper databaseHelper;
 	private LocalTask localTask;
 
@@ -55,6 +58,8 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		public void onReceive(Context context, Intent intent) {
 			long taskId = intent.getLongExtra(Utils.EXTRA_TASK_ID, -1);
 			if (taskId != -1) {
+				cache_unshorten = intent.getStringArrayExtra(Utils.EXTRA_CACHE_UNSHORTEN);
+				cache_titles = intent.getStringArrayExtra(Utils.EXTRA_CACHE_TITLES);
 				localTask = databaseHelper.getTask(taskId);
 				send_fragment.setPreview(localTask.getTitle());
 				setDone();
@@ -65,7 +70,7 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Utils.log("onCreate");
+		Utils.log("onCreate " + this.toString());
 
 		if (getIntent().getAction().equals(Intent.ACTION_SEND)
 				&& getIntent().hasExtra(Intent.EXTRA_TEXT)) {
@@ -73,8 +78,6 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 
 			databaseHelper = DatabaseHelper
 					.getInstance(getApplicationContext());
-			localTask = new LocalTask(databaseHelper);
-			localTask.setTitle(text_from_extra).persist();
 
 			send_fragment = (SendFragment) getSupportFragmentManager()
 					.findFragmentByTag("send_fragment");
@@ -101,8 +104,13 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 			cache_unshorten = savedInstanceState
 					.getStringArray(SAVE_CACHE_UNSHORTEN);
 			cache_titles = savedInstanceState.getStringArray(SAVE_CACHE_TITLES);
+			long local_id = savedInstanceState.getLong(SAVE_LOCAL_TASK_ID);
+			localTask = databaseHelper.getTask(local_id);
+			isWaiting = savedInstanceState.getBoolean(SAVE_IS_WAITING);
 			restoreFromPreferences = false;
 		} else {
+			localTask = new LocalTask(this);
+			localTask.setTitle(text_from_extra).persist();
 			restoreFromPreferences = true;
 		}
 
@@ -117,7 +125,13 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 			send_fragment.cb_unshorten.setChecked(prefs.loadUnshorten());
 			send_fragment.cb_get_titles.setChecked(prefs.loadGetTitles());
 		}
-		processCheckBoxes();
+		if (! isWaiting) {
+			Utils.log("not waiting, processCheckBoxes");
+			processCheckBoxes();
+		} else {
+			Utils.log("waiting, setWaiting");
+			setWaiting();
+		}
 	}
 
 	@Override
@@ -125,6 +139,8 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		super.onSaveInstanceState(outState);
 		outState.putStringArray(SAVE_CACHE_UNSHORTEN, cache_unshorten);
 		outState.putStringArray(SAVE_CACHE_TITLES, cache_titles);
+		outState.putBoolean(SAVE_IS_WAITING, isWaiting);
+		outState.putLong(SAVE_LOCAL_TASK_ID, localTask.getLocalId());
 	}
 
 	@Override
@@ -229,46 +245,62 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		localTask.setOptions(0);
 
 		if (send_fragment.cb_only_links.isChecked()) {
-			localTask.addOption(Options.OPTION_ONLY_LINKS);
 			localTask.setTitle(links);
 		} else {
-			localTask.removeOption(Options.OPTION_ONLY_LINKS);
 			localTask.setTitle(text_from_extra);
 		}
 
 		if (send_fragment.cb_unshorten.isChecked()) {
-			localTask.addOption(Options.OPTION_UNSHORTEN);
+			if (cache_unshorten != null) {
+				localTask.setTitle(Utils.replace(
+						localTask.getTitle(),
+						cache_unshorten));
+			} else {
+				localTask.addOption(Options.OPTION_UNSHORTEN);
+			}
 		} else {
 			localTask.removeOption(Options.OPTION_UNSHORTEN);
 		}
 
 		if (send_fragment.cb_get_titles.isChecked()) {
-			localTask.addOption(Options.OPTION_GETTITLES);
+			if (cache_titles != null) {
+				localTask.setTitle(Utils.appendInBrackets(
+						localTask.getTitle(),
+						cache_titles));
+			} else {
+				localTask.addOption(Options.OPTION_GETTITLES);
+			}
 		} else {
 			localTask.removeOption(Options.OPTION_GETTITLES);
 		}
 
 		localTask.persist(new PersistCallback() {
 			@Override
-			public void done() {
-				Intent service = new Intent(SendTasksActivity.this, GoogleTasksService.class);
-				service.setAction(Utils.ACTION_PROCESS_TASK);
-				service.putExtra(Utils.EXTRA_TASK_ID, localTask.getLocalId());
-				startService(service);
+			public void run() {
+				if (localTask.hasOption(Options.OPTION_UNSHORTEN)
+						|| localTask.hasOption(Options.OPTION_GETTITLES)) {
+					//Only start service if there's some option to process
+					Intent service = new Intent(SendTasksActivity.this, GoogleTasksService.class);
+					service.setAction(Utils.ACTION_PROCESS_TASK);
+					service.putExtra(Utils.EXTRA_TASK_ID, localTask.getLocalId());
+					startService(service);
+					setWaiting();
+				}
 			}
 		});
-		setWaiting();
 		
 		send_fragment.setPreview(localTask.getTitle());
 	}
 
 	public void setWaiting() {
-		Utils.log(this.toString());
+		Utils.log("Waiting " + this.toString());
+		isWaiting = true;
 		send_fragment.setWaiting(true);
 	}
 
 	public void setDone() {
-		Utils.log(this.toString());
+		Utils.log("Done " + this.toString());
+		isWaiting = false;
 		send_fragment.setWaiting(false);
 	}
 
@@ -312,7 +344,6 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
-			Utils.log("onCreateView");
 			if (getDialog() == null) {
 				return createView(inflater, container);
 			} else {
@@ -326,7 +357,6 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		}
 
 		private View createView(LayoutInflater inflater, ViewGroup container) {
-			Utils.log("createView");
 			v = inflater.inflate(R.layout.layout_send_task, container, false);
 			((TextView) v.findViewById(R.id.text_preview))
 					.setText(getArguments().getString(Intent.EXTRA_TEXT));

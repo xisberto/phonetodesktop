@@ -61,6 +61,8 @@ public class GoogleTasksService extends IntentService {
 
 	private Preferences preferences;
 	private String list_id;
+	
+	private String[] cache_unshorten, cache_titles;
 
 	public GoogleTasksService() {
 		super("GoogleTasksService");
@@ -99,7 +101,13 @@ public class GoogleTasksService extends IntentService {
 						processOptions(task);
 						task.persist(new PersistCallback() {
 							@Override
-							public void done() {
+							public void run() {
+								if (cache_unshorten != null) {
+									result.putExtra(Utils.EXTRA_CACHE_UNSHORTEN, cache_unshorten);
+								}
+								if (cache_unshorten != null) {
+									result.putExtra(Utils.EXTRA_CACHE_TITLES, cache_titles);
+								}
 								LocalBroadcastManager.getInstance(GoogleTasksService.this)
 										.sendBroadcast(result);
 							}
@@ -237,7 +245,7 @@ public class GoogleTasksService extends IntentService {
 
 		PersistCallback callback = new PersistCallback() {
 			@Override
-			public void done() {
+			public void run() {
 				LocalBroadcastManager.getInstance(GoogleTasksService.this).sendBroadcast(
 						new Intent(Utils.ACTION_LIST_LOCAL_TASKS));		
 			}
@@ -308,6 +316,8 @@ public class GoogleTasksService extends IntentService {
 	private void processOptions(LocalTask task) throws IOException {
 		URLOptions urlOptions = new URLOptions();
 		String[] parts;
+		cache_unshorten = null;
+		cache_titles = null;
 		switch (task.getStatus()) {
 		case ADDED:
 		case READY:
@@ -315,6 +325,7 @@ public class GoogleTasksService extends IntentService {
 				task.setStatus(Status.PROCESSING_UNSHORTEN).persist();
 				String links = Utils.filterLinks(task.getTitle()).trim();
 				parts = urlOptions.unshorten(links.split(" "));
+				cache_unshorten = parts.clone();
 				task.setTitle(Utils.replace(task.getTitle(), parts))
 						.removeOption(Options.OPTION_UNSHORTEN);
 			}
@@ -322,6 +333,7 @@ public class GoogleTasksService extends IntentService {
 				task.setStatus(Status.PROCESSING_TITLE).persist();
 				String links = Utils.filterLinks(task.getTitle()).trim();
 				parts = urlOptions.getTitles(links.split(" "));
+				cache_titles = parts.clone();
 				task.setTitle(Utils.appendInBrackets(task.getTitle(), parts))
 						.removeOption(Options.OPTION_GETTITLES);
 			}
@@ -330,6 +342,7 @@ public class GoogleTasksService extends IntentService {
 		case PROCESSING_UNSHORTEN:
 			parts = Utils.filterLinks(task.getTitle()).split(" ");
 			parts = urlOptions.unshorten(parts);
+			cache_unshorten = parts.clone();
 			task.setTitle(Utils.replace(task.getTitle(), parts)).removeOption(
 					Options.OPTION_UNSHORTEN);
 			if (!task.hasOption(Options.OPTION_GETTITLES)) {
@@ -339,6 +352,7 @@ public class GoogleTasksService extends IntentService {
 		case PROCESSING_TITLE:
 			parts = Utils.filterLinks(task.getTitle()).split(" ");
 			parts = urlOptions.getTitles(parts);
+			cache_titles = parts.clone();
 			task.setTitle(Utils.appendInBrackets(task.getTitle(), parts))
 					.removeOption(Options.OPTION_GETTITLES)
 					.setStatus(Status.READY);

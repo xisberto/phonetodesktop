@@ -14,6 +14,8 @@ import java.util.EnumSet;
 
 import net.xisberto.phonetodesktop.Utils;
 import net.xisberto.phonetodesktop.database.DatabaseHelper;
+import android.content.Context;
+import android.os.Handler;
 import android.os.Process;
 
 public class LocalTask {
@@ -44,16 +46,16 @@ public class LocalTask {
 	private String description, title, google_id;
 	private EnumSet<Options> options;
 	private Status status;
-	private DatabaseHelper helper;
+	private Context context;
 	
-	public LocalTask(DatabaseHelper databaseHelper) {
+	public LocalTask(Context context) {
 		this.local_id = -1;
 		this.google_id = "";
 		this.title = "";
 		this.description = "";
 		this.options = EnumSet.noneOf(Options.class);
 		this.status = Status.ADDED;
-		this.helper = databaseHelper;
+		this.context = context;
 	}
 	
 	public long getLocalId() {
@@ -152,7 +154,7 @@ public class LocalTask {
 	public void persist(PersistCallback callback) {
 		int action = (local_id == -1 ? PersistThread.ACTION_INSERT : PersistThread.ACTION_UPDATE);
 		new PersistThread(
-				helper, this,
+				this,
 				action, callback)
 		.start();
 	}
@@ -163,20 +165,18 @@ public class LocalTask {
 	
 	public void delete() {
 		new PersistThread(
-				helper, this,
+				this,
 				PersistThread.ACTION_DELETE, null)
 		.start();
 	}
 	
 	private class PersistThread extends Thread {
 		public static final int ACTION_INSERT = 1, ACTION_UPDATE = 2, ACTION_DELETE = 3;
-		private DatabaseHelper helper;
 		private LocalTask task;
 		private int action;
 		private PersistCallback callback;
 		
-		public PersistThread(DatabaseHelper helper, LocalTask task, int action, PersistCallback callback) {
-			this.helper = helper;
+		public PersistThread(LocalTask task, int action, PersistCallback callback) {
 			this.task = task;
 			this.action = action;
 			this.callback = callback;
@@ -185,6 +185,7 @@ public class LocalTask {
 
 		@Override
 		public void run() {
+			DatabaseHelper helper = DatabaseHelper.getInstance(task.context);
 			switch (action) {
 			case ACTION_INSERT:
 				Utils.log("ACTION_INSERT");
@@ -201,13 +202,13 @@ public class LocalTask {
 				break;
 			}
 			if (callback != null) {
-				callback.done();
+				Handler mainHandler = new Handler(task.context.getMainLooper());
+				mainHandler.post(callback);
 			}
 		}
 		
 	}
 	
-	public interface PersistCallback {
-		public void done();
+	public interface PersistCallback extends Runnable {
 	}
 }
