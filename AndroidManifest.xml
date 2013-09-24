@@ -88,6 +88,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="net.xisberto.phonetodesktop.PhoneToDesktopActivity" />
         </activity>
+        
+        <activity
+            android:name="net.xisberto.phonetodesktop.PreferencesActivity"
+            android:label="@string/title_activity_preferences"
+            android:parentActivityName="net.xisberto.phonetodesktop.PhoneToDesktopActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="net.xisberto.phonetodesktop.PhoneToDesktopActivity" />
+        </activity>
     </application>
 
 </manifest>
