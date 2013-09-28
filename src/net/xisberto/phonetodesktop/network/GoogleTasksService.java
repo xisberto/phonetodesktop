@@ -89,6 +89,7 @@ public class GoogleTasksService extends IntentService {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
+		Utils.log("onStartCommand "+ intent.getAction());
 		if (Utils.ACTION_SEND_TASKS.equals(intent.getAction())) {
 			// We start foregroud as soon as we receive an ACTION_SEND_TASKS
 			// action. This will make the service foreground when
@@ -103,6 +104,7 @@ public class GoogleTasksService extends IntentService {
 	protected void onHandleIntent(Intent intent) {
 		if (intent != null) {
 			final String action = intent.getAction();
+			Utils.log("onHandleIntent "+ intent.getAction());
 			long[] tasks_ids = intent.getLongArrayExtra(Utils.EXTRA_TASKS_IDS);
 			try {
 				if (action.equals(Utils.ACTION_PROCESS_TASK)) {
@@ -272,9 +274,9 @@ public class GoogleTasksService extends IntentService {
 			}
 		};
 
-		processOptions(task);
-
 		task.setStatus(Status.SENDING).persist(callback);
+		
+		Utils.log("Sending task " + task.getTitle());
 
 		Task new_task = new Task().setTitle(task.getTitle());
 		client.tasks().insert(list_id, new_task).execute();

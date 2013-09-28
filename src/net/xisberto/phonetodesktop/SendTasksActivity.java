@@ -111,7 +111,18 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 			restoreFromPreferences = false;
 		} else {
 			localTask = new LocalTask(this);
-			localTask.setTitle(text_from_extra).persist();
+			localTask.setTitle(text_from_extra);
+			Preferences prefs = new Preferences(this);
+			if (prefs.loadDontAsk()) {
+				// If this is set, we process and send the task without showing
+				// the activity. processPreferences calls sentText on
+				// localTask's persist callback
+				processPreferences(prefs);
+				finish();
+			} else {
+				// If we will show the activity, change the theme
+				setTheme(R.style.Theme_PhoneToDesktop_ActivityOrDialog);
+			}
 			restoreFromPreferences = true;
 		}
 
@@ -189,6 +200,7 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		switch (item.getItemId()) {
 		case R.id.item_send:
 			sendText();
+			saveCheckBoxes();
 			finish();
 			break;
 		case R.id.item_cancel:
@@ -204,6 +216,7 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		switch (whichButton) {
 		case DialogInterface.BUTTON_POSITIVE:
 			sendText();
+			saveCheckBoxes();
 			finish();
 			break;
 		case DialogInterface.BUTTON_NEGATIVE:
@@ -219,7 +232,9 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		service.putExtra(Utils.EXTRA_TASKS_IDS,
 				new long[] { localTask.getLocalId() });
 		startService(service);
+	}
 
+	private void saveCheckBoxes() {
 		Preferences prefs = new Preferences(this);
 		prefs.saveOnlyLinks(send_fragment.cb_only_links.isChecked());
 		prefs.saveUnshorten(send_fragment.cb_unshorten.isChecked());
@@ -227,7 +242,19 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		prefs.saveDontAsk(send_fragment.cb_dont_ask.isChecked());
 	}
 
+	private void processPreferences(Preferences prefs) {
+		processOptions(prefs.loadOnlyLinks(), prefs.loadUnshorten(),
+				prefs.loadGetTitles(), true);
+	}
+
 	private void processCheckBoxes() {
+		processOptions(send_fragment.cb_only_links.isChecked(),
+				send_fragment.cb_unshorten.isChecked(),
+				send_fragment.cb_get_titles.isChecked(), false);
+	}
+
+	private void processOptions(boolean only_links, boolean unshorten,
+			boolean get_titles, final boolean send_immediately) {
 		String links = Utils.filterLinks(text_from_extra).trim();
 		if (links.equals("")) {
 			Toast.makeText(this, R.string.txt_no_links, Toast.LENGTH_SHORT)
@@ -237,13 +264,13 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 
 		localTask.setOptions(0);
 
-		if (send_fragment.cb_only_links.isChecked()) {
+		if (only_links) {
 			localTask.setTitle(links);
 		} else {
 			localTask.setTitle(text_from_extra);
 		}
 
-		if (send_fragment.cb_unshorten.isChecked()) {
+		if (unshorten) {
 			if (cache_unshorten != null) {
 				localTask.setTitle(Utils.replace(localTask.getTitle(),
 						cache_unshorten));
@@ -254,7 +281,7 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 			localTask.removeOption(Options.OPTION_UNSHORTEN);
 		}
 
-		if (send_fragment.cb_get_titles.isChecked()) {
+		if (get_titles) {
 			if (cache_titles != null) {
 				localTask.setTitle(Utils.appendInBrackets(localTask.getTitle(),
 						cache_titles));
@@ -271,18 +298,24 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 				if (localTask.hasOption(Options.OPTION_UNSHORTEN)
 						|| localTask.hasOption(Options.OPTION_GETTITLES)) {
 					// Only start service if there's some option to process
-					Intent service = new Intent(SendTasksActivity.this,
-							GoogleTasksService.class);
-					service.setAction(Utils.ACTION_PROCESS_TASK);
-					service.putExtra(Utils.EXTRA_TASK_ID,
-							localTask.getLocalId());
-					startService(service);
+					startProcessingTask();
 					setWaiting();
+				}
+				if (send_immediately) {
+					sendText();
 				}
 			}
 		});
 
 		send_fragment.setPreview(localTask.getTitle());
+	}
+
+	private void startProcessingTask() {
+		Intent service = new Intent(SendTasksActivity.this,
+				GoogleTasksService.class);
+		service.setAction(Utils.ACTION_PROCESS_TASK);
+		service.putExtra(Utils.EXTRA_TASK_ID, localTask.getLocalId());
+		startService(service);
 	}
 
 	public void setWaiting() {
@@ -299,7 +332,8 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 
 	public static class SendFragment extends SherlockDialogFragment implements
 			OnClickListener {
-		private CheckBox cb_only_links, cb_unshorten, cb_get_titles, cb_dont_ask;
+		private CheckBox cb_only_links, cb_unshorten, cb_get_titles,
+				cb_dont_ask;
 		private View v;
 
 		public static SendFragment newInstance(String text) {
@@ -386,10 +420,15 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		}
 
 		private void setPreview(String text) {
-			((TextView) v.findViewById(R.id.text_preview)).setText(text);
+			if (v != null) {
+				((TextView) v.findViewById(R.id.text_preview)).setText(text);
+			}
 		}
 
 		private void setWaiting(boolean is_waiting) {
+			if (v == null) {
+				return;
+			}
 			if (is_waiting) {
 				v.findViewById(R.id.progress).setVisibility(View.VISIBLE);
 				v.findViewById(R.id.text_preview).setEnabled(false);
