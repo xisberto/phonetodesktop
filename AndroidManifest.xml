@@ -64,7 +64,7 @@
         <activity
             android:name="net.xisberto.phonetodesktop.SendTasksActivity"
             android:label="@string/filter_title"
-            android:theme="@style/Theme.PhoneToDesktop.ActivityOrDialog"
+            android:theme="@style/Theme.PhoneToDesktop.Translucent.NoTitlebar"
             android:uiOptions="splitActionBarWhenNarrow" >
             <intent-filter android:label="@string/filter_title" >
                 <action android:name="android.intent.action.SEND" />
@@ -83,6 +83,15 @@
         <activity
             android:name="net.xisberto.phonetodesktop.WaitListActivity"
             android:label="@string/title_activity_wait_list"
+            android:parentActivityName="net.xisberto.phonetodesktop.PhoneToDesktopActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="net.xisberto.phonetodesktop.PhoneToDesktopActivity" />
+        </activity>
+        
+        <activity
+            android:name="PreferencesActivity"
+            android:label="@string/title_activity_preferences"
             android:parentActivityName="net.xisberto.phonetodesktop.PhoneToDesktopActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <CheckBoxPreference
+        android:disableDependentsState="false"
+        android:key="@string/pref_dont_ask"
+        android:summaryOff="@string/sum_dont_ask_off"
+        android:summaryOn="@string/sum_dont_ask_on"
+        android:defaultValue="false"
+        android:title="@string/title_dont_ask" />
+    <CheckBoxPreference
+        android:dependency="@string/pref_dont_ask"
+        android:key="@string/pref_only_links"
+        android:summaryOff="@string/sum_only_links_off"
+        android:summaryOn="@string/sum_only_links_on"
+        android:title="@string/title_only_links" />
+    <CheckBoxPreference
+        android:dependency="@string/pref_dont_ask"
+        android:key="@string/pref_unshorten"
+        android:summaryOff="@string/sum_unshorten_off"
+        android:summaryOn="@string/sum_unshorten_on"
+        android:title="@string/title_unshorten" />
+    <CheckBoxPreference
+        android:dependency="@string/pref_dont_ask"
+        android:key="@string/pref_get_titles"
+        android:summaryOff="@string/sum_get_titles_off"
+        android:summaryOn="@string/sum_get_titles_on"
+        android:title="@string/title_get_titles" />
+
+</PreferenceScreen>
