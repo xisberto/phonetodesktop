@@ -88,6 +88,18 @@ public class GoogleTasksService extends IntentService {
 	}
 
 	@Override
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		if (Utils.ACTION_SEND_TASKS.equals(intent.getAction())) {
+			// We start foregroud as soon as we receive an ACTION_SEND_TASKS
+			// action. This will make the service foreground when
+			// SendTaskActivity goes away
+			startForeground(NOTIFICATION_SEND,
+					buildNotification(NOTIFICATION_SEND).build());
+		}
+		return super.onStartCommand(intent, flags, startId);
+	}
+
+	@Override
 	protected void onHandleIntent(Intent intent) {
 		if (intent != null) {
 			final String action = intent.getAction();
@@ -126,8 +138,6 @@ public class GoogleTasksService extends IntentService {
 					}
 				} else if (action.equals(Utils.ACTION_SEND_TASKS)) {
 					if (isOnline()) {
-						startForeground(NOTIFICATION_SEND,
-								buildNotification(NOTIFICATION_SEND).build());
 
 						if (tasks_ids.length == 1) {
 							DatabaseHelper databaseHelper = DatabaseHelper
