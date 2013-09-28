@@ -79,6 +79,32 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 
 			databaseHelper = DatabaseHelper
 					.getInstance(getApplicationContext());
+			
+			if (savedInstanceState != null) {
+				cache_unshorten = savedInstanceState
+						.getStringArray(SAVE_CACHE_UNSHORTEN);
+				cache_titles = savedInstanceState.getStringArray(SAVE_CACHE_TITLES);
+				long local_id = savedInstanceState.getLong(SAVE_LOCAL_TASK_ID);
+				localTask = databaseHelper.getTask(local_id);
+				isWaiting = savedInstanceState.getBoolean(SAVE_IS_WAITING);
+				restoreFromPreferences = false;
+			} else {
+				localTask = new LocalTask(this);
+				localTask.setTitle(text_from_extra);
+				Preferences prefs = new Preferences(this);
+				if (prefs.loadDontAsk()) {
+					// If this is set, we process and send the task without showing
+					// the activity. processPreferences calls sentText on
+					// localTask's persist callback
+					processPreferences(prefs);
+					finish();
+					return;
+				} else {
+					// If we will show the activity, change the theme
+					setTheme(R.style.Theme_PhoneToDesktop_ActivityOrDialog);
+				}
+				restoreFromPreferences = true;
+			}
 
 			send_fragment = (SendFragment) getSupportFragmentManager()
 					.findFragmentByTag("send_fragment");
@@ -99,31 +125,6 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		} else {
 			finish();
 			return;
-		}
-
-		if (savedInstanceState != null) {
-			cache_unshorten = savedInstanceState
-					.getStringArray(SAVE_CACHE_UNSHORTEN);
-			cache_titles = savedInstanceState.getStringArray(SAVE_CACHE_TITLES);
-			long local_id = savedInstanceState.getLong(SAVE_LOCAL_TASK_ID);
-			localTask = databaseHelper.getTask(local_id);
-			isWaiting = savedInstanceState.getBoolean(SAVE_IS_WAITING);
-			restoreFromPreferences = false;
-		} else {
-			localTask = new LocalTask(this);
-			localTask.setTitle(text_from_extra);
-			Preferences prefs = new Preferences(this);
-			if (prefs.loadDontAsk()) {
-				// If this is set, we process and send the task without showing
-				// the activity. processPreferences calls sentText on
-				// localTask's persist callback
-				processPreferences(prefs);
-				finish();
-			} else {
-				// If we will show the activity, change the theme
-				setTheme(R.style.Theme_PhoneToDesktop_ActivityOrDialog);
-			}
-			restoreFromPreferences = true;
 		}
 
 	}
@@ -307,7 +308,9 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 			}
 		});
 
-		send_fragment.setPreview(localTask.getTitle());
+		if (send_fragment != null) {
+			send_fragment.setPreview(localTask.getTitle());
+		}
 	}
 
 	private void startProcessingTask() {
@@ -321,7 +324,9 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 	public void setWaiting() {
 		Utils.log("Waiting " + this.toString());
 		isWaiting = true;
-		send_fragment.setWaiting(true);
+		if (send_fragment != null) {
+			send_fragment.setWaiting(true);
+		}
 	}
 
 	public void setDone() {
@@ -420,9 +425,7 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		}
 
 		private void setPreview(String text) {
-			if (v != null) {
-				((TextView) v.findViewById(R.id.text_preview)).setText(text);
-			}
+			((TextView) v.findViewById(R.id.text_preview)).setText(text);
 		}
 
 		private void setWaiting(boolean is_waiting) {
