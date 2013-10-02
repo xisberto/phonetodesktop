@@ -50,6 +50,7 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 			SAVE_LOCAL_TASK_ID = "local_task_id",
 			SAVE_IS_WAITING = "is_waiting";
 	private DatabaseHelper databaseHelper;
+	private Preferences prefs;
 	private LocalTask localTask;
 
 	private BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -70,8 +71,16 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
 		Utils.log("onCreate " + this.toString());
+
+		prefs = new Preferences(this);
+		if (!prefs.loadDontAsk()) {
+			// If we will show the activity, change the theme
+			setTheme(R.style.Theme_PhoneToDesktop_ActivityOrDialog);
+		}
+		// ActionbarSherlock adds views to the Activity during onCreate, so we
+		// must call super.onCreate after we reset the theme
+		super.onCreate(savedInstanceState);
 
 		if (getIntent().getAction().equals(Intent.ACTION_SEND)
 				&& getIntent().hasExtra(Intent.EXTRA_TEXT)) {
@@ -79,11 +88,12 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 
 			databaseHelper = DatabaseHelper
 					.getInstance(getApplicationContext());
-			
+
 			if (savedInstanceState != null) {
 				cache_unshorten = savedInstanceState
 						.getStringArray(SAVE_CACHE_UNSHORTEN);
-				cache_titles = savedInstanceState.getStringArray(SAVE_CACHE_TITLES);
+				cache_titles = savedInstanceState
+						.getStringArray(SAVE_CACHE_TITLES);
 				long local_id = savedInstanceState.getLong(SAVE_LOCAL_TASK_ID);
 				localTask = databaseHelper.getTask(local_id);
 				isWaiting = savedInstanceState.getBoolean(SAVE_IS_WAITING);
@@ -91,17 +101,13 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 			} else {
 				localTask = new LocalTask(this);
 				localTask.setTitle(text_from_extra);
-				Preferences prefs = new Preferences(this);
 				if (prefs.loadDontAsk()) {
-					// If this is set, we process and send the task without showing
-					// the activity. processPreferences calls sentText on
-					// localTask's persist callback
-					processPreferences(prefs);
+					// If this is set, we process and send the task without
+					// showing the activity. processPreferences calls sentText
+					// on localTask's persist callback
+					processPreferences();
 					finish();
 					return;
-				} else {
-					// If we will show the activity, change the theme
-					setTheme(R.style.Theme_PhoneToDesktop_ActivityOrDialog);
 				}
 				restoreFromPreferences = true;
 			}
@@ -140,7 +146,6 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 	protected void onResume() {
 		super.onResume();
 		if (restoreFromPreferences) {
-			Preferences prefs = new Preferences(this);
 			send_fragment.cb_only_links.setChecked(prefs.loadOnlyLinks());
 			send_fragment.cb_unshorten.setChecked(prefs.loadUnshorten());
 			send_fragment.cb_get_titles.setChecked(prefs.loadGetTitles());
@@ -236,14 +241,13 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 	}
 
 	private void saveCheckBoxes() {
-		Preferences prefs = new Preferences(this);
 		prefs.saveOnlyLinks(send_fragment.cb_only_links.isChecked());
 		prefs.saveUnshorten(send_fragment.cb_unshorten.isChecked());
 		prefs.saveGetTitles(send_fragment.cb_get_titles.isChecked());
 		prefs.saveDontAsk(send_fragment.cb_dont_ask.isChecked());
 	}
 
-	private void processPreferences(Preferences prefs) {
+	private void processPreferences() {
 		processOptions(prefs.loadOnlyLinks(), prefs.loadUnshorten(),
 				prefs.loadGetTitles(), true);
 	}
