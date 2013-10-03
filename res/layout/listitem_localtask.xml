@@ -1,40 +1,13 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<CheckedTextView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/RelativeLayout1"
+    android:id="@android:id/text1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/listitem_background_pdttheme"
+    android:checkMark="@null"
     android:minHeight="?android:attr/listPreferredItemHeight"
+    android:paddingBottom="8dp"
     android:paddingLeft="4dp"
     android:paddingRight="4dp"
     android:paddingTop="8dp"
-    android:paddingBottom="8dp"
-    android:background="@drawable/listitem_background_pdttheme"
-    tools:context=".WaitListActivity" >
-
-    <TextView
-        android:id="@+id/task_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginBottom="4dp" />
-
-    <TextView
-        android:id="@+id/task_status"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/task_title"
-        android:visibility="gone" />
-
-    <ProgressBar
-        android:id="@+id/progress"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:indeterminate="true"
-        android:visibility="gone" />
-
-</RelativeLayout>
+    tools:context=".WaitListActivity" />
