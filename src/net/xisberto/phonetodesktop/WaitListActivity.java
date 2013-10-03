@@ -1,6 +1,7 @@
 package net.xisberto.phonetodesktop;
 
 import net.xisberto.phonetodesktop.database.DatabaseHelper;
+import net.xisberto.phonetodesktop.database.TableTasks;
 import net.xisberto.phonetodesktop.network.GoogleTasksService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -11,6 +12,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.AdapterView;
@@ -22,11 +24,12 @@ import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
-public class WaitListActivity extends SherlockListActivity implements OnItemClickListener {
-	LocalTaskAdapter adapter;
+public class WaitListActivity extends SherlockListActivity implements
+		OnItemClickListener {
+	SimpleCursorAdapter adapter;
 	ActionMode actionMode;
 	SparseArray<Long> selectedItems;
-	
+
 	BroadcastReceiver receiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -34,7 +37,7 @@ public class WaitListActivity extends SherlockListActivity implements OnItemClic
 			new ListLocalTask(ListLocalTask.ACTION_LIST).execute();
 		}
 	};
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -46,13 +49,13 @@ public class WaitListActivity extends SherlockListActivity implements OnItemClic
 	@Override
 	protected void onStart() {
 		super.onStart();
-		
+
 		getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 		getListView().setOnItemClickListener(this);
-		
+
 		new ListLocalTask(ListLocalTask.ACTION_LIST).execute();
-		LocalBroadcastManager.getInstance(this).registerReceiver(
-				receiver, new IntentFilter(Utils.ACTION_LIST_LOCAL_TASKS));
+		LocalBroadcastManager.getInstance(this).registerReceiver(receiver,
+				new IntentFilter(Utils.ACTION_LIST_LOCAL_TASKS));
 	}
 
 	@Override
@@ -80,8 +83,9 @@ public class WaitListActivity extends SherlockListActivity implements OnItemClic
 	}
 
 	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		Utils.log("Item id: "+id);
+	public void onItemClick(AdapterView<?> parent, View view, int position,
+			long id) {
+		Utils.log("Item id: " + id);
 
 		if (selectedItems.get(position) == null) {
 			selectedItems.put(position, id);
@@ -90,7 +94,7 @@ public class WaitListActivity extends SherlockListActivity implements OnItemClic
 			selectedItems.remove(position);
 			getListView().setItemChecked(position, false);
 		}
-		
+
 		if (selectedItems.size() > 0) {
 			String title = getResources().getQuantityString(
 					R.plurals.txt_selected_items, selectedItems.size());
@@ -105,19 +109,20 @@ public class WaitListActivity extends SherlockListActivity implements OnItemClic
 			}
 		}
 	}
-	
+
 	private class ListLocalTask extends AsyncTask<Long, Void, Cursor> {
 		private static final int ACTION_LIST = 1, ACTION_SEND_ALL = 2,
 				ACTION_DELETE_SELECTED = 3, ACTION_SEND_SELECTED = 4;
 		private int action;
-		
+
 		public ListLocalTask(int action) {
 			this.action = action;
 		}
 
 		@Override
 		protected Cursor doInBackground(Long... params) {
-			DatabaseHelper databaseHelper = DatabaseHelper.getInstance(WaitListActivity.this);
+			DatabaseHelper databaseHelper = DatabaseHelper
+					.getInstance(WaitListActivity.this);
 			switch (action) {
 			case ACTION_SEND_SELECTED:
 				return databaseHelper.listTasksAsCursorById(params);
@@ -137,10 +142,15 @@ public class WaitListActivity extends SherlockListActivity implements OnItemClic
 			case ACTION_LIST:
 			case ACTION_DELETE_SELECTED:
 				if (adapter == null) {
-					adapter = new LocalTaskAdapter(WaitListActivity.this, result);
+					adapter = new SimpleCursorAdapter(WaitListActivity.this,
+							R.layout.listitem_localtask,
+							result,
+							new String[] {TableTasks.COLUMN_TITLE},
+							new int[] {android.R.id.text1},
+							0);
 					getListView().setAdapter(adapter);
 				} else {
-					adapter.changeCursor(result);
+					adapter.swapCursor(result);
 				}
 				break;
 			case ACTION_SEND_ALL:
@@ -153,7 +163,8 @@ public class WaitListActivity extends SherlockListActivity implements OnItemClic
 					result.moveToNext();
 					tasks_ids[i] = result.getLong(0);
 				}
-				Intent service = new Intent(WaitListActivity.this, GoogleTasksService.class);
+				Intent service = new Intent(WaitListActivity.this,
+						GoogleTasksService.class);
 				service.setAction(Utils.ACTION_SEND_TASKS);
 				service.putExtra(Utils.EXTRA_TASKS_IDS, tasks_ids);
 				startService(service);
@@ -163,7 +174,7 @@ public class WaitListActivity extends SherlockListActivity implements OnItemClic
 			}
 		}
 	}
-	
+
 	private final class ActionModeCallback implements ActionMode.Callback {
 
 		@Override
@@ -200,15 +211,15 @@ public class WaitListActivity extends SherlockListActivity implements OnItemClic
 		@Override
 		public void onDestroyActionMode(ActionMode mode) {
 			for (int i = 0; i < getListView().getAdapter().getCount(); i++) {
-                getListView().setItemChecked(i, false);
+				getListView().setItemChecked(i, false);
 			}
-			
+
 			selectedItems.clear();
- 
-            if (mode == actionMode) {
-                actionMode = null;
-            }			
+
+			if (mode == actionMode) {
+				actionMode = null;
+			}
 		}
-		
+
 	}
 }
