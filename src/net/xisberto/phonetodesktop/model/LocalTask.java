@@ -151,6 +151,32 @@ public class LocalTask {
 		return this;
 	}
 	
+	/**
+	 * Persists this LocalTask blocking the current thread.
+	 * This is useful for GoogleTasksService.processOptions, since it's
+	 * important that the task is stored before sending it.
+	 * @param callback this callback will be posted to the main thread
+	 */
+	public void persistBlocking(PersistCallback callback) {
+		DatabaseHelper helper = DatabaseHelper.getInstance(context);
+		int action = (local_id == -1 ? PersistThread.ACTION_INSERT : PersistThread.ACTION_UPDATE);
+		switch (action) {
+		case PersistThread.ACTION_INSERT:
+			Utils.log("ACTION_INSERT");
+			long id = helper.insert(this);
+			this.setLocalId(id);
+			break;
+		case PersistThread.ACTION_UPDATE:
+			Utils.log("ACTION_UPDATE "+this.local_id);
+			helper.update(this);
+			break;
+		}
+		if (callback != null) {
+			Handler mainHandler = new Handler(context.getMainLooper());
+			mainHandler.post(callback);
+		}
+	}
+	
 	public void persist(PersistCallback callback) {
 		int action = (local_id == -1 ? PersistThread.ACTION_INSERT : PersistThread.ACTION_UPDATE);
 		new PersistThread(

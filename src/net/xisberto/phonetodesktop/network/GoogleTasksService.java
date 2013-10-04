@@ -116,7 +116,7 @@ public class GoogleTasksService extends IntentService {
 					result.putExtra(Utils.EXTRA_TASK_ID, task.getLocalId());
 					if (isOnline()) {
 						processOptions(task);
-						task.persist(new PersistCallback() {
+						task.persistBlocking(new PersistCallback() {
 							@Override
 							public void run() {
 								if (cache_unshorten != null) {
