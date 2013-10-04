@@ -21,7 +21,7 @@ public class Preferences {
 	private static final String ACCOUNT_NAME = "accountName",
 			LIST_ID = "listId", LAST_SENT_TEXT = "lastSentText";
 
-	private static String ONLY_LINKS, UNSHORTEN, GET_TITLES, DONT_ASK;
+	private static String ONLY_LINKS, UNSHORTEN, GET_TITLES, SHOW_PREVIEW;
 
 	private SharedPreferences prefs;
 
@@ -31,7 +31,7 @@ public class Preferences {
 		ONLY_LINKS = context.getString(R.string.pref_only_links);
 		UNSHORTEN = context.getString(R.string.pref_unshorten);
 		GET_TITLES = context.getString(R.string.pref_get_titles);
-		DONT_ASK = context.getString(R.string.pref_dont_ask);
+		SHOW_PREVIEW = context.getString(R.string.pref_show_preview);
 	}
 
 	public String loadAccountName() {
@@ -58,8 +58,8 @@ public class Preferences {
 		return prefs.getBoolean(GET_TITLES, false);
 	}
 
-	public boolean loadDontAsk() {
-		return prefs.getBoolean(DONT_ASK, true);
+	public boolean loadShowPreview() {
+		return prefs.getBoolean(SHOW_PREVIEW, true);
 	}
 
 	private void saveString(String key, String value) {
@@ -98,8 +98,8 @@ public class Preferences {
 		saveBoolean(GET_TITLES, value);
 	}
 
-	public void saveDontAsk(boolean value) {
-		saveBoolean(DONT_ASK, value);
+	public void saveShowPreview(boolean value) {
+		saveBoolean(SHOW_PREVIEW, value);
 	}
 
 	public void removeListId() {

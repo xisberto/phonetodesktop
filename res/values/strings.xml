@@ -26,7 +26,7 @@
     <string name="txt_only_links">Send only links</string>
     <string name="txt_unshorten">Unshorten links</string>
     <string name="txt_get_titles">Add titles (if the links lead to web pages)</string>
-    <string name="txt_dont_ask">Don\'t ask this again</string>
+    <string name="txt_show_preview">Show this preview next time</string>
     <string name="send">Send</string>
     
     <string name="title_select_account">Select a Google account</string>
@@ -91,12 +91,12 @@ When the text is successfully sent, the notification goes away.</string>
     <string name="pref_only_links">only_links</string>
     <string name="pref_unshorten">unshorten</string>
     <string name="pref_get_titles">get_titles</string>
-    <string name="pref_dont_ask">dont_ask</string>
+    <string name="pref_show_preview">show_preview</string>
 
     <string name="title_activity_preferences">Preferences</string>
-    <string name="title_dont_ask">Don\'t ask options</string>
-    <string name="sum_dont_ask_on">Apply options below and send text without asking</string>
-    <string name="sum_dont_ask_off">Show options below and preview before send text</string>
+    <string name="title_show_preview">Show text preview</string>
+    <string name="sum_show_preview_on">Show preview and options below before sending text</string>
+    <string name="sum_show_preview_off">Apply options below and send text without asking</string>
     <string name="title_only_links">Send only links</string>
     <string name="sum_only_links_on">Filter original text, send only links</string>
     <string name="sum_only_links_off">Send original text, plus options below</string>

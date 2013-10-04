@@ -74,7 +74,7 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		Utils.log("onCreate " + this.toString());
 
 		prefs = new Preferences(this);
-		if (!prefs.loadDontAsk()) {
+		if (prefs.loadShowPreview()) {
 			// If we will show the activity, change the theme
 			setTheme(R.style.Theme_PhoneToDesktop_ActivityOrDialog);
 		}
@@ -101,10 +101,11 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 			} else {
 				localTask = new LocalTask(this);
 				localTask.setTitle(text_from_extra);
-				if (prefs.loadDontAsk()) {
-					// If this is set, we process and send the task without
-					// showing the activity. processPreferences calls sentText
-					// on localTask's persist callback
+				if (!prefs.loadShowPreview()) {
+					// User has chosen to not see the preview, so we process and
+					// send the task without showing the activity.
+					// processPreferences calls sentText on localTask's persist
+					// callback
 					processPreferences();
 					finish();
 					return;
@@ -149,7 +150,7 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 			send_fragment.cb_only_links.setChecked(prefs.loadOnlyLinks());
 			send_fragment.cb_unshorten.setChecked(prefs.loadUnshorten());
 			send_fragment.cb_get_titles.setChecked(prefs.loadGetTitles());
-			send_fragment.cb_dont_ask.setChecked(prefs.loadDontAsk());
+			send_fragment.cb_show_preview.setChecked(prefs.loadShowPreview());
 		}
 		if (!isWaiting) {
 			Utils.log("not waiting, processCheckBoxes");
@@ -244,7 +245,7 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		prefs.saveOnlyLinks(send_fragment.cb_only_links.isChecked());
 		prefs.saveUnshorten(send_fragment.cb_unshorten.isChecked());
 		prefs.saveGetTitles(send_fragment.cb_get_titles.isChecked());
-		prefs.saveDontAsk(send_fragment.cb_dont_ask.isChecked());
+		prefs.saveShowPreview(send_fragment.cb_show_preview.isChecked());
 	}
 
 	private void processPreferences() {
@@ -342,7 +343,7 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 	public static class SendFragment extends SherlockDialogFragment implements
 			OnClickListener {
 		private CheckBox cb_only_links, cb_unshorten, cb_get_titles,
-				cb_dont_ask;
+				cb_show_preview;
 		private View v;
 
 		public static SendFragment newInstance(String text) {
@@ -403,7 +404,7 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 			cb_unshorten.setOnClickListener(this);
 			cb_get_titles = ((CheckBox) v.findViewById(R.id.cb_get_titles));
 			cb_get_titles.setOnClickListener(this);
-			cb_dont_ask = (CheckBox) v.findViewById(R.id.cb_dont_ask);
+			cb_show_preview = (CheckBox) v.findViewById(R.id.cb_show_preview);
 
 			return v;
 		}
