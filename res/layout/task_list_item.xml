@@ -26,7 +26,8 @@
     
     <View
         android:layout_width="1dp"
-        android:layout_height="match_parent"
+        android:layout_height="24dp"
+        android:layout_gravity="center_vertical"
         android:layout_marginLeft="1dp"
         android:layout_marginRight="1dp"
         android:background="?attr/dividerVertical" />
