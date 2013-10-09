@@ -124,7 +124,7 @@ public class GoogleTasksService extends IntentService {
 											Utils.EXTRA_CACHE_UNSHORTEN,
 											cache_unshorten);
 								}
-								if (cache_unshorten != null) {
+								if (cache_titles != null) {
 									result.putExtra(Utils.EXTRA_CACHE_TITLES,
 											cache_titles);
 								}
@@ -366,8 +366,8 @@ public class GoogleTasksService extends IntentService {
 			parts = Utils.filterLinks(task.getTitle()).split(" ");
 			parts = urlOptions.unshorten(parts);
 			cache_unshorten = parts.clone();
-			task.setTitle(Utils.replace(task.getTitle(), parts)).removeOption(
-					Options.OPTION_UNSHORTEN);
+			task.setTitle(Utils.replace(task.getTitle(), parts))
+					.removeOption(Options.OPTION_UNSHORTEN);
 			if (!task.hasOption(Options.OPTION_GETTITLES)) {
 				task.setStatus(Status.READY);
 				break;
