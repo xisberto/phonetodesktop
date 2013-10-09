@@ -262,13 +262,29 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 	private void processOptions(boolean only_links, boolean unshorten,
 			boolean get_titles, final boolean send_immediately) {
 		String links = Utils.filterLinks(text_from_extra).trim();
+		PersistCallback callback = new PersistCallback() {
+			@Override
+			public void run() {
+				if (localTask.hasOption(Options.OPTION_UNSHORTEN)
+						|| localTask.hasOption(Options.OPTION_GETTITLES)) {
+					// Only start service if there's some option to process
+					startProcessingTask();
+					setWaiting();
+				}
+				if (send_immediately) {
+					sendText();
+				}
+			}
+		};
+
+		localTask.setOptions(0);
+		
 		if (links.equals("")) {
 			Toast.makeText(this, R.string.txt_no_links, Toast.LENGTH_SHORT)
 					.show();
+			localTask.persist(callback);
 			return;
 		}
-
-		localTask.setOptions(0);
 
 		if (only_links) {
 			localTask.setTitle(links);
@@ -298,20 +314,7 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 			localTask.removeOption(Options.OPTION_GETTITLES);
 		}
 
-		localTask.persist(new PersistCallback() {
-			@Override
-			public void run() {
-				if (localTask.hasOption(Options.OPTION_UNSHORTEN)
-						|| localTask.hasOption(Options.OPTION_GETTITLES)) {
-					// Only start service if there's some option to process
-					startProcessingTask();
-					setWaiting();
-				}
-				if (send_immediately) {
-					sendText();
-				}
-			}
-		});
+		localTask.persist(callback);
 
 		if (send_fragment != null) {
 			send_fragment.setPreview(localTask.getTitle());
