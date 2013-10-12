@@ -11,6 +11,9 @@
 -->
 <resources>
 
-    <style name="Theme.PhoneToDesktop.ActivityOrDialog" parent="@style/Theme.PhoneToDesktop.Translucent.NoTitlebar"></style>
+    <style name="Theme.PhoneToDesktop.ActivityOrDialog" parent="@style/Theme.PhoneToDesktop.Translucent.NoTitlebar">
+        <item name="android:checkboxStyle">@style/Theme.PhoneToDesktop.CheckBox</item>
+        <item name="android:progressBarStyleHorizontal">@style/Theme.PhoneToDesktop.ProgressBar</item>
+    </style>
 
 </resources>
