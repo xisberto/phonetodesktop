@@ -32,19 +32,17 @@
     <string name="title_select_account">Select a Google account</string>
     <string name="btn_how_it_works">See how it works</string>
     <string name="btn_about">About Phone To Desktop</string>
+    <string name="btn_preferences">Preferences</string>
     
-    <string name="txt_no_links">No link detected</string>
-    <string name="txt_error_timeout">Could not access server. Try again later.</string>
-    <string name="txt_sending">Sending links</string>
-    <string name="txt_sending_multiple">Sending link %1$d of %2$d</string>
+    <string name="txt_no_links">No link detected, will send original text</string>
+    <string name="txt_error_timeout">Could not access server, try again later</string>
+    <string name="txt_sending">Sending text</string>
+    <string name="txt_sending_multiple">Sending text %1$d of %2$d</string>
     <string name="txt_error_sending">Could not send text</string>
     <string name="txt_error_no_connection">No internet connection</string>
-    <string name="txt_error_try_again">Click here to try again.</string>
-    <string name="txt_error_list">Could not get the list. Try again.</string>
-    <string name="txt_need_authorize">You need first authorize Phone To Desktop.</string>
-    
-    <string name="txt_check_preferences">Check Preferences on menu to change</string>
-    <string name="btn_preferences">Preferences</string>
+    <string name="txt_error_try_again">Click to view wait list and try again</string>
+    <string name="txt_error_list">Could not get the list, try again</string>
+    <string name="txt_need_authorize">You need first authorize Phone To Desktop</string>
     
     <string name="btn_back">Back</string>
     <string name="btn_next">Next</string>
@@ -79,7 +77,7 @@ When the text is successfully sent, the notification goes away.</string>
     <string name="refresh">Refresh</string>
     
     <string name="btn_wait_list">View wait list</string>
-    <string name="title_activity_wait_list">Waiting List</string>
+    <string name="title_activity_wait_list">Wait List</string>
     <string name="action_sendall">Send all</string>
     <string name="action_delete_multiple">Delete selected items</string>
     <string name="action_send_multiple">Send selected items</string>
@@ -87,11 +85,6 @@ When the text is successfully sent, the notification goes away.</string>
         <item quantity="one">%d selected item</item>
         <item quantity="other">%d selected items</item>
     </plurals>
-    
-    <string name="pref_only_links">only_links</string>
-    <string name="pref_unshorten">unshorten</string>
-    <string name="pref_get_titles">get_titles</string>
-    <string name="pref_show_preview">show_preview</string>
 
     <string name="title_activity_preferences">Preferences</string>
     <string name="title_show_preview">Show text preview</string>

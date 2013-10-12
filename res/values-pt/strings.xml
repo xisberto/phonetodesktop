@@ -26,22 +26,23 @@
     <string name="txt_only_links">Enviar apenas os links</string>
     <string name="txt_unshorten">Desencurtar links</string>
     <string name="txt_get_titles">Adicionar os títulos (se os links levarem a páginas web)</string>
+    <string name="txt_show_preview">Show this preview next time</string>
     <string name="send">Enviar</string>
     
     <string name="title_select_account">Selecione uma conta Google</string>
     <string name="btn_how_it_works">Veja como funciona</string>
     <string name="btn_about">Sobre o Phone To Desktop</string>
-
-    <string name="txt_no_links">Nenhum link detectado</string>
-    <string name="txt_error_timeout">Não foi possível acessar o servidor. Tente novamente.</string>
-    <string name="txt_sending">Enviando link</string>
-    <string name="txt_error_sending">Não pude enviar o texto</string>
-    <string name="txt_error_try_again">Clique para tentar novamente.</string>
-    <string name="txt_error_list">Não pude obter a lista. Tente novamente.</string>
-    <string name="txt_need_authorize">Você precisa primeiro autorizar o Phone To Desktop.</string>
-    
-    <string name="txt_check_preferences">Veja Preferências no menu para alterar</string>
     <string name="btn_preferences">Preferências</string>
+
+    <string name="txt_no_links">Nenhum link detectado, será enviado o texto original</string>
+    <string name="txt_error_timeout">Não foi possível acessar o servidor, tente novamente</string>
+    <string name="txt_sending">Enviando text</string>
+    <string name="txt_sending_multiple">Enviando texto %1$d de %2$d</string>
+    <string name="txt_error_sending">Não pude enviar o texto</string>
+    <string name="txt_error_no_connection">Sem conexão à internet</string>
+    <string name="txt_error_try_again">Clique para ver a lista de espera e tentar novamente</string>
+    <string name="txt_error_list">Não pude obter a lista, tente novamente</string>
+    <string name="txt_need_authorize">Você precisa primeiro autorizar o Phone To Desktop</string>
     
     <string name="btn_back">Voltar</string>
     <string name="btn_next">Avançar</string>
@@ -75,5 +76,29 @@
     <string name="title_confirm">Confirmar remoção</string>
     <string name="txt_confirm">Você deseja remover este item?</string>
     <string name="refresh">Refresh</string>
+    
+    <string name="btn_wait_list">Ver lista de espera</string>
+    <string name="title_activity_wait_list">Lista de espera</string>
+    <string name="action_sendall">Enviar todos</string>
+    <string name="action_delete_multiple">Apagar itens selecionados</string>
+    <string name="action_send_multiple">Enviar itens selecionados</string>
+    <plurals name="txt_selected_items">
+        <item quantity="one">%d item selecionado</item>
+        <item quantity="other">%d itens selecionados</item>
+    </plurals>
+
+    <string name="title_activity_preferences">Preferências</string>
+    <string name="title_show_preview">Mostrar pré-visualização</string>
+    <string name="sum_show_preview_on">Mostrar uma prévia e as opções abaixo antes de enviar</string>
+    <string name="sum_show_preview_off">Aplicar as opções abaixo e enviar o texto sem perguntar</string>
+    <string name="title_only_links">Enviar apenas links</string>
+    <string name="sum_only_links_on">Filtra o texto original enviando apenas os links</string>
+    <string name="sum_only_links_off">Envia o texto original mais as opções abaixo</string>
+    <string name="title_unshorten">Desencurtar links</string>
+    <string name="sum_unshorten_on">Busca o destino real dos links</string>
+    <string name="sum_unshorten_off">Envia os links do texto original</string>
+    <string name="title_get_titles">Adiciona os títulos das páginas</string>
+    <string name="sum_get_titles_on">Adiciona os títulos das páginas para cada link</string>
+    <string name="sum_get_titles_off">Não adiciona os títulos das páginas</string>
     
 </resources>
