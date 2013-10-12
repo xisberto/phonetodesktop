@@ -91,6 +91,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:text="@string/txt_get_titles" />
+            
+            <CheckBox
+                android:id="@+id/cb_show_preview"
+                style="?android:attr/textAppearanceMedium"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="@string/txt_show_preview" />
         </LinearLayout>
     </ScrollView>
 

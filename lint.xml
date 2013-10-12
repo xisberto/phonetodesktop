@@ -10,4 +10,7 @@
       Humberto Fraga <xisberto@gmail.com> - initial API and implementation
 -->
 <lint>
+    <issue id="NewApi">
+        <ignore path="res/values-v11/styles.xml" />
+    </issue>
 </lint>

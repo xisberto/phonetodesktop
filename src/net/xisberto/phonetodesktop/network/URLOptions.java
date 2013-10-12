@@ -8,7 +8,7 @@
  * Contributors:
  *     Humberto Fraga <xisberto@gmail.com> - initial API and implementation
  ******************************************************************************/
-package net.xisberto.phonetodesktop;
+package net.xisberto.phonetodesktop.network;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,6 +20,8 @@ import java.nio.charset.Charset;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.xisberto.phonetodesktop.Utils;
+
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -27,89 +29,20 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import android.os.AsyncTask;
-import android.util.Log;
-
-public class URLOptionsAsyncTask extends AsyncTask<String, Void, String[]> {
-
-	public static final int TASK_UNSHORTEN = 0, TASK_GET_TITLE = 1;
+public class URLOptions {
 	private static final Pattern TITLE_TAG = Pattern.compile(
 			"\\<title>(.*?)\\</title>", Pattern.CASE_INSENSITIVE
 					| Pattern.DOTALL), CHARSET_HEADER = Pattern.compile(
 			"charset=([-_a-zA-Z0-9]+)", Pattern.CASE_INSENSITIVE
 					| Pattern.DOTALL);
 
-	private int task;
-	private URLOptionsListener listener;
-
-	public URLOptionsAsyncTask(URLOptionsListener listener, int task) {
-		super();
-		this.task = task;
-		this.listener = listener;
+	private boolean isCancelled = false;
+	
+	protected void cancel() {
+		isCancelled = true;
 	}
 
-	@Override
-	protected void onPreExecute() {
-		listener.setWaiting();
-	}
-
-	@Override
-	protected String[] doInBackground(String... params) {
-		try {
-			switch (task) {
-			case TASK_UNSHORTEN:
-				return unshorten(params);
-			case TASK_GET_TITLE:
-				return getTitles(params);
-			default:
-				return null;
-			}
-		} catch (IOException ioe) {
-			Log.e(URLOptionsAsyncTask.class.getName(), ioe.getMessage());
-			return null;
-		} catch (NullPointerException npe) {
-			Log.e(URLOptionsAsyncTask.class.getName(), Log.getStackTraceString(npe));
-			return null;
-		}
-	}
-
-	@Override
-	protected void onPostExecute(String[] result) {
-		switch (task) {
-		case TASK_UNSHORTEN:
-			listener.onPostUnshorten(result);
-			break;
-		case TASK_GET_TITLE:
-			listener.onPostGetTitle(result);
-			break;
-		default:
-			break;
-		}
-		listener.setDone();
-	}
-
-	@Override
-	protected void onCancelled() {
-		super.onCancelled();
-		listener.setDone();
-	}
-
-	@Override
-	protected void onCancelled(String[] result) {
-		switch (task) {
-		case TASK_UNSHORTEN:
-			listener.onPostUnshorten(null);
-			break;
-		case TASK_GET_TITLE:
-			listener.onPostGetTitle(null);
-			break;
-		default:
-			break;
-		}
-		listener.setDone();
-	}
-
-	private String[] unshorten(String... params) throws IOException {
+	protected String[] unshorten(String... params) throws IOException {
 		String[] result = params.clone();
 		for (int i = 0; i < params.length; i++) {
 			Utils.log("unshorten " + params[i]);
@@ -119,7 +52,7 @@ public class URLOptionsAsyncTask extends AsyncTask<String, Void, String[]> {
 			InputStream instr = connection.getInputStream();
 			instr.close();
 			
-			if (isCancelled()) {
+			if (isCancelled) {
 				return result;
 			}
 
@@ -129,7 +62,7 @@ public class URLOptionsAsyncTask extends AsyncTask<String, Void, String[]> {
 		return result;
 	}
 
-	private String[] getTitles(String... params) throws IOException,
+	protected String[] getTitles(String... params) throws IOException,
 			NullPointerException {
 		String[] result = params.clone();
 		for (int i = 0; i < params.length; i++) {
@@ -143,7 +76,7 @@ public class URLOptionsAsyncTask extends AsyncTask<String, Void, String[]> {
 				result[i] = params[i];
 			}
 			
-			if (isCancelled()) {
+			if (isCancelled) {
 				return result;
 			}
 		}
@@ -168,7 +101,7 @@ public class URLOptionsAsyncTask extends AsyncTask<String, Void, String[]> {
 		HttpUriRequest request = new HttpGet(url);
 		HttpResponse response = client.execute(request);
 		
-		if (isCancelled()) {
+		if (isCancelled) {
 			return null;
 		}
 
@@ -215,7 +148,7 @@ public class URLOptionsAsyncTask extends AsyncTask<String, Void, String[]> {
 					String result = matcher.group(1).replaceAll("[\\s\\<>]+", " ").trim();
 					return result;
 				}
-				if (isCancelled()) {
+				if (isCancelled) {
 					reader.close();
 					return null;
 				}
@@ -224,15 +157,4 @@ public class URLOptionsAsyncTask extends AsyncTask<String, Void, String[]> {
 		}
 		return null;
 	}
-
-	public interface URLOptionsListener {
-		public void setWaiting();
-
-		public void setDone();
-
-		public void onPostUnshorten(String[] result);
-
-		public void onPostGetTitle(String[] result);
-	}
-
 }

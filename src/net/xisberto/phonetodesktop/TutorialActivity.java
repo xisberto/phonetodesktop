@@ -31,7 +31,7 @@ import com.actionbarsherlock.view.MenuItem;
 
 public class TutorialActivity extends SherlockFragmentActivity implements OnClickListener, OnPageChangeListener {
 	private final int
-		total_slides = 6;
+		total_slides = 7;
 	private TutorialPageAdapter page_adapter;
 	private ViewPager view_pager;
 

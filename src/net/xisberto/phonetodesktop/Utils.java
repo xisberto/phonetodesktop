@@ -13,6 +13,8 @@ package net.xisberto.phonetodesktop;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.util.Log;
 
@@ -24,8 +26,11 @@ public class Utils {
 			ACTION_AUTHENTICATE = "net.xisberto.phonetodesktop.action.AUTHENTICATE",
 			ACTION_LOAD_LISTS = "net.xisberto.phonetodesktop.action.LOAD_LISTS",
 			ACTION_SAVE_LIST = "net.xisberto.phonetodesktop.action.SAVE_LISTS",
-			ACTION_SEND_TASK = "net.xisberto.phonetodesktop.action.SEND_TASK",
+			ACTION_PROCESS_TASK = "net.xisberto.phonetodesktop.action.PROCESS_TASK",
+			ACTION_RESULT_PROCESS_TASK = "net.xisberto.phonetodesktop.action.RESULT_PROCESS_TASK",
+			ACTION_SEND_TASKS = "net.xisberto.phonetodesktop.action.SEND_TASKS",
 			ACTION_LIST_TASKS = "net.xisberto.phonetodesktop.action.LIST_TASKS",
+			ACTION_LIST_LOCAL_TASKS = "net.xisberto.phonetodesktop.action.LIST_LOCAL_TASKS",
 			ACTION_REMOVE_TASK = "net.xisberto.phonetodesktop.action.REMOVE_TASK",
 			ACTION_SHOW_AVAILABILITY_ERROR = "net.xisberto.phonetodesktop.action.SHOW_AVAILABILITY_ERROR",
 			ACTION_SHOW_USER_RECOVERABLE = "net.xisberto.phonetodesktop.action.SHOW_USER_RECOVERABLE",
@@ -38,6 +43,9 @@ public class Utils {
 			EXTRA_IDS = "net.xisberto.phonetodesktop.extra.IDS",
 			EXTRA_ERROR_TEXT = "net.xisberto.phonetodesktop.extra.ERROR_TEXT",
 			EXTRA_TASK_ID = "net.xisberto.phonetodesktop.extra.TASK_ID",
+			EXTRA_TASKS_IDS = "net.xisberto.phonetodesktop.extra.TASKS_IDS",
+			EXTRA_CACHE_UNSHORTEN = "net.xisberto.phonetodesktop.extra.TASKS_CACHE_UNSHORTEN",
+			EXTRA_CACHE_TITLES = "net.xisberto.phonetodesktop.extra.TASKS_CACHE_TITLES",
 			LIST_TITLE = "PhoneToDesktop";
 	
 	public static void log(String message) {
@@ -55,4 +63,54 @@ public class Utils {
 			return -1;
 		}
 	}
+
+	public static final Pattern urlPattern = Pattern
+	.compile(
+			"\\b((?:https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])",
+			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE
+					| Pattern.DOTALL);
+	
+	public static String appendInBrackets(String text, String[] parts) {
+		int index = 0;
+		Matcher matcher = Utils.urlPattern.matcher(text);
+		while (matcher.find()) {
+			if (!matcher.group().equals(parts[index])) {
+				// don't replace when we have the URL and not a title
+				text = text.replace(matcher.group(),
+						matcher.group() + " [" + parts[index] + "]");
+			}
+			index++;
+		}
+		return text;
+	}
+	
+	public static String replace(String text, String[] parts) {
+		int index = 0;
+		Matcher matcher = Utils.urlPattern.matcher(text);
+		while (matcher.find()) {
+			text = text.replace(matcher.group(), parts[index]);
+			index++;
+		}
+		return text;
+	}
+
+
+	/**
+	 * Filter the URLs in {@code text} and return them separated by spaces
+	 * 
+	 * @param text
+	 *            the text to search the URLs in
+	 * @return the found URLs separated by space
+	 */
+	public static String filterLinks(String text) {
+		String result = "";
+		Matcher matcher = Utils.urlPattern.matcher(text);
+		while (matcher.find()) {
+			result += matcher.group() + " ";
+		}
+	
+		return result;
+	}
+
+
 }

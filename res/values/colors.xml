@@ -19,6 +19,9 @@
 
 <resources>
     <color name="phonetodesktop_pressed">#CC669900</color>
+    <color name="phonetodesktop_listitem_pressed">#88669900</color>
     <color name="phonetodesktop_highlight">#FF669900</color>
     <color name="phonetodesktop_selected">#33669900</color>
+    
+    <color name="phonetodesktop_pressed_light">#88669900</color>
 </resources>

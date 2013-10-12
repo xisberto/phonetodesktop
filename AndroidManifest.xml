@@ -12,14 +12,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="net.xisberto.phonetodesktop"
     android:installLocation="auto"
-    android:versionCode="125"
-    android:versionName="1.2.3" >
+    android:versionCode="128"
+    android:versionName="1.2.4 beta 2" >
 
     <uses-sdk
         android:minSdkVersion="7"
         android:targetSdkVersion="18" />
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
@@ -38,13 +39,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="net.xisberto.phonetodesktop.TutorialActivity"
+        <activity
+            android:name="net.xisberto.phonetodesktop.TutorialActivity"
             android:parentActivityName="net.xisberto.phonetodesktop.PhoneToDesktopActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="net.xisberto.phonetodesktop.PhoneToDesktopActivity" />
         </activity>
-        <activity android:name="net.xisberto.phonetodesktop.AboutActivity"
+        <activity
+            android:name="net.xisberto.phonetodesktop.AboutActivity"
             android:parentActivityName="net.xisberto.phonetodesktop.PhoneToDesktopActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -61,7 +64,7 @@
         <activity
             android:name="net.xisberto.phonetodesktop.SendTasksActivity"
             android:label="@string/filter_title"
-            android:theme="@style/Theme.PhoneToDesktop.ActivityOrDialog"
+            android:theme="@style/Theme.PhoneToDesktop.Translucent.NoTitlebar"
             android:uiOptions="splitActionBarWhenNarrow" >
             <intent-filter android:label="@string/filter_title" >
                 <action android:name="android.intent.action.SEND" />
@@ -73,9 +76,27 @@
         </activity>
 
         <service
-            android:name="net.xisberto.phonetodesktop.GoogleTasksService"
+            android:name="net.xisberto.phonetodesktop.network.GoogleTasksService"
             android:exported="false" >
         </service>
+
+        <activity
+            android:name="net.xisberto.phonetodesktop.WaitListActivity"
+            android:label="@string/title_activity_wait_list"
+            android:parentActivityName="net.xisberto.phonetodesktop.PhoneToDesktopActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="net.xisberto.phonetodesktop.PhoneToDesktopActivity" />
+        </activity>
+        
+        <activity
+            android:name="PreferencesActivity"
+            android:label="@string/title_activity_preferences"
+            android:parentActivityName="net.xisberto.phonetodesktop.PhoneToDesktopActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="net.xisberto.phonetodesktop.PhoneToDesktopActivity" />
+        </activity>
     </application>
 
 </manifest>
