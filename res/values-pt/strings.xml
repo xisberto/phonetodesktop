@@ -26,7 +26,7 @@
     <string name="txt_only_links">Enviar apenas os links</string>
     <string name="txt_unshorten">Desencurtar links</string>
     <string name="txt_get_titles">Adicionar os títulos (se os links levarem a páginas web)</string>
-    <string name="txt_show_preview">Show this preview next time</string>
+    <string name="txt_show_preview">Mostrar esta tela na próxima vez</string>
     <string name="send">Enviar</string>
     
     <string name="title_select_account">Selecione uma conta Google</string>
@@ -36,7 +36,7 @@
 
     <string name="txt_no_links">Nenhum link detectado, será enviado o texto original</string>
     <string name="txt_error_timeout">Não foi possível acessar o servidor, tente novamente</string>
-    <string name="txt_sending">Enviando text</string>
+    <string name="txt_sending">Enviando texto</string>
     <string name="txt_sending_multiple">Enviando texto %1$d de %2$d</string>
     <string name="txt_error_sending">Não pude enviar o texto</string>
     <string name="txt_error_no_connection">Sem conexão à internet</string>
