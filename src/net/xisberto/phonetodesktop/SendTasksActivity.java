@@ -63,7 +63,9 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 				cache_titles = intent
 						.getStringArrayExtra(Utils.EXTRA_CACHE_TITLES);
 				localTask = databaseHelper.getTask(taskId);
-				send_fragment.setPreview(localTask.getTitle());
+				if (send_fragment != null) {
+					send_fragment.setPreview(localTask.getTitle());
+				}
 				setDone();
 			}
 		}
@@ -177,21 +179,15 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 	}
 
 	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		// TODO delete the localTask when exiting the activity
-		// localTask.delete();
-	}
-
-	@Override
 	public void onBackPressed() {
+		localTask.delete();
 		super.onBackPressed();
-		// During beta, we will inform the user that the task will be saved
-		Toast.makeText(
-				this,
-				"Saving this task on Waiting List "
-						+ "(after beta period, the task will be discarded)",
-				Toast.LENGTH_LONG).show();
+//		During beta, we will inform the user that the task will be saved
+//		Toast.makeText(
+//				this,
+//				"Saving this task on Waiting List "
+//						+ "(after beta period, the task will be discarded)",
+//				Toast.LENGTH_LONG).show();
 	}
 
 	@Override
