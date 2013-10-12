@@ -52,8 +52,10 @@
     <string name="txt_tutorial_2">Você verá uma tela com uma prévia e algumas opções. Escolha Enviar quando estiver pronto.</string>
     <string name="txt_tutorial_3">Haverá uma notificação enquanto o Phone To Desktop envia o texto.
         Quando o texto for enviado, a notificação vai embora.</string>
-    <string name="txt_tutorial_4">Para ver seus textos enviados no seu desktop ou notebook, escolha Tarefas no Gmail.</string>
-    <string name="txt_tutorial_5">Você pode ver os textos enviados na lista "Phone To Desktop".</string>
+    <string name="txt_tutorial_4">Se ocorrer algum erro ou se você estiver sem internet, o texto será salvo na lista de espera.
+        Envie todos os textos ou selecione-os para apagar ou enviar individualmente.</string>
+    <string name="txt_tutorial_5">Para ver seus textos enviados no seu desktop ou notebook, escolha Tarefas no Gmail.</string>
+    <string name="txt_tutorial_6">Você pode ver os textos enviados na lista "Phone To Desktop".</string>
     
     <string name="link_about_message">https://github.com/xisberto/phonetodesktop</string>
     <string name="txt_about_message">Phone To Desktop é um software livre.

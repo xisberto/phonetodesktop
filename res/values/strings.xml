@@ -51,9 +51,11 @@
     <string name="txt_tutorial_1">A list of applications which can receive text will be shown. Choose Phone To Desktop.</string>
     <string name="txt_tutorial_2">You will see a screen with a preview text and some options. Click Send when ready.</string>
     <string name="txt_tutorial_3">There will be a notification while Phone To Desktop sends the text.
-When the text is successfully sent, the notification goes away.</string>
-    <string name="txt_tutorial_4">To see your sent texts in your desktop or notebook, choose Tasks in Gmail.</string>
-    <string name="txt_tutorial_5">You can see the list of sent texts under the "Phone To Desktop" list.</string>
+		When the text is successfully sent, the notification goes away.</string>
+	<string name="txt_tutorial_4">If there\'s some error, or if you don\'t have internet connection, the text is saved on the Wait list.
+	    Send all texts or select them to delete or send individually.</string>
+    <string name="txt_tutorial_5">To see your sent texts in your desktop or notebook, choose Tasks in Gmail.</string>
+    <string name="txt_tutorial_6">You can see the list of sent texts under the "Phone To Desktop" list.</string>
     
     <string name="link_about_message">https://github.com/xisberto/phonetodesktop</string>
     <string name="txt_about_message">Phone To Desktop is free software (as in freedom). The source code is on GitHub.</string>
