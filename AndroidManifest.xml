@@ -12,8 +12,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="net.xisberto.phonetodesktop"
     android:installLocation="auto"
-    android:versionCode="128"
-    android:versionName="1.2.4 beta 2" >
+    android:versionCode="134"
+    android:versionName="1.3.0" >
 
     <uses-sdk
         android:minSdkVersion="7"
