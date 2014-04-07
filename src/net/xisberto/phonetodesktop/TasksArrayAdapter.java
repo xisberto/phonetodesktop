@@ -13,6 +13,7 @@ package net.xisberto.phonetodesktop;
 import java.util.HashMap;
 
 import android.app.Activity;
+import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -57,7 +58,10 @@ public class TasksArrayAdapter extends BaseAdapter {
 		String key = keys[position];
 		String title = getItem(position).toString();
 		
-		((TextView) convertView.findViewById(R.id.text_task_title)).setText(title);
+		TextView text_title = ((TextView) convertView.findViewById(R.id.text_task_title));
+		text_title.setText(title);
+		Linkify.addLinks(text_title, Linkify.WEB_URLS);
+		text_title.setLinkTextColor(activity.getResources().getColor(R.color.phonetodesktop_highlight));
 		convertView.findViewById(R.id.btn_remove_task).setTag(key);
 		if (activity instanceof OnClickListener) {
 			convertView.findViewById(R.id.btn_remove_task).setOnClickListener((OnClickListener) activity);

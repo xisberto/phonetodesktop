@@ -64,9 +64,11 @@ public class Utils {
 		}
 	}
 
+
+//	"\\b((?:https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])",	
 	public static final Pattern urlPattern = Pattern
 	.compile(
-			"\\b((?:https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])",
+			"(https?|ftp)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_()|]*",
 			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE
 					| Pattern.DOTALL);
 	
