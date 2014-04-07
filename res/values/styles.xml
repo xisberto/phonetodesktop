@@ -20,20 +20,22 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="Theme.PhoneToDesktop" parent="@style/Theme.Sherlock.Light">
+    <style name="Theme.PhoneToDesktopBase" parent="@style/Theme.Sherlock.Light">
+        <item name="android:checkboxStyle">@style/Theme.PhoneToDesktop.CheckBox</item>
+        <item name="android:listViewStyle">@style/Theme.PhoneToDesktop.ListView</item>
+        <item name="android:progressBarStyleHorizontal">@style/Theme.PhoneToDesktop.ProgressBar</item>
+    </style>
+    <style name="Theme.PhoneToDesktop" parent="@style/Theme.PhoneToDesktopBase">
         <item name="actionBarItemBackground">@drawable/selectable_background_pdttheme</item>
         <item name="actionBarStyle">@style/ActionBar.Transparent.Pdttheme</item>
         <item name="actionModeBackground">@drawable/cab_background_top_pdttheme</item>
         <item name="actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Pdttheme</item>
-        <item name="android:checkboxStyle">@style/Theme.PhoneToDesktop.CheckBox</item>
-        <item name="android:progressBarStyleHorizontal">@style/Theme.PhoneToDesktop.ProgressBar</item>
-        <item name="android:listViewStyle">@style/Theme.PhoneToDesktop.ListView</item>
     </style>
 
     <style name="ActionBar.Transparent.Pdttheme" parent="@style/Widget.Sherlock.Light.ActionBar">
         <item name="background">@drawable/ab_transparent_pdttheme</item>
     </style>
-    
+
     <style name="ActionButton.CloseMode.Pdttheme" parent="@style/Widget.Sherlock.Light.ActionButton.CloseMode">
         <item name="android:background">@drawable/btn_cab_done_pdttheme</item>
     </style>
@@ -61,6 +63,10 @@
         <item name="android:textColor">@android:color/black</item>
     </style>
 
+    <style name="Theme.PhoneToDesktop.LinkAppearance" parent="@android:style/TextAppearance">
+        <item name="android:textColorLink">@color/phonetodesktop_highlight</item>        
+    </style>
+    
     <style name="Theme.PhoneToDesktop.CheckBox" parent="android:Widget.CompoundButton.CheckBox">
         <item name="android:button">@drawable/btn_check_holo_light</item>
     </style>
@@ -74,10 +80,12 @@
 
     <style name="Theme.PhoneToDesktop.ListView" parent="android:Widget.ListView">
         <item name="android:listSelector">@drawable/list_selector_holo_light</item>
+        <item name="android:textColorLink">@color/phonetodesktop_highlight</item>
     </style>
 
     <style name="Theme.PhoneToDesktop.ListView.White" parent="android:Widget.ListView.White">
         <item name="android:listSelector">@drawable/list_selector_holo_light</item>
+        <item name="android:textColorLink">@color/phonetodesktop_highlight</item>
     </style>
 
 </resources>
