@@ -48,7 +48,6 @@ public class LinkListActivity extends SherlockFragmentActivity implements
 	private ArrayList<String> ids;
 	private ArrayList<String> titles;
 	private boolean updating;
-	private TasksArrayAdapter adapter;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -178,11 +177,7 @@ public class LinkListActivity extends SherlockFragmentActivity implements
 				for (int i = 0; i < titles.size(); i++) {
 					tasks.put(ids.get(i), titles.get(i));
 				}
-				if (adapter == null) {
-					adapter = new TasksArrayAdapter(this, tasks);
-				} else {
-					adapter.notifyDataSetChanged();
-				}
+				TasksArrayAdapter adapter = new TasksArrayAdapter(this, tasks);
 				list_view.setAdapter(adapter);
 				list_view.setVisibility(View.VISIBLE);
 				text.setVisibility(View.GONE);
