@@ -88,6 +88,7 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		
 		UpdateChecker checker = new UpdateChecker(this);
 		checker.setNotice(Notice.NOTIFICATION);
+		checker.setDebug(BuildConfig.DEBUG);
 		checker.start();
 
 		if (getIntent().getAction().equals(Intent.ACTION_SEND)
