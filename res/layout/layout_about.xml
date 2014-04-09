@@ -12,16 +12,16 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/ScrollView1"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin" >
+    android:layout_height="match_parent" >
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin" >
 
         <ImageView
             android:id="@+id/imageView1"
@@ -52,16 +52,15 @@
             style="@style/Theme.PhoneToDesktop.HomeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/btn_share_this"
+            android:onClick="onClick"
             android:tag="@string/link_about_message"
-            android:onClick="onClick" />
-        
+            android:text="@string/btn_share_this" />
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginBottom="8dp"
-            android:background="#CCCCCC" 
-            />
+            android:background="#CCCCCC" />
 
         <TextView
             android:id="@+id/text_chrome_extension"
@@ -75,17 +74,16 @@
             style="@style/Theme.PhoneToDesktop.HomeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/btn_share_this"
+            android:onClick="onClick"
             android:tag="@string/link_chrome_extension"
-            android:onClick="onClick" />
+            android:text="@string/btn_share_this" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginBottom="8dp"
-            android:background="#CCCCCC" 
-            />
-        
+            android:background="#CCCCCC" />
+
         <TextView
             android:id="@+id/text_google_java_api"
             android:layout_width="wrap_content"
@@ -98,17 +96,16 @@
             style="@style/Theme.PhoneToDesktop.HomeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/btn_share_this"
+            android:onClick="onClick"
             android:tag="@string/link_google_java_api"
-            android:onClick="onClick" />
+            android:text="@string/btn_share_this" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginBottom="8dp"
-            android:background="#CCCCCC" 
-            />
-        
+            android:background="#CCCCCC" />
+
         <TextView
             android:id="@+id/text_actionbarsherlock"
             android:layout_width="wrap_content"
@@ -121,9 +118,9 @@
             style="@style/Theme.PhoneToDesktop.HomeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/btn_share_this"
+            android:onClick="onClick"
             android:tag="@string/link_actionbarsherlock"
-            android:onClick="onClick" />
+            android:text="@string/btn_share_this" />
     </LinearLayout>
 
 </ScrollView>
