@@ -19,14 +19,13 @@
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_margin="5dp"
         android:layout_weight="1" />
 
-    <View 
+    <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="?attr/dividerVertical"/>
-    
+        android:background="?attr/dividerVertical" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
@@ -38,13 +37,12 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/btn_back" />
-        
+
         <View
             android:layout_width="1dp"
             android:layout_height="24dp"
             android:layout_gravity="center"
-            android:background="?attr/dividerVertical" 
-            />
+            android:background="?attr/dividerVertical" />
 
         <Button
             android:id="@+id/button_next"

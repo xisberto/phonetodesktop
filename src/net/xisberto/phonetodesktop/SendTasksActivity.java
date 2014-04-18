@@ -37,6 +37,8 @@ import com.actionbarsherlock.app.SherlockDialogFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.rampo.updatechecker.Notice;
+import com.rampo.updatechecker.UpdateChecker;
 
 public class SendTasksActivity extends SherlockFragmentActivity implements
 		android.content.DialogInterface.OnClickListener {
@@ -83,6 +85,11 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		// ActionbarSherlock adds views to the Activity during onCreate, so we
 		// must call super.onCreate after we reset the theme
 		super.onCreate(savedInstanceState);
+		
+		UpdateChecker checker = new UpdateChecker(this);
+		checker.setNotice(Notice.NOTIFICATION);
+		checker.setDebug(BuildConfig.DEBUG);
+		checker.start();
 
 		if (getIntent().getAction().equals(Intent.ACTION_SEND)
 				&& getIntent().hasExtra(Intent.EXTRA_TEXT)) {
