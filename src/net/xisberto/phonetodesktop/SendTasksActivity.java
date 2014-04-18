@@ -187,14 +187,15 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 
 	@Override
 	public void onBackPressed() {
-		localTask.delete();
+		if (!BuildConfig.DEBUG) {
+			localTask.delete();
+			Toast.makeText(
+					getApplicationContext(),
+					"Saving this task on Waiting List "
+							+ "(after beta period, the task will be discarded)",
+					Toast.LENGTH_LONG).show();
+		}
 		super.onBackPressed();
-//		During beta, we will inform the user that the task will be saved
-//		Toast.makeText(
-//				this,
-//				"Saving this task on Waiting List "
-//						+ "(after beta period, the task will be discarded)",
-//				Toast.LENGTH_LONG).show();
 	}
 
 	@Override
