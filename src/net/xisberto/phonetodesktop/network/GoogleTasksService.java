@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.xisberto.phonetodesktop.PhoneToDesktopActivity;
+import net.xisberto.phonetodesktop.MainActivity;
 import net.xisberto.phonetodesktop.Preferences;
 import net.xisberto.phonetodesktop.R;
 import net.xisberto.phonetodesktop.Utils;
@@ -244,7 +244,7 @@ public class GoogleTasksService extends IntentService {
 		case NOTIFICATION_NEED_AUTHORIZE:
 			// When authorization is need, send the user to authorization
 			// process
-			intentContent.setClass(this, PhoneToDesktopActivity.class);
+			intentContent.setClass(this, MainActivity.class);
 			intentContent.setAction(Utils.ACTION_AUTHENTICATE);
 			intentContent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
 					| Intent.FLAG_ACTIVITY_CLEAR_TOP);

@@ -37,7 +37,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.services.tasks.model.TaskList;
 
-public class PhoneToDesktopActivity extends SherlockFragmentActivity implements
+public class MainActivity extends SherlockFragmentActivity implements
 		OnClickListener, TaskListTaskListener, PhoneToDesktopAuthorization {
 
 	public static final int REQUEST_GOOGLE_PLAY_SERVICES = 0;
@@ -54,6 +54,8 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements
 	private MainFragment mainFragment;
 	private Fragment currentFragment;
 
+	private boolean showWelcome;
+	
 	private BroadcastReceiver receiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -67,6 +69,7 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+		setContentView(R.layout.activity_main);
 
 		preferences = new Preferences(this);
 
@@ -77,11 +80,13 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements
 			FragmentTransaction transaction = getSupportFragmentManager()
 					.beginTransaction();
 			if (preferences.loadAccountName() == null) {
+				showWelcome = true;
 				currentFragment = WelcomeFragment.newInstance();
-				transaction.replace(android.R.id.content, currentFragment);
+				transaction.replace(R.id.main_frame, currentFragment);
 			} else {
+				showWelcome = false;
 				mainFragment = MainFragment.newInstance();
-				transaction.replace(android.R.id.content, mainFragment, TAG_MAIN);
+				transaction.replace(R.id.main_frame, mainFragment, TAG_MAIN);
 			}
 			transaction.commit();
 		} else {
@@ -114,11 +119,11 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements
 						if (mainFragment == null) {
 							mainFragment = MainFragment.newInstance();
 						}
+						updateMainLayout(true);
 						getSupportFragmentManager().beginTransaction()
-								.replace(android.R.id.content, mainFragment)
+								.replace(R.id.main_frame, mainFragment)
 								.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
 								.commit();
-						updateMainLayout(true);
 					}
 					credential.setSelectedAccountName(accountName);
 					preferences.saveAccountName(accountName);
@@ -195,7 +200,7 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements
 		runOnUiThread(new Runnable() {
 			public void run() {
 				Dialog dialog = GooglePlayServicesUtil.getErrorDialog(
-						connectionStatusCode, PhoneToDesktopActivity.this,
+						connectionStatusCode, MainActivity.this,
 						REQUEST_GOOGLE_PLAY_SERVICES);
 				dialog.show();
 			}
@@ -268,6 +273,10 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements
 			}
 		}
 		updateMainLayout(false);
+		if (showWelcome) {
+			startActivity(new Intent(this, TutorialActivity.class));
+			showWelcome = false;
+		}
 	}
 
 	@Override
@@ -291,9 +300,9 @@ public class PhoneToDesktopActivity extends SherlockFragmentActivity implements
 
 	public static class RetryDialog extends DialogFragment implements
 			DialogInterface.OnClickListener {
-		private PhoneToDesktopActivity activity;
+		private MainActivity activity;
 
-		public static RetryDialog newInstance(PhoneToDesktopActivity act) {
+		public static RetryDialog newInstance(MainActivity act) {
 			RetryDialog dialog = new RetryDialog();
 			dialog.activity = act;
 			return dialog;
