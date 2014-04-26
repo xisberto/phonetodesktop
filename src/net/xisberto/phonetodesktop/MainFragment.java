@@ -32,32 +32,12 @@ public class MainFragment extends SherlockFragment implements OnClickListener {
 		MainFragment fragment = new MainFragment();
 		Bundle args = new Bundle();
 		fragment.setArguments(args);
+		fragment.setUpdating(false);
 		return fragment;
 	}
 
 	public MainFragment() {
 		// Required empty public constructor
-	}
-
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setUpdating(false);
-	}
-
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		mView = inflater.inflate(R.layout.layout_main, container, false);
-
-		mView.findViewById(R.id.btn_authorize).setOnClickListener(this);
-		mView.findViewById(R.id.btn_link_list).setOnClickListener(this);
-		mView.findViewById(R.id.btn_wait_list).setOnClickListener(this);
-		mView.findViewById(R.id.btn_how_it_works).setOnClickListener(this);
-		mView.findViewById(R.id.btn_preferences).setOnClickListener(this);
-		mView.findViewById(R.id.btn_about).setOnClickListener(this);
-
-		return mView;
 	}
 
 	@Override
@@ -72,9 +52,23 @@ public class MainFragment extends SherlockFragment implements OnClickListener {
 	}
 
 	@Override
-	public void onDetach() {
-		super.onDetach();
-		mListener = null;
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		mView = inflater.inflate(R.layout.fragment_main, container, false);
+
+		mView.findViewById(R.id.btn_authorize).setOnClickListener(this);
+		mView.findViewById(R.id.btn_link_list).setOnClickListener(this);
+		mView.findViewById(R.id.btn_wait_list).setOnClickListener(this);
+		mView.findViewById(R.id.btn_how_it_works).setOnClickListener(this);
+		mView.findViewById(R.id.btn_preferences).setOnClickListener(this);
+		mView.findViewById(R.id.btn_about).setOnClickListener(this);
+
+		return mView;
 	}
 
 	@Override
@@ -85,7 +79,18 @@ public class MainFragment extends SherlockFragment implements OnClickListener {
 	@Override
 	public void onStart() {
 		super.onStart();
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
 		updateMainLayout();
+	}
+
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		mListener = null;
 	}
 
 	@Override
@@ -114,6 +119,7 @@ public class MainFragment extends SherlockFragment implements OnClickListener {
 	}
 
 	public void setUpdating(boolean updating) {
+		Utils.log("changing updating to "+updating);
 		mUpdating = updating;
 	}
 	
