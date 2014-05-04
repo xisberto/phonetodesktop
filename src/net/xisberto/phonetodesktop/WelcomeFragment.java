@@ -45,6 +45,7 @@ public class WelcomeFragment extends SherlockFragment implements OnClickListener
 		
 		mView.findViewById(R.id.btn_authorize).setOnClickListener(this);
 		mView.findViewById(R.id.btn_how_it_works).setOnClickListener(this);
+		mView.findViewById(R.id.btn_about).setOnClickListener(this);
 		return mView;
 	}
 
@@ -73,6 +74,9 @@ public class WelcomeFragment extends SherlockFragment implements OnClickListener
 			break;
 		case R.id.btn_how_it_works:
 			startActivity(new Intent(getActivity(), TutorialActivity.class));
+			break;
+		case R.id.btn_about:
+			startActivity(new Intent(getActivity(), AboutActivity.class));
 			break;
 		default:
 			break;

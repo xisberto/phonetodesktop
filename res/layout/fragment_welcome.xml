@@ -29,19 +29,20 @@
             android:layout_height="wrap_content"
             android:text="@string/btn_authorize" />
 
-        <TextView
-            android:id="@+id/txt_how_works"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/txt_tutorial"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
         <Button
             android:id="@+id/btn_how_it_works"
             style="@style/Theme.PhoneToDesktop.HomeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/btn_how_it_works" />
+
+        <Button
+            android:id="@+id/btn_about"
+            style="@style/Theme.PhoneToDesktop.HomeButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_about" />
+
     </LinearLayout>
 
 </ScrollView>
