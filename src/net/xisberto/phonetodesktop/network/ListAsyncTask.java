@@ -13,7 +13,7 @@ package net.xisberto.phonetodesktop.network;
 import java.io.IOException;
 import java.util.List;
 
-import net.xisberto.phonetodesktop.PhoneToDesktopActivity;
+import net.xisberto.phonetodesktop.MainActivity;
 import net.xisberto.phonetodesktop.Preferences;
 import net.xisberto.phonetodesktop.Utils;
 
@@ -41,12 +41,12 @@ public class ListAsyncTask extends AsyncTask<Integer, Void, String> {
 
 	private JsonFactory jsonFactory;
 
-	private PhoneToDesktopActivity listener;
+	private MainActivity listener;
 	private List<TaskList> tasklists;
 
-	public ListAsyncTask(PhoneToDesktopActivity activity) {
+	public ListAsyncTask(MainActivity activity) {
 		if (activity instanceof TaskListTaskListener) {
-			listener = (PhoneToDesktopActivity) activity;
+			listener = (MainActivity) activity;
 		} else {
 			throw new ClassCastException(
 					"Activity must implement TaskListTaskListener");
@@ -92,7 +92,7 @@ public class ListAsyncTask extends AsyncTask<Integer, Void, String> {
 			Utils.log(Log.getStackTraceString(userRecoverableException));
 			listener.startActivityForResult(
 					userRecoverableException.getIntent(),
-					PhoneToDesktopActivity.REQUEST_AUTHORIZATION);
+					MainActivity.REQUEST_AUTHORIZATION);
 		} catch (IOException e) {
 			Utils.log(Log.getStackTraceString(e));
 		} catch (IllegalArgumentException iae) {
