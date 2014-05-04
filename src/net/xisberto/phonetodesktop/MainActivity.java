@@ -272,11 +272,11 @@ public class MainActivity extends SherlockFragmentActivity implements
 				// nothing to do here
 			}
 		}
-		updateMainLayout(false);
 		if (showWelcome) {
 			startActivity(new Intent(this, TutorialActivity.class));
 			showWelcome = false;
 		}
+		updateMainLayout(false);
 	}
 
 	@Override
