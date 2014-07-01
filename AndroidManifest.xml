@@ -12,8 +12,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="net.xisberto.phonetodesktop"
     android:installLocation="auto"
-    android:versionCode="138"
-    android:versionName="1.3.1" >
+    android:versionCode="140"
+    android:versionName="1.3.2" >
 
     <uses-sdk
         android:minSdkVersion="7"
@@ -45,14 +45,14 @@
             android:parentActivityName="net.xisberto.phonetodesktop.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="net.xisberto.phonetodesktop.PhoneToDesktopActivity" />
+                android:value="net.xisberto.phonetodesktop.MainActivity" />
         </activity>
         <activity
             android:name="net.xisberto.phonetodesktop.AboutActivity"
             android:parentActivityName="net.xisberto.phonetodesktop.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="net.xisberto.phonetodesktop.PhoneToDesktopActivity" />
+                android:value="net.xisberto.phonetodesktop.MainActivity" />
         </activity>
         <activity
             android:name="net.xisberto.phonetodesktop.LinkListActivity"
@@ -60,7 +60,7 @@
             android:parentActivityName="net.xisberto.phonetodesktop.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="net.xisberto.phonetodesktop.PhoneToDesktopActivity" />
+                android:value="net.xisberto.phonetodesktop.MainActivity" />
         </activity>
         <activity
             android:name="net.xisberto.phonetodesktop.SendTasksActivity"
@@ -87,7 +87,7 @@
             android:parentActivityName="net.xisberto.phonetodesktop.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="net.xisberto.phonetodesktop.PhoneToDesktopActivity" />
+                android:value="net.xisberto.phonetodesktop.MainActivity" />
         </activity>
         
         <activity
@@ -96,7 +96,7 @@
             android:parentActivityName="net.xisberto.phonetodesktop.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="net.xisberto.phonetodesktop.PhoneToDesktopActivity" />
+                android:value="net.xisberto.phonetodesktop.MainActivity" />
         </activity>
     </application>
 
