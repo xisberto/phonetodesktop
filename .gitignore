@@ -1,6 +1,8 @@
 bin
 libs
 libs-sources
+build
+phonetodesktop/build
 gen
 proguard
 *.apk
