@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- From: file:/home/xisberto/AndroidstudioProjects/phonetodesktop/updateChecker/src/main/res/values-fr/strings.xml -->
+    <eat-comment/>
+    <string name="dialogNegativeButton">Non merci</string>
+    <string name="dialogNeutralButton">Plus tard</string>
+    <string name="dialogPositiveButton">Noter</string>
+    <string name="downloadFor">Vérifier de la nouvelle mise à jour pour %1$s!\nDisponible dès maintenant sur %2$s.</string>
+    <string name="newUpdateAvailable">Nouvelle mise à jour Trouvé</string>
+</resources>

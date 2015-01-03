@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- From: file:/home/xisberto/AndroidstudioProjects/phonetodesktop/updateChecker/src/main/res/values/strings.xml -->
+    <eat-comment/>
+    <string name="amazonStore">Amazon App Store</string>
+    <string name="dialogNegativeButton">No, thanks</string>
+    <string name="dialogNeutralButton">Later</string>
+    <string name="dialogPositiveButton">OK</string>
+    <string name="downloadFor">Check out the new update for %1$s!\nAvailable now on %2$s.</string>
+    <string name="googlePlay">Google Play</string>
+    <string name="library_name">Update Checker</string>
+    <string name="newUpdateAvailable">New update found</string>
+</resources>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- From: file:/home/xisberto/AndroidstudioProjects/phonetodesktop/updateChecker/src/main/res/values-hu/strings.xml -->
+    <eat-comment/>
+    <string name="dialogNegativeButton">Nem, köszönöm</string>
+    <string name="dialogNeutralButton">Később</string>
+    <string name="dialogPositiveButton">Frissítem</string>
+    <string name="downloadFor">Telepítsd az új %1$s verziót - már elérhető a Play Áruházban.</string>
+    <string name="newUpdateAvailable">Új frissítés érhető el</string>
+</resources>

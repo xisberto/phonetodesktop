@@ -1,0 +1,35 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "21.1.1"
+
+    defaultConfig {
+        applicationId "net.xisberto.phonetodesktop"
+        minSdkVersion 9
+        targetSdkVersion 21
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
+        }
+    }
+}
+
+dependencies {
+    compile project(':updateChecker')
+    compile 'com.android.support:support-v4:21.0.3'
+    compile 'com.google.http-client:google-http-client-gson:1.19.0'
+    compile 'com.google.code.gson:gson:2.3'
+    compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
+    compile 'com.google.android.gms:play-services:6.5.87'
+    compile files('libs/google-api-client-1.17.0-rc.jar')
+    compile files('libs/google-api-client-android-1.17.0-rc.jar')
+    compile files('libs/google-api-services-tasks-v1-rev28-1.17.0-rc.jar')
+    //compile files('libs/google-http-client-1.17.0-rc.jar')
+    compile files('libs/google-http-client-android-1.17.0-rc.jar')
+    compile files('libs/google-oauth-client-1.17.0-rc.jar')
+    compile files('libs/jsr305-1.3.9.jar')
+}

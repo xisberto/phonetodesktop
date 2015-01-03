@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- From: file:/home/xisberto/AndroidstudioProjects/phonetodesktop/updateChecker/build/intermediates/bundles/debug/res/values-sk/values.xml -->
+    <eat-comment/>
+    <string name="dialogNegativeButton">Nie, vďaka</string>
+    <string name="dialogNeutralButton">Neskôr</string>
+    <string name="dialogPositiveButton">OK</string>
+    <string name="downloadFor">Pozrite sa na novú aktualizáciu pre %1$s!\nTeraz dostupná v %2$s.</string>
+    <string name="newUpdateAvailable">Nájdená nová aktualizácia</string>
+</resources>
