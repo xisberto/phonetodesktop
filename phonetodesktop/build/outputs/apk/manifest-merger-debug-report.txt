@@ -1,0 +1,168 @@
+-- Merging decision tree log ---
+manifest
+ADDED from AndroidManifest.xml:12:1
+	xmlns:android
+		ADDED from AndroidManifest.xml:12:11
+	package
+		ADDED from AndroidManifest.xml:13:5
+		INJECTED from AndroidManifest.xml:0:0
+		INJECTED from AndroidManifest.xml:0:0
+	android:versionName
+		ADDED from AndroidManifest.xml:16:5
+	android:versionCode
+		ADDED from AndroidManifest.xml:15:5
+		INJECTED from AndroidManifest.xml:0:0
+		INJECTED from AndroidManifest.xml:0:0
+	android:installLocation
+		ADDED from AndroidManifest.xml:14:5
+uses-permission#android.permission.INTERNET
+ADDED from AndroidManifest.xml:19:5
+	android:name
+		ADDED from AndroidManifest.xml:19:22
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from AndroidManifest.xml:20:5
+	android:name
+		ADDED from AndroidManifest.xml:20:22
+uses-permission#android.permission.GET_ACCOUNTS
+ADDED from AndroidManifest.xml:21:5
+	android:name
+		ADDED from AndroidManifest.xml:21:22
+uses-permission#android.permission.USE_CREDENTIALS
+ADDED from AndroidManifest.xml:22:5
+	android:name
+		ADDED from AndroidManifest.xml:22:22
+uses-permission#android.permission.MANAGE_ACCOUNTS
+ADDED from AndroidManifest.xml:23:5
+	android:name
+		ADDED from AndroidManifest.xml:23:22
+application
+ADDED from AndroidManifest.xml:25:5
+MERGED from com.android.support:support-v4:21.0.0:16:5
+MERGED from com.android.support:support-v4:21.0.0:16:5
+MERGED from com.actionbarsherlock:actionbarsherlock:4.4.0:4:3
+MERGED from com.google.android.gms:play-services:6.5.87:20:5
+MERGED from com.android.support:support-v4:21.0.0:16:5
+	android:label
+		ADDED from AndroidManifest.xml:28:9
+	android:allowBackup
+		ADDED from AndroidManifest.xml:26:9
+	android:icon
+		ADDED from AndroidManifest.xml:27:9
+	android:theme
+		ADDED from AndroidManifest.xml:29:9
+activity#net.xisberto.phonetodesktop.MainActivity
+ADDED from AndroidManifest.xml:30:9
+	android:label
+		ADDED from AndroidManifest.xml:32:13
+	android:name
+		ADDED from AndroidManifest.xml:31:13
+	android:launchMode
+		ADDED from AndroidManifest.xml:33:13
+intent-filter#android.intent.action.MAIN+android.intent.category.LAUNCHER
+ADDED from AndroidManifest.xml:34:13
+action#android.intent.action.MAIN
+ADDED from AndroidManifest.xml:35:17
+	android:name
+		ADDED from AndroidManifest.xml:35:25
+category#android.intent.category.LAUNCHER
+ADDED from AndroidManifest.xml:37:17
+	android:name
+		ADDED from AndroidManifest.xml:37:27
+activity#net.xisberto.phonetodesktop.TutorialActivity
+ADDED from AndroidManifest.xml:40:9
+	android:parentActivityName
+		ADDED from AndroidManifest.xml:42:13
+	android:name
+		ADDED from AndroidManifest.xml:41:13
+meta-data#android.support.PARENT_ACTIVITY
+ADDED from AndroidManifest.xml:43:13
+	android:name
+		ADDED from AndroidManifest.xml:44:17
+	android:value
+		ADDED from AndroidManifest.xml:45:17
+activity#net.xisberto.phonetodesktop.AboutActivity
+ADDED from AndroidManifest.xml:47:9
+	android:parentActivityName
+		ADDED from AndroidManifest.xml:49:13
+	android:name
+		ADDED from AndroidManifest.xml:48:13
+activity#net.xisberto.phonetodesktop.LinkListActivity
+ADDED from AndroidManifest.xml:54:9
+	android:label
+		ADDED from AndroidManifest.xml:56:13
+	android:parentActivityName
+		ADDED from AndroidManifest.xml:57:13
+	android:name
+		ADDED from AndroidManifest.xml:55:13
+activity#net.xisberto.phonetodesktop.SendTasksActivity
+ADDED from AndroidManifest.xml:62:9
+	android:noHistory
+		ADDED from AndroidManifest.xml:67:13
+	android:label
+		ADDED from AndroidManifest.xml:64:13
+	android:uiOptions
+		ADDED from AndroidManifest.xml:68:13
+	android:theme
+		ADDED from AndroidManifest.xml:65:13
+	android:excludeFromRecents
+		ADDED from AndroidManifest.xml:66:13
+	android:name
+		ADDED from AndroidManifest.xml:63:13
+intent-filter#android.intent.action.SEND+android.intent.category.DEFAULT
+ADDED from AndroidManifest.xml:69:13
+	android:label
+		ADDED from AndroidManifest.xml:69:28
+action#android.intent.action.SEND
+ADDED from AndroidManifest.xml:70:17
+	android:name
+		ADDED from AndroidManifest.xml:70:25
+category#android.intent.category.DEFAULT
+ADDED from AndroidManifest.xml:72:17
+	android:name
+		ADDED from AndroidManifest.xml:72:27
+data
+ADDED from AndroidManifest.xml:74:17
+	android:mimeType
+		ADDED from AndroidManifest.xml:74:23
+service#net.xisberto.phonetodesktop.network.GoogleTasksService
+ADDED from AndroidManifest.xml:78:9
+	android:exported
+		ADDED from AndroidManifest.xml:80:13
+	android:name
+		ADDED from AndroidManifest.xml:79:13
+activity#net.xisberto.phonetodesktop.WaitListActivity
+ADDED from AndroidManifest.xml:83:9
+	android:label
+		ADDED from AndroidManifest.xml:85:13
+	android:parentActivityName
+		ADDED from AndroidManifest.xml:86:13
+	android:name
+		ADDED from AndroidManifest.xml:84:13
+activity#net.xisberto.phonetodesktop.PreferencesActivity
+ADDED from AndroidManifest.xml:92:9
+	android:label
+		ADDED from AndroidManifest.xml:94:13
+	android:parentActivityName
+		ADDED from AndroidManifest.xml:95:13
+	android:name
+		ADDED from AndroidManifest.xml:93:13
+uses-sdk
+INJECTED from AndroidManifest.xml:0:0 reason: use-sdk injection requested
+MERGED from phonetodesktop:updateChecker:unspecified:7:5
+MERGED from com.android.support:support-v4:21.0.0:15:5
+MERGED from com.android.support:support-v4:21.0.0:15:5
+MERGED from com.actionbarsherlock:actionbarsherlock:4.4.0:3:3
+MERGED from com.google.android.gms:play-services:6.5.87:18:5
+MERGED from com.android.support:support-v4:21.0.0:15:5
+	android:targetSdkVersion
+		INJECTED from AndroidManifest.xml:0:0
+		INJECTED from AndroidManifest.xml:0:0
+	android:minSdkVersion
+		INJECTED from AndroidManifest.xml:0:0
+		INJECTED from AndroidManifest.xml:0:0
+meta-data#com.google.android.gms.version
+ADDED from com.google.android.gms:play-services:6.5.87:21:9
+	android:name
+		ADDED from com.google.android.gms:play-services:6.5.87:22:13
+	android:value
+		ADDED from com.google.android.gms:play-services:6.5.87:23:13
