@@ -8,7 +8,7 @@
  * Contributors:
  *     Humberto Fraga <xisberto@gmail.com> - initial API and implementation
  ******************************************************************************/
-package net.xisberto.phonetodesktop;
+package net.xisberto.phonetodesktop.ui;
 
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;

@@ -8,7 +8,7 @@
  * Contributors:
  *     Humberto Fraga <xisberto@gmail.com> - initial API and implementation
  ******************************************************************************/
-package net.xisberto.phonetodesktop;
+package net.xisberto.phonetodesktop.ui;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -35,6 +35,9 @@ import com.actionbarsherlock.view.MenuItem;
 import com.rampo.updatechecker.UpdateChecker;
 import com.rampo.updatechecker.notice.Notice;
 
+import net.xisberto.phonetodesktop.BuildConfig;
+import net.xisberto.phonetodesktop.Preferences;
+import net.xisberto.phonetodesktop.Utils;
 import net.xisberto.phonetodesktop.database.DatabaseHelper;
 import net.xisberto.phonetodesktop.model.LocalTask;
 import net.xisberto.phonetodesktop.model.LocalTask.Options;

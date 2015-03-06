@@ -1,4 +1,4 @@
-package net.xisberto.phonetodesktop;
+package net.xisberto.phonetodesktop.ui;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -11,6 +11,10 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragment;
+
+import net.xisberto.phonetodesktop.BuildConfig;
+import net.xisberto.phonetodesktop.Preferences;
+import net.xisberto.phonetodesktop.Utils;
 
 /**
  * A simple {@link android.support.v4.app.Fragment} subclass. Activities that
@@ -119,7 +123,7 @@ public class MainFragment extends SherlockFragment implements OnClickListener {
 	}
 
 	public void setUpdating(boolean updating) {
-		Utils.log("changing updating to "+updating);
+		Utils.log("changing updating to " + updating);
 		mUpdating = updating;
 	}
 	

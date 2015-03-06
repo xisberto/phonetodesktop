@@ -1,6 +1,6 @@
-package net.xisberto.phonetodesktop;
+package net.xisberto.phonetodesktop.ui;
 
-import net.xisberto.phonetodesktop.MainFragment.PhoneToDesktopAuthorization;
+import net.xisberto.phonetodesktop.ui.MainFragment.PhoneToDesktopAuthorization;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;

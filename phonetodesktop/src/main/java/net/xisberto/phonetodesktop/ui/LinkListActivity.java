@@ -8,12 +8,13 @@
  * Contributors:
  *     Humberto Fraga <xisberto@gmail.com> - initial API and implementation
  ******************************************************************************/
-package net.xisberto.phonetodesktop;
+package net.xisberto.phonetodesktop.ui;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import net.xisberto.phonetodesktop.Utils;
 import net.xisberto.phonetodesktop.network.GoogleTasksService;
 import android.app.AlertDialog;
 import android.app.Dialog;
