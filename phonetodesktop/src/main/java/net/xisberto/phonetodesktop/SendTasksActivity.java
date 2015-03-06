@@ -10,11 +10,6 @@
  ******************************************************************************/
 package net.xisberto.phonetodesktop;
 
-import net.xisberto.phonetodesktop.database.DatabaseHelper;
-import net.xisberto.phonetodesktop.model.LocalTask;
-import net.xisberto.phonetodesktop.model.LocalTask.Options;
-import net.xisberto.phonetodesktop.model.LocalTask.PersistCallback;
-import net.xisberto.phonetodesktop.network.GoogleTasksService;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -37,8 +32,14 @@ import com.actionbarsherlock.app.SherlockDialogFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.rampo.updatechecker.Notice;
 import com.rampo.updatechecker.UpdateChecker;
+import com.rampo.updatechecker.notice.Notice;
+
+import net.xisberto.phonetodesktop.database.DatabaseHelper;
+import net.xisberto.phonetodesktop.model.LocalTask;
+import net.xisberto.phonetodesktop.model.LocalTask.Options;
+import net.xisberto.phonetodesktop.model.LocalTask.PersistCallback;
+import net.xisberto.phonetodesktop.network.GoogleTasksService;
 
 public class SendTasksActivity extends SherlockFragmentActivity implements
 		android.content.DialogInterface.OnClickListener {
@@ -87,8 +88,7 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		super.onCreate(savedInstanceState);
 		
 		UpdateChecker checker = new UpdateChecker(this);
-		checker.setNotice(Notice.NOTIFICATION);
-		checker.setDebug(BuildConfig.DEBUG);
+        checker.setNotice(Notice.NOTIFICATION);
 		checker.start();
 
 		if (getIntent().getAction().equals(Intent.ACTION_SEND)

@@ -19,7 +19,7 @@ android {
 }
 
 dependencies {
-    compile project(':updateChecker')
+    compile 'com.github.rampo.updatechecker:library:2.1.4'
     compile 'com.android.support:support-v4:21.0.3'
     compile 'com.google.http-client:google-http-client-gson:1.19.0'
     compile 'com.google.code.gson:gson:2.3'
