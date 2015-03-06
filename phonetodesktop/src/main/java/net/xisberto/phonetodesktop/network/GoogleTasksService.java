@@ -14,11 +14,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.xisberto.phonetodesktop.MainActivity;
+import net.xisberto.phonetodesktop.ui.MainActivity;
 import net.xisberto.phonetodesktop.Preferences;
 import net.xisberto.phonetodesktop.R;
 import net.xisberto.phonetodesktop.Utils;
-import net.xisberto.phonetodesktop.WaitListActivity;
+import net.xisberto.phonetodesktop.ui.WaitListActivity;
 import net.xisberto.phonetodesktop.database.DatabaseHelper;
 import net.xisberto.phonetodesktop.model.LocalTask;
 import net.xisberto.phonetodesktop.model.LocalTask.Options;

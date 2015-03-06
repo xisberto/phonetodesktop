@@ -8,7 +8,7 @@
  * Contributors:
  *     Humberto Fraga <xisberto@gmail.com> - initial API and implementation
  ******************************************************************************/
-package net.xisberto.phonetodesktop;
+package net.xisberto.phonetodesktop.ui;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -28,6 +28,9 @@ import android.widget.TextView;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
+
+import net.xisberto.phonetodesktop.BuildConfig;
+import net.xisberto.phonetodesktop.Utils;
 
 public class TutorialActivity extends SherlockFragmentActivity implements OnClickListener, OnPageChangeListener {
 	private final int
@@ -153,7 +156,7 @@ public class TutorialActivity extends SherlockFragmentActivity implements OnClic
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			v = inflater.inflate(R.layout.layout_slide, container, false);
-			int res_string = Utils.getResId(R.string.class, "txt_tutorial_"+page_number);
+			int res_string = Utils.getResId(R.string.class, "txt_tutorial_" + page_number);
 			int res_image = Utils.getResId(R.drawable.class, "tutorial_"+page_number);
 			((TextView) v.findViewById(R.id.slide_text)).setText(res_string);
 			((ImageView) v.findViewById(R.id.slide_image)).setImageResource(res_image);

@@ -13,7 +13,7 @@ package net.xisberto.phonetodesktop.network;
 import java.io.IOException;
 import java.util.List;
 
-import net.xisberto.phonetodesktop.MainActivity;
+import net.xisberto.phonetodesktop.ui.MainActivity;
 import net.xisberto.phonetodesktop.Preferences;
 import net.xisberto.phonetodesktop.Utils;
 

@@ -8,11 +8,12 @@
  * Contributors:
  *     Humberto Fraga <xisberto@gmail.com> - initial API and implementation
  ******************************************************************************/
-package net.xisberto.phonetodesktop;
+package net.xisberto.phonetodesktop.ui;
 
 import java.util.List;
 
-import net.xisberto.phonetodesktop.MainFragment.PhoneToDesktopAuthorization;
+import net.xisberto.phonetodesktop.Preferences;
+import net.xisberto.phonetodesktop.Utils;
 import net.xisberto.phonetodesktop.network.ListAsyncTask;
 import net.xisberto.phonetodesktop.network.ListAsyncTask.TaskListTaskListener;
 import android.accounts.AccountManager;
@@ -38,7 +39,7 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import com.google.api.services.tasks.model.TaskList;
 
 public class MainActivity extends SherlockFragmentActivity implements
-		OnClickListener, TaskListTaskListener, PhoneToDesktopAuthorization {
+		OnClickListener, TaskListTaskListener, MainFragment.PhoneToDesktopAuthorization {
 
 	public static final int REQUEST_GOOGLE_PLAY_SERVICES = 0;
 	public static final int REQUEST_AUTHORIZATION = 1;
