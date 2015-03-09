@@ -19,8 +19,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -28,15 +32,12 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockDialogFragment;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.rampo.updatechecker.UpdateChecker;
 import com.rampo.updatechecker.notice.Notice;
 
 import net.xisberto.phonetodesktop.BuildConfig;
 import net.xisberto.phonetodesktop.Preferences;
+import net.xisberto.phonetodesktop.R;
 import net.xisberto.phonetodesktop.Utils;
 import net.xisberto.phonetodesktop.database.DatabaseHelper;
 import net.xisberto.phonetodesktop.model.LocalTask;
@@ -44,7 +45,7 @@ import net.xisberto.phonetodesktop.model.LocalTask.Options;
 import net.xisberto.phonetodesktop.model.LocalTask.PersistCallback;
 import net.xisberto.phonetodesktop.network.GoogleTasksService;
 
-public class SendTasksActivity extends SherlockFragmentActivity implements
+public class SendTasksActivity extends ActionBarActivity implements
 		android.content.DialogInterface.OnClickListener {
 
 	private String text_from_extra;
@@ -204,7 +205,7 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		if (!getResources().getBoolean(R.bool.is_tablet)) {
-			getSupportMenuInflater().inflate(R.menu.activity_send, menu);
+			getMenuInflater().inflate(R.menu.activity_send, menu);
 		}
 		return true;
 	}
@@ -350,7 +351,7 @@ public class SendTasksActivity extends SherlockFragmentActivity implements
 		send_fragment.setWaiting(false);
 	}
 
-	public static class SendFragment extends SherlockDialogFragment implements
+	public static class SendFragment extends DialogFragment implements
 			OnClickListener {
 		private CheckBox cb_only_links, cb_unshorten, cb_get_titles,
 				cb_show_preview;

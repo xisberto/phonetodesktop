@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   Copyright (c) 2012 Humberto Fraga <xisberto@gmail.com>.
   All rights reserved. This program and the accompanying materials
   are made available under the terms of the GNU Public License v3.0
@@ -15,12 +14,12 @@
     android:layout_height="match_parent"
     android:padding="8dp"
     android:clipToPadding="false"
-    android:scrollbarStyle="outsideOverlay" >
+    android:scrollbarStyle="outsideOverlay">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
         <ImageView
             android:id="@+id/slide_image"

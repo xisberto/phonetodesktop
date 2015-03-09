@@ -9,16 +9,17 @@
   Contributors:
       Humberto Fraga <xisberto@gmail.com> - initial API and implementation
 -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/item_cancel"
-        android:showAsAction="ifRoom|withText"
+        app:showAsAction="ifRoom|withText"
         android:title="@android:string/cancel">
     </item>
     <item
         android:id="@+id/item_send"
-        android:showAsAction="ifRoom|withText"
+        app:showAsAction="ifRoom|withText"
         android:title="@string/send">
     </item>
 

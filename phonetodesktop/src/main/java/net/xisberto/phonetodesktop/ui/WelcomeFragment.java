@@ -1,15 +1,16 @@
 package net.xisberto.phonetodesktop.ui;
 
-import net.xisberto.phonetodesktop.ui.MainFragment.PhoneToDesktopAuthorization;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
-import com.actionbarsherlock.app.SherlockFragment;
+import net.xisberto.phonetodesktop.R;
+import net.xisberto.phonetodesktop.ui.MainFragment.PhoneToDesktopAuthorization;
 
 /**
  * A simple {@link android.support.v4.app.Fragment} subclass. Activities that
@@ -19,7 +20,7 @@ import com.actionbarsherlock.app.SherlockFragment;
  * method to create an instance of this fragment.
  * 
  */
-public class WelcomeFragment extends SherlockFragment implements OnClickListener {
+public class WelcomeFragment extends Fragment implements OnClickListener {
 
 	private PhoneToDesktopAuthorization mListener;
 	private View mView;

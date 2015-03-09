@@ -17,7 +17,9 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -25,14 +27,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.MenuItem;
-
 import net.xisberto.phonetodesktop.BuildConfig;
+import net.xisberto.phonetodesktop.R;
 import net.xisberto.phonetodesktop.Utils;
 
-public class TutorialActivity extends SherlockFragmentActivity implements OnClickListener, OnPageChangeListener {
+public class TutorialActivity extends ActionBarActivity implements OnClickListener, OnPageChangeListener {
 	private final int
 		total_slides = 7;
 	private TutorialPageAdapter page_adapter;
@@ -43,11 +42,7 @@ public class TutorialActivity extends SherlockFragmentActivity implements OnClic
 		super.onCreate(arg0);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		setContentView(R.layout.layout_presentation);
-		if (BuildConfig.DEBUG) {
-			float density = getResources().getDisplayMetrics().density;
-			getSherlock().getActionBar().setSubtitle("Density: "+density);
-		}
-		
+
 		findViewById(R.id.button_back).setOnClickListener(this);
 		findViewById(R.id.button_next).setOnClickListener(this);
 		
@@ -131,7 +126,7 @@ public class TutorialActivity extends SherlockFragmentActivity implements OnClic
 		
 	}
 	
-	public static class TutorialFragment extends SherlockFragment {
+	public static class TutorialFragment extends Fragment {
 		int page_number;
 		private View v;
 		

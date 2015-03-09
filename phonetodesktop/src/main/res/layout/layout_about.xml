@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   Copyright (c) 2012 Humberto Fraga <xisberto@gmail.com>.
   All rights reserved. This program and the accompanying materials
   are made available under the terms of the GNU Public License v3.0
@@ -12,7 +11,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/ScrollView1"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -21,7 +20,7 @@
         android:paddingBottom="@dimen/activity_vertical_margin"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin" >
+        android:paddingTop="@dimen/activity_vertical_margin">
 
         <ImageView
             android:id="@+id/imageView1"
@@ -49,7 +48,7 @@
 
         <Button
             android:id="@+id/btn_share_about_message"
-            style="@style/Theme.PhoneToDesktop.HomeButton"
+            android:background="@drawable/btn_normal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="onClick"
@@ -71,7 +70,7 @@
 
         <Button
             android:id="@+id/btn_share_chrome"
-            style="@style/Theme.PhoneToDesktop.HomeButton"
+            android:background="@drawable/btn_normal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="onClick"
@@ -93,7 +92,7 @@
 
         <Button
             android:id="@+id/btn_share_google_java_api"
-            style="@style/Theme.PhoneToDesktop.HomeButton"
+            android:background="@drawable/btn_normal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="onClick"
@@ -115,7 +114,7 @@
 
         <Button
             android:id="@+id/btn_share_actionbarsherlock"
-            style="@style/Theme.PhoneToDesktop.HomeButton"
+            android:background="@drawable/btn_normal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="onClick"

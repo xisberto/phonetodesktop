@@ -10,12 +10,6 @@
  ******************************************************************************/
 package net.xisberto.phonetodesktop.ui;
 
-import java.util.List;
-
-import net.xisberto.phonetodesktop.Preferences;
-import net.xisberto.phonetodesktop.Utils;
-import net.xisberto.phonetodesktop.network.ListAsyncTask;
-import net.xisberto.phonetodesktop.network.ListAsyncTask.TaskListTaskListener;
 import android.accounts.AccountManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -29,16 +23,25 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Window;
+import com.google.android.gms.common.AccountPicker;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.services.tasks.model.TaskList;
 
-public class MainActivity extends SherlockFragmentActivity implements
+import net.xisberto.phonetodesktop.Preferences;
+import net.xisberto.phonetodesktop.R;
+import net.xisberto.phonetodesktop.Utils;
+import net.xisberto.phonetodesktop.network.ListAsyncTask;
+import net.xisberto.phonetodesktop.network.ListAsyncTask.TaskListTaskListener;
+
+import java.util.List;
+
+public class MainActivity extends ActionBarActivity implements
 		OnClickListener, TaskListTaskListener, MainFragment.PhoneToDesktopAuthorization {
 
 	public static final int REQUEST_GOOGLE_PLAY_SERVICES = 0;
@@ -69,7 +72,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+		supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.activity_main);
 
 		preferences = new Preferences(this);

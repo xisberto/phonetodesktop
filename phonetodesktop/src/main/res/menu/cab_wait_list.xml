@@ -9,17 +9,18 @@
   Contributors:
       Humberto Fraga <xisberto@gmail.com> - initial API and implementation
 -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/action_delete_multiple"
-        android:showAsAction="ifRoom"
+        app:showAsAction="ifRoom"
         android:title="@string/action_delete_multiple"
         android:icon="@drawable/ic_action_delete">
     </item>
     <item
         android:id="@+id/action_send_multiple"
-        android:showAsAction="ifRoom"
+        app:showAsAction="ifRoom"
         android:title="@string/action_send_multiple"
         android:icon="@drawable/ic_action_send">
     </item>
