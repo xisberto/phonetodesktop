@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/scroll"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:id="@+id/LinearLayout1"
@@ -13,7 +13,7 @@
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin"
-        tools:context="net.xisberto.phonetodesktop.ui.WelcomeFragment" >
+        tools:context="net.xisberto.phonetodesktop.ui.WelcomeFragment">
 
         <TextView
             android:id="@+id/txt_authorize"
@@ -24,23 +24,23 @@
 
         <Button
             android:id="@+id/btn_authorize"
-            style="@style/Theme.PhoneToDesktop.HomeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            style="@style/Button_Primary"
             android:text="@string/btn_authorize" />
 
         <Button
             android:id="@+id/btn_how_it_works"
-            style="@style/Theme.PhoneToDesktop.HomeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            style="@style/Button_Normal"
             android:text="@string/btn_how_it_works" />
 
         <Button
             android:id="@+id/btn_about"
-            style="@style/Theme.PhoneToDesktop.HomeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@drawable/btn_normal"
             android:text="@string/btn_about" />
 
     </LinearLayout>

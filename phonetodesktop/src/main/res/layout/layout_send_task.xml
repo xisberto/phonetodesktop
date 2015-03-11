@@ -15,7 +15,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="4dp"
-    tools:context=".AdvancedTaskFragment" >
+    tools:context=".AdvancedTaskFragment">
 
     <TextView
         android:id="@+id/title_preview"
@@ -29,12 +29,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp" >
+        android:layout_marginTop="8dp">
 
         <ScrollView
             style="@style/Theme.PhoneToDesktop.PreviewText"
             android:layout_width="match_parent"
-            android:layout_height="96dp" >
+            android:layout_height="96dp">
 
             <TextView
                 android:id="@+id/text_preview"
@@ -64,12 +64,12 @@
     <ScrollView
         android:id="@+id/scroll_options"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <CheckBox
                 android:id="@+id/cb_only_links"
@@ -91,7 +91,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:text="@string/txt_get_titles" />
-            
+
             <CheckBox
                 android:id="@+id/cb_show_preview"
                 style="?android:attr/textAppearanceMedium"

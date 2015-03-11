@@ -10,10 +10,6 @@
  ******************************************************************************/
 package net.xisberto.phonetodesktop.ui;
 
-import net.xisberto.phonetodesktop.Utils;
-import net.xisberto.phonetodesktop.database.DatabaseHelper;
-import net.xisberto.phonetodesktop.database.TableTasks;
-import net.xisberto.phonetodesktop.network.GoogleTasksService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -24,18 +20,23 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.view.ActionMode;
 import android.util.SparseArray;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-import com.actionbarsherlock.app.SherlockListActivity;
-import com.actionbarsherlock.view.ActionMode;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
+import net.xisberto.phonetodesktop.R;
+import net.xisberto.phonetodesktop.Utils;
+import net.xisberto.phonetodesktop.database.DatabaseHelper;
+import net.xisberto.phonetodesktop.database.TableTasks;
+import net.xisberto.phonetodesktop.network.GoogleTasksService;
 
-public class WaitListActivity extends SherlockListActivity implements
+public class WaitListActivity extends ActionBarActivity implements
 		OnItemClickListener {
 	SimpleCursorAdapter adapter;
 	ActionMode actionMode;
@@ -77,7 +78,7 @@ public class WaitListActivity extends SherlockListActivity implements
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.activity_wait_list, menu);
+		getMenuInflater().inflate(R.menu.activity_wait_list, menu);
 		return true;
 	}
 
@@ -111,7 +112,7 @@ public class WaitListActivity extends SherlockListActivity implements
 					R.plurals.txt_selected_items, selectedItems.size());
 			title = String.format(title, selectedItems.size());
 			if (actionMode == null) {
-				actionMode = startActionMode(new ActionModeCallback());
+				actionMode = startSupportActionMode(new ActionModeCallback());
 			}
 			actionMode.setTitle(title);
 		} else {
@@ -121,7 +122,11 @@ public class WaitListActivity extends SherlockListActivity implements
 		}
 	}
 
-	private class ListLocalTask extends AsyncTask<Long, Void, Cursor> {
+    public ListView getListView() {
+        return (ListView) findViewById(android.R.id.list);
+    }
+
+    private class ListLocalTask extends AsyncTask<Long, Void, Cursor> {
 		private static final int ACTION_LIST = 1, ACTION_SEND_ALL = 2,
 				ACTION_DELETE_SELECTED = 3, ACTION_SEND_SELECTED = 4;
 		private int action;
@@ -190,7 +195,7 @@ public class WaitListActivity extends SherlockListActivity implements
 
 		@Override
 		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-			getSupportMenuInflater().inflate(R.menu.cab_wait_list, menu);
+			getMenuInflater().inflate(R.menu.cab_wait_list, menu);
 			return true;
 		}
 

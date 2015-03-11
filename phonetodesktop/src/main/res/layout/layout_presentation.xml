@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   Copyright (c) 2012 Humberto Fraga <xisberto@gmail.com>.
   All rights reserved. This program and the accompanying materials
   are made available under the terms of the GNU Public License v3.0
@@ -13,7 +12,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <android.support.v4.view.ViewPager
         android:id="@+id/view_pager"
@@ -27,29 +26,26 @@
         android:background="?attr/dividerVertical" />
 
     <LinearLayout
+        style="?attr/buttonBarStyle"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content">
 
         <Button
             android:id="@+id/button_back"
-            style="@style/Theme.PhoneToDesktop.HomeButton"
+            style="?attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:text="@string/btn_back" />
-
-        <View
-            android:layout_width="1dp"
-            android:layout_height="24dp"
-            android:layout_gravity="center"
-            android:background="?attr/dividerVertical" />
 
         <Button
             android:id="@+id/button_next"
-            style="@style/Theme.PhoneToDesktop.HomeButton"
+            style="?attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:text="@string/btn_next" />
     </LinearLayout>
 
