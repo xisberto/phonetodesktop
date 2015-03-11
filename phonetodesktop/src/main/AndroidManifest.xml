@@ -64,8 +64,7 @@
             android:label="@string/filter_title"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.Translucent"
             android:excludeFromRecents="true"
-            android:noHistory="true"
-            android:uiOptions="splitActionBarWhenNarrow" >
+            android:noHistory="true" >
             <intent-filter android:label="@string/filter_title" >
                 <action android:name="android.intent.action.SEND" />
 

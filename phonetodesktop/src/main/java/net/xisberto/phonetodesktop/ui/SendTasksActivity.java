@@ -85,11 +85,7 @@ public class SendTasksActivity extends ActionBarActivity implements
         prefs = new Preferences(this);
         if (prefs.loadShowPreview()) {
             // If we will show the activity, change the theme
-            if (getResources().getBoolean(R.bool.is_tablet)) {
-                setTheme(R.style.Theme_PhoneToDesktop_Dialog);
-            } else {
-                setTheme(R.style.Theme_PhoneToDesktop);
-            }
+            setTheme(R.style.Theme_PhoneToDesktop_Dialog);
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
