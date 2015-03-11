@@ -62,7 +62,7 @@
         <activity
             android:name=".ui.SendTasksActivity"
             android:label="@string/filter_title"
-            android:theme="@style/Theme.PhoneToDesktop.Translucent.NoTitlebar"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.Translucent"
             android:excludeFromRecents="true"
             android:noHistory="true"
             android:uiOptions="splitActionBarWhenNarrow" >
