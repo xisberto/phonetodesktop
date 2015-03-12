@@ -10,12 +10,6 @@
  ******************************************************************************/
 package net.xisberto.phonetodesktop.ui;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-
-import net.xisberto.phonetodesktop.Utils;
-import net.xisberto.phonetodesktop.network.GoogleTasksService;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
@@ -25,8 +19,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.ActionBarActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -34,10 +32,15 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockDialogFragment;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
+import net.xisberto.phonetodesktop.R;
+import net.xisberto.phonetodesktop.Utils;
+import net.xisberto.phonetodesktop.network.GoogleTasksService;
 
-public class LinkListActivity extends SherlockFragmentActivity implements
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+
+public class LinkListActivity extends ActionBarActivity implements
 		OnClickListener {
 	private BroadcastReceiver receiver = new BroadcastReceiver() {
 		@Override
@@ -53,7 +56,7 @@ public class LinkListActivity extends SherlockFragmentActivity implements
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+		supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		setContentView(R.layout.activity_link_list);
 
@@ -96,15 +99,14 @@ public class LinkListActivity extends SherlockFragmentActivity implements
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(com.actionbarsherlock.view.Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.activity_link_list, menu);
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.activity_link_list, menu);
 		menu.findItem(R.id.item_refresh).setVisible(!updating);
 		return true;
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(
-			com.actionbarsherlock.view.MenuItem item) {
+	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			NavUtils.navigateUpFromSameTask(this);
@@ -190,7 +192,7 @@ public class LinkListActivity extends SherlockFragmentActivity implements
 
 	}
 
-	public static class YesNoDialog extends SherlockDialogFragment {
+	public static class YesNoDialog extends DialogFragment {
 		public static YesNoDialog newInstance(String task_id) {
 			YesNoDialog dlg = new YesNoDialog();
 			Bundle bundle = new Bundle();

@@ -85,11 +85,10 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 21 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="google-api-client-android-1.17.0-rc" level="project" />
     <orderEntry type="library" exported="" name="google-http-client-1.19.0" level="project" />
-    <orderEntry type="library" exported="" name="google-http-client-android-1.17.0-rc" level="project" />
     <orderEntry type="library" exported="" name="library-2.1.4" level="project" />
     <orderEntry type="library" exported="" name="gson-2.3" level="project" />
+    <orderEntry type="library" exported="" name="support-v4-21.0.3" level="project" />
     <orderEntry type="library" exported="" name="google-http-client-gson-1.19.0" level="project" />
     <orderEntry type="library" exported="" name="google-api-services-tasks-v1-rev28-1.17.0-rc" level="project" />
     <orderEntry type="library" exported="" name="google-oauth-client-1.17.0-rc" level="project" />

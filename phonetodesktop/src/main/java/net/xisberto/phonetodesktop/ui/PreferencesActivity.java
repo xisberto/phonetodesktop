@@ -11,30 +11,45 @@
 package net.xisberto.phonetodesktop.ui;
 
 import android.os.Bundle;
+import android.preference.PreferenceActivity;
 import android.support.v4.app.NavUtils;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
-import com.actionbarsherlock.app.SherlockPreferenceActivity;
-import com.actionbarsherlock.view.MenuItem;
+import net.xisberto.phonetodesktop.R;
 
-public class PreferencesActivity extends SherlockPreferenceActivity {
+public class PreferencesActivity extends PreferenceActivity {
 
-	@SuppressWarnings("deprecation")
+    private Toolbar mToolBar;
+
+    @SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        setupToolbar();
 		
 		addPreferencesFromResource(R.xml.preferences);
 	}
-	
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case android.R.id.home:
-			NavUtils.navigateUpFromSameTask(this);
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
+
+    private void setupToolbar() {
+        ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
+        View content = root.getChildAt(0);
+        LinearLayout toolbarContainer = (LinearLayout) View.inflate(this, R.layout.activity_prefs, null);
+        root.removeAllViews();
+        toolbarContainer.addView(content);
+        root.addView(toolbarContainer);
+        mToolBar = (Toolbar) toolbarContainer.findViewById(R.id.toolbar);
+        mToolBar.setTitle(getTitle());
+        mToolBar.setNavigationIcon(R.drawable.abc_ic_ab_back_mtrl_am_alpha);
+        mToolBar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavUtils.navigateUpFromSameTask(PreferencesActivity.this);
+            }
+        });
+    }
 	
 }

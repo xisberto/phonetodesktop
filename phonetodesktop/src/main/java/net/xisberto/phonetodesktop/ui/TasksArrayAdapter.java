@@ -21,6 +21,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import net.xisberto.phonetodesktop.R;
+
 public class TasksArrayAdapter extends BaseAdapter {
 	private HashMap<String, String> items;
 	private String[] keys;
@@ -61,7 +63,7 @@ public class TasksArrayAdapter extends BaseAdapter {
 		TextView text_title = ((TextView) convertView.findViewById(R.id.text_task_title));
 		text_title.setText(title);
 		Linkify.addLinks(text_title, Linkify.WEB_URLS);
-		text_title.setLinkTextColor(activity.getResources().getColor(R.color.phonetodesktop_highlight));
+		text_title.setLinkTextColor(activity.getResources().getColor(R.color.phonetodesktop_primary));
 		convertView.findViewById(R.id.btn_remove_task).setTag(key);
 		if (activity instanceof OnClickListener) {
 			convertView.findViewById(R.id.btn_remove_task).setOnClickListener((OnClickListener) activity);

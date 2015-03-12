@@ -3,6 +3,7 @@ package net.xisberto.phonetodesktop.ui;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -10,10 +11,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockFragment;
-
 import net.xisberto.phonetodesktop.BuildConfig;
 import net.xisberto.phonetodesktop.Preferences;
+import net.xisberto.phonetodesktop.R;
 import net.xisberto.phonetodesktop.Utils;
 
 /**
@@ -24,7 +24,7 @@ import net.xisberto.phonetodesktop.Utils;
  * to create an instance of this fragment.
  * 
  */
-public class MainFragment extends SherlockFragment implements OnClickListener {
+public class MainFragment extends Fragment implements OnClickListener {
 
 	private View mView;
 
@@ -132,7 +132,7 @@ public class MainFragment extends SherlockFragment implements OnClickListener {
 		Button btn_authorize = (Button) mView.findViewById(R.id.btn_authorize);
 		TextView txt_authorize = (TextView) mView.findViewById(R.id.txt_authorize);
 
-		getSherlockActivity().setProgressBarIndeterminateVisibility(mUpdating);
+		getActivity().setProgressBarIndeterminateVisibility(mUpdating);
 		btn_authorize.setEnabled(!mUpdating);
 
 		if (mUpdating) {
@@ -144,10 +144,10 @@ public class MainFragment extends SherlockFragment implements OnClickListener {
 				txt_authorize.setText(getString(R.string.txt_authorized_to) + " "
 						+ account_name);
 				btn_authorize.setText(R.string.btn_authorize_other);
-				if (BuildConfig.DEBUG) {
-					getSherlockActivity().getSupportActionBar().setSubtitle(
-							"List: " + prefs.loadListId());
-				}
+//				if (BuildConfig.DEBUG) {
+//                    getActivity().getActionBar().setSubtitle(
+//							"List: " + prefs.loadListId());
+//				}
 			} else {
 				txt_authorize.setText(R.string.txt_authorize);
 			}

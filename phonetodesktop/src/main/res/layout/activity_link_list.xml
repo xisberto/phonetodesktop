@@ -9,9 +9,8 @@
       Humberto Fraga <xisberto@gmail.com> - initial API and implementation
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
     <ListView
         android:id="@android:id/list"
@@ -23,8 +22,7 @@
         android:divider="?attr/dividerVertical"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
-        android:scrollbarStyle="outsideOverlay" >
-    </ListView>
+        android:scrollbarStyle="outsideOverlay" />
 
     <TextView
         android:id="@android:id/empty"
