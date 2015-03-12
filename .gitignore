@@ -2,6 +2,7 @@ bin
 libs
 libs-sources
 .idea
+.gradle
 build
 phonetodesktop/build
 gen
