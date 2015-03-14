@@ -23,7 +23,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="?attr/dividerVertical" />
+        android:background="?attr/actionBarDivider" />
 
     <LinearLayout
         style="?attr/buttonBarStyle"
@@ -32,20 +32,18 @@
 
         <Button
             android:id="@+id/button_back"
-            style="?attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            style="@style/Button_Normal"
             android:text="@string/btn_back" />
 
         <Button
             android:id="@+id/button_next"
-            style="?attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            style="@style/Button_Normal"
             android:text="@string/btn_next" />
     </LinearLayout>
 
