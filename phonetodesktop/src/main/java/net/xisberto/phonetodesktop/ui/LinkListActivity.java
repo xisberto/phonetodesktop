@@ -22,12 +22,14 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.util.SparseArrayCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.view.ActionMode;
 import android.util.SparseArray;
+import android.util.SparseBooleanArray;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -46,41 +48,47 @@ import net.xisberto.phonetodesktop.network.GoogleTasksService;
 import java.util.ArrayList;
 
 public class LinkListActivity extends ActionBarActivity implements TasksArrayAdapter.TaskArraySelectionListener, SwipeRefreshLayout.OnRefreshListener {
-	private BroadcastReceiver receiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			updateLayout(intent);
-		}
-	};
+    private static final String SELECTED_ITEMS = "selected_items";
 
 	private ArrayList<String> ids;
-	private ArrayList<String> titles;
-	private boolean updating;
+    private ArrayList<String> titles;
+    private boolean updating;
     private ProgressBar mProgress;
     private TasksArrayAdapter adapter;
     private ListView list_view;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private SparseArray<String> selectedItems;
+    private SparseArrayCompat<String> selectedItems;
     private ActionMode actionMode;
+
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            updateLayout(intent);
+        }
+    };
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		setContentView(R.layout.activity_link_list);
 
-        selectedItems = new SparseArray<>();
+        selectedItems = new SparseArrayCompat<>();
 
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_layout);
         swipeRefreshLayout.setOnRefreshListener(this);
+        list_view = (ListView) findViewById(android.R.id.list);
 
 		if ((savedInstanceState != null)
 				&& savedInstanceState.containsKey(Utils.EXTRA_TITLES)) {
 			titles = savedInstanceState.getStringArrayList(Utils.EXTRA_TITLES);
 			ids = savedInstanceState.getStringArrayList(Utils.EXTRA_IDS);
 			updating = savedInstanceState.getBoolean(Utils.EXTRA_UPDATING);
-		} else {
+            ArrayList<Integer> selection = savedInstanceState.getIntegerArrayList(SELECTED_ITEMS);
+            for (int i = 0; i < selection.size(); i++) {
+                selectedItems.put(selection.get(i), ids.get(i));
+            }
+        } else {
 			titles = null;
 			ids = null;
 			updating = false;
@@ -111,6 +119,11 @@ public class LinkListActivity extends ActionBarActivity implements TasksArrayAda
 		outState.putStringArrayList(Utils.EXTRA_TITLES, titles);
 		outState.putStringArrayList(Utils.EXTRA_IDS, ids);
 		outState.putBoolean(Utils.EXTRA_UPDATING, updating);
+        ArrayList<Integer> selection = new ArrayList<>();
+        for (int i = 0; i < selectedItems.size(); i++) {
+            selection.add(selectedItems.keyAt(i));
+        }
+        outState.putIntegerArrayList(SELECTED_ITEMS, selection);
 	}
 
 	@Override
@@ -144,7 +157,7 @@ public class LinkListActivity extends ActionBarActivity implements TasksArrayAda
         }
     }
 
-    public static <C> ArrayList<C> asArrayList(SparseArray<C> sparseArray) {
+    public static <C> ArrayList<C> asArrayList(SparseArrayCompat<C> sparseArray) {
         if (sparseArray == null) return null;
         ArrayList<C> arrayList = new ArrayList<C>(sparseArray.size());
         for (int i = 0; i < sparseArray.size(); i++)
@@ -161,7 +174,8 @@ public class LinkListActivity extends ActionBarActivity implements TasksArrayAda
 	}
 
 	private void deleteTasks() {
-		Intent service = new Intent(this, GoogleTasksService.class);
+        Utils.log(String.format("%s items selected", selectedItems.size()));
+        Intent service = new Intent(this, GoogleTasksService.class);
 		service.setAction(Utils.ACTION_REMOVE_TASKS);
 		service.putExtra(Utils.EXTRA_TASKS_IDS, asArrayList(selectedItems));
 		startService(service);
@@ -202,6 +216,13 @@ public class LinkListActivity extends ActionBarActivity implements TasksArrayAda
                     list_view.setAdapter(adapter);
                 } else {
                     adapter.updateLists(ids, titles);
+                }
+                if (selectedItems.size() > 0) {
+                    for (int i = 0; i < selectedItems.size(); i++) {
+                        adapter.setChecked(selectedItems.keyAt(i), true);
+                        onItemChecked(selectedItems.keyAt(i), true);
+                    }
+                    adapter.notifyDataSetChanged();
                 }
 				list_view.setVisibility(View.VISIBLE);
 				text.setVisibility(View.GONE);
@@ -307,8 +328,9 @@ public class LinkListActivity extends ActionBarActivity implements TasksArrayAda
         @Override
         public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
             if (menuItem.getItemId() == R.id.action_delete_multiple) {
-                    YesNoDialog.newInstance()
-                            .show(getSupportFragmentManager(), "deleteDialog");
+                YesNoDialog.newInstance()
+                        .show(getSupportFragmentManager(), "deleteDialog");
+                Utils.log(String.format("%s items selected", selectedItems.size()));
             }
             return false;
         }
