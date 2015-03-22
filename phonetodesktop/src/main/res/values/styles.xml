@@ -24,6 +24,7 @@
         <item name="colorPrimary">@color/phonetodesktop_primary</item>
         <item name="colorPrimaryDark">@color/phonetodesktop_dark</item>
         <item name="colorAccent">@color/phonetodesktop_accent</item>
+        <item name="android:textColorLink">@color/phonetodesktop_primary</item>
         <item name="actionModeBackground">@color/phonetodesktop_actionmode</item>
         <item name="android:progressBarStyleHorizontal">@style/Theme.PhoneToDesktop.ProgressBar</item>
     </style>

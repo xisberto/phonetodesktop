@@ -31,7 +31,7 @@ public class Utils {
 			ACTION_SEND_TASKS = "net.xisberto.phonetodesktop.action.SEND_TASKS",
 			ACTION_LIST_TASKS = "net.xisberto.phonetodesktop.action.LIST_TASKS",
 			ACTION_LIST_LOCAL_TASKS = "net.xisberto.phonetodesktop.action.LIST_LOCAL_TASKS",
-			ACTION_REMOVE_TASK = "net.xisberto.phonetodesktop.action.REMOVE_TASK",
+			ACTION_REMOVE_TASKS = "net.xisberto.phonetodesktop.action.REMOVE_TASKS",
 			ACTION_SHOW_AVAILABILITY_ERROR = "net.xisberto.phonetodesktop.action.SHOW_AVAILABILITY_ERROR",
 			ACTION_SHOW_USER_RECOVERABLE = "net.xisberto.phonetodesktop.action.SHOW_USER_RECOVERABLE",
 			EXTRA_LISTS = "net.xisberto.phonetodesktop.extra.LISTS",

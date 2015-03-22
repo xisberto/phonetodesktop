@@ -13,33 +13,23 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="?android:attr/listPreferredItemHeight"
+    android:orientation="horizontal"
     android:paddingBottom="6dip"
     android:paddingTop="6dip">
 
-    <TextView
-        android:id="@+id/text_task_title"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="center_vertical" />
-
-    <View
-        android:layout_width="1dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="center_vertical"
-        android:layout_marginLeft="1dp"
-        android:layout_marginRight="1dp"
-        android:background="?attr/dividerVertical" />
-
-    <ImageButton
-        android:id="@+id/btn_remove_task"
+    <CheckBox
         android:layout_width="48dp"
         android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:onClick="onClick"
-        android:tint="@android:color/black"
-        android:contentDescription="@string/btn_delete"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/ic_action_delete" />
+        android:id="@+id/check_task"
+        android:focusable="false"
+        />
+
+    <CheckedTextView
+        android:id="@+id/text_task"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:textAppearance="?attr/textAppearanceListItemSmall"
+        android:checkMark="@null"
+        android:gravity="center_vertical" />
 
 </LinearLayout>
