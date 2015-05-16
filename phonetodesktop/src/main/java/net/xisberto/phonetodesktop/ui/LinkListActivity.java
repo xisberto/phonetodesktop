@@ -10,32 +10,24 @@
  ******************************************************************************/
 package net.xisberto.phonetodesktop.ui;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.util.SparseArrayCompat;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
-import android.util.SparseArray;
-import android.util.SparseBooleanArray;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -47,7 +39,7 @@ import net.xisberto.phonetodesktop.network.GoogleTasksService;
 
 import java.util.ArrayList;
 
-public class LinkListActivity extends ActionBarActivity implements TasksArrayAdapter.TaskArraySelectionListener, SwipeRefreshLayout.OnRefreshListener {
+public class LinkListActivity extends AppCompatActivity implements TasksArrayAdapter.TaskArraySelectionListener, SwipeRefreshLayout.OnRefreshListener {
     private static final String SELECTED_ITEMS = "selected_items";
 
 	private ArrayList<String> ids;
@@ -70,7 +62,9 @@ public class LinkListActivity extends ActionBarActivity implements TasksArrayAda
     @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 		setContentView(R.layout.activity_link_list);
 
         selectedItems = new SparseArrayCompat<>();

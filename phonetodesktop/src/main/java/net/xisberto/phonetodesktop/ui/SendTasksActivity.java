@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -45,7 +46,7 @@ import net.xisberto.phonetodesktop.model.LocalTask.Options;
 import net.xisberto.phonetodesktop.model.LocalTask.PersistCallback;
 import net.xisberto.phonetodesktop.network.GoogleTasksService;
 
-public class SendTasksActivity extends ActionBarActivity implements
+public class SendTasksActivity extends AppCompatActivity implements
         android.content.DialogInterface.OnClickListener {
 
     private String text_from_extra;
