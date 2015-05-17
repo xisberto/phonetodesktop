@@ -10,20 +10,6 @@
  ******************************************************************************/
 package net.xisberto.phonetodesktop.network;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import net.xisberto.phonetodesktop.ui.MainActivity;
-import net.xisberto.phonetodesktop.Preferences;
-import net.xisberto.phonetodesktop.R;
-import net.xisberto.phonetodesktop.Utils;
-import net.xisberto.phonetodesktop.ui.WaitListActivity;
-import net.xisberto.phonetodesktop.database.DatabaseHelper;
-import net.xisberto.phonetodesktop.model.LocalTask;
-import net.xisberto.phonetodesktop.model.LocalTask.Options;
-import net.xisberto.phonetodesktop.model.LocalTask.PersistCallback;
-import net.xisberto.phonetodesktop.model.LocalTask.Status;
 import android.app.IntentService;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -43,7 +29,23 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecovera
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.services.tasks.Tasks;
 import com.google.api.services.tasks.model.Task;
+
+import net.xisberto.phonetodesktop.Preferences;
+import net.xisberto.phonetodesktop.R;
+import net.xisberto.phonetodesktop.Utils;
+import net.xisberto.phonetodesktop.database.DatabaseHelper;
+import net.xisberto.phonetodesktop.model.LocalTask;
+import net.xisberto.phonetodesktop.model.LocalTask.Options;
+import net.xisberto.phonetodesktop.model.LocalTask.PersistCallback;
+import net.xisberto.phonetodesktop.model.LocalTask.Status;
+import net.xisberto.phonetodesktop.ui.MainActivity;
+import net.xisberto.phonetodesktop.ui.WaitListActivity;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -105,7 +107,7 @@ public class GoogleTasksService extends IntentService {
 		if (intent != null) {
 			final String action = intent.getAction();
 			Utils.log("onHandleIntent "+ intent.getAction());
-			long[] tasks_ids = intent.getLongArrayExtra(Utils.EXTRA_TASKS_IDS);
+			long[] tasks_ids;
 			try {
 				if (action.equals(Utils.ACTION_PROCESS_TASK)) {
 					long task_id = intent.getLongExtra(Utils.EXTRA_TASK_ID, -1);
@@ -134,12 +136,15 @@ public class GoogleTasksService extends IntentService {
 							}
 						});
 					} else {
+                        tasks_ids = intent.getLongArrayExtra(Utils.EXTRA_TASKS_IDS);
 						revertTaskToReady(tasks_ids);
 						LocalBroadcastManager.getInstance(this).sendBroadcast(
 								result);
 					}
 				} else if (action.equals(Utils.ACTION_SEND_TASKS)) {
 					if (isOnline()) {
+
+                        tasks_ids = intent.getLongArrayExtra(Utils.EXTRA_TASKS_IDS);
 
 						if (tasks_ids.length == 1) {
 							DatabaseHelper databaseHelper = DatabaseHelper
@@ -153,6 +158,7 @@ public class GoogleTasksService extends IntentService {
 
 						stopForeground(true);
 					} else {
+                        tasks_ids = intent.getLongArrayExtra(Utils.EXTRA_TASKS_IDS);
 						revertTaskToReady(tasks_ids);
 						((NotificationManager) getSystemService(NOTIFICATION_SERVICE))
 								.notify(NOTIFICATION_SEND_LATER,
@@ -162,13 +168,14 @@ public class GoogleTasksService extends IntentService {
 					}
 				} else if (action.equals(Utils.ACTION_LIST_TASKS)) {
 					handleActionList();
-				} else if (action.equals(Utils.ACTION_REMOVE_TASK)) {
+				} else if (action.equals(Utils.ACTION_REMOVE_TASKS)) {
 					handleActionRemove(intent
-							.getStringExtra(Utils.EXTRA_TASK_ID));
+							.getStringArrayListExtra(Utils.EXTRA_TASKS_IDS));
 				}
 			} catch (UserRecoverableAuthIOException userRecoverableException) {
 				Utils.log(Log.getStackTraceString(userRecoverableException));
 				stopForeground(true);
+                tasks_ids = intent.getLongArrayExtra(Utils.EXTRA_TASKS_IDS);
 				revertTaskToReady(tasks_ids);
 				((NotificationManager) getSystemService(NOTIFICATION_SERVICE))
 						.notify(NOTIFICATION_NEED_AUTHORIZE,
@@ -177,6 +184,7 @@ public class GoogleTasksService extends IntentService {
 			} catch (IOException ioException) {
 				Utils.log(Log.getStackTraceString(ioException));
 				if (action.equals(Utils.ACTION_SEND_TASKS)) {
+                    tasks_ids = intent.getLongArrayExtra(Utils.EXTRA_TASKS_IDS);
 					stopForeground(true);
 					revertTaskToReady(tasks_ids);
 					((NotificationManager) getSystemService(NOTIFICATION_SERVICE))
@@ -191,6 +199,7 @@ public class GoogleTasksService extends IntentService {
 							broadcast);
 				}
 			} catch (NullPointerException npe) {
+                tasks_ids = intent.getLongArrayExtra(Utils.EXTRA_TASKS_IDS);
 				Utils.log(Log.getStackTraceString(npe));
 				stopForeground(true);
 				revertTaskToReady(tasks_ids);
@@ -323,9 +332,12 @@ public class GoogleTasksService extends IntentService {
 		}
 	}
 
-	private void handleActionRemove(String task_id)
+	private void handleActionRemove(ArrayList<String> tasks_ids)
 			throws UserRecoverableAuthIOException, IOException {
-		client.tasks().delete(list_id, task_id).execute();
+        Tasks.TasksOperations tasks = client.tasks();
+        for (String task_id : tasks_ids) {
+            tasks.delete(list_id, task_id).execute();
+        }
 		handleActionList();
 	}
 

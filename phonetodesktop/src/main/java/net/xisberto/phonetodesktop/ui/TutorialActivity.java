@@ -18,6 +18,7 @@ import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,7 +32,7 @@ import net.xisberto.phonetodesktop.BuildConfig;
 import net.xisberto.phonetodesktop.R;
 import net.xisberto.phonetodesktop.Utils;
 
-public class TutorialActivity extends ActionBarActivity implements OnClickListener, OnPageChangeListener {
+public class TutorialActivity extends AppCompatActivity implements OnClickListener, OnPageChangeListener {
 	private final int
 		total_slides = 7;
 	private TutorialPageAdapter page_adapter;
@@ -40,7 +41,9 @@ public class TutorialActivity extends ActionBarActivity implements OnClickListen
 	@Override
 	protected void onCreate(Bundle arg0) {
 		super.onCreate(arg0);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		if (getSupportActionBar() != null) {
+			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		}
 		setContentView(R.layout.layout_presentation);
 
 		findViewById(R.id.button_back).setOnClickListener(this);

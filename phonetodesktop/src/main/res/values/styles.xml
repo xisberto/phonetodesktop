@@ -24,15 +24,14 @@
         <item name="colorPrimary">@color/phonetodesktop_primary</item>
         <item name="colorPrimaryDark">@color/phonetodesktop_dark</item>
         <item name="colorAccent">@color/phonetodesktop_accent</item>
+        <item name="android:textColorLink">@color/phonetodesktop_primary</item>
         <item name="actionModeBackground">@color/phonetodesktop_actionmode</item>
-        <item name="android:progressBarStyleHorizontal">@style/Theme.PhoneToDesktop.ProgressBar</item>
     </style>
 
-    <style name="Theme.PhoneToDesktop.Dialog" parent="Theme.AppCompat.Light.DialogWhenLarge">
+    <style name="Theme.PhoneToDesktop.Dialog" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/phonetodesktop_primary</item>
         <item name="colorPrimaryDark">@color/phonetodesktop_dark</item>
         <item name="colorAccent">@color/phonetodesktop_accent</item>
-        <item name="actionBarTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
     </style>
 
     <style name="Theme.AppCompat.Light.NoActionBar.Translucent">
@@ -56,31 +55,6 @@
     <style name="Theme.PhoneToDesktop.PreviewText">
         <item name="android:background">@drawable/background_preview</item>
         <item name="android:textColor">@android:color/black</item>
-    </style>
-
-    <style name="Theme.PhoneToDesktop.LinkAppearance" parent="@android:style/TextAppearance">
-        <!--<item name="android:textColorLink">@color/phonetodesktop_highlight</item> -->
-    </style>
-    
-    <style name="Theme.PhoneToDesktop.CheckBox" parent="android:Widget.CompoundButton.CheckBox">
-        <item name="android:button">@drawable/btn_check_holo_light</item>
-    </style>
-
-    <style name="Theme.PhoneToDesktop.ProgressBar" parent="android:Widget.ProgressBar.Horizontal">
-        <item name="android:progressDrawable">@drawable/progress_horizontal_holo_light</item>
-        <item name="android:indeterminateDrawable">@drawable/progress_indeterminate_horizontal_holo_light</item>
-        <item name="android:minHeight">16dip</item>
-        <item name="android:maxHeight">16dip</item>
-    </style>
-
-    <style name="Theme.PhoneToDesktop.ListView" parent="android:Widget.ListView">
-        <item name="android:listSelector">@drawable/list_selector_holo_light</item>
-        <item name="android:textColorLink">@color/phonetodesktop_primary</item>
-    </style>
-
-    <style name="Theme.PhoneToDesktop.ListView.White" parent="android:Widget.ListView.White">
-        <item name="android:listSelector">@drawable/list_selector_holo_light</item>
-        <item name="android:textColorLink">@color/phonetodesktop_primary</item>
     </style>
 
 </resources>

@@ -11,7 +11,6 @@
 package net.xisberto.phonetodesktop.ui;
 
 import android.accounts.AccountManager;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -23,12 +22,13 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 
-import com.google.android.gms.common.AccountPicker;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.services.tasks.model.TaskList;
@@ -41,7 +41,7 @@ import net.xisberto.phonetodesktop.network.ListAsyncTask.TaskListTaskListener;
 
 import java.util.List;
 
-public class MainActivity extends ActionBarActivity implements
+public class MainActivity extends AppCompatActivity implements
 		OnClickListener, TaskListTaskListener, MainFragment.PhoneToDesktopAuthorization {
 
 	public static final int REQUEST_GOOGLE_PLAY_SERVICES = 0;
@@ -165,7 +165,7 @@ public class MainActivity extends ActionBarActivity implements
 	protected void onStart() {
 		super.onStart();
 		LocalBroadcastManager.getInstance(this).registerReceiver(receiver,
-				new IntentFilter(Utils.ACTION_AUTHENTICATE));
+                new IntentFilter(Utils.ACTION_AUTHENTICATE));
 	}
 
 	@Override
@@ -190,10 +190,11 @@ public class MainActivity extends ActionBarActivity implements
 
 	/** Check that Google Play services APK is installed and up to date. */
 	public boolean checkGooglePlayServicesAvailable() {
-		final int connectionStatusCode = GooglePlayServicesUtil
-				.isGooglePlayServicesAvailable(this);
-		if (GooglePlayServicesUtil.isUserRecoverableError(connectionStatusCode)) {
-			showGooglePlayServicesAvailabilityErrorDialog(connectionStatusCode);
+        GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
+		final int connectionStatusCode = googleApiAvailability
+                .isGooglePlayServicesAvailable(this);
+		if (googleApiAvailability.isUserResolvableError(connectionStatusCode)) {
+            showGooglePlayServicesAvailabilityErrorDialog(connectionStatusCode);
 			return false;
 		}
 		return true;
@@ -201,14 +202,14 @@ public class MainActivity extends ActionBarActivity implements
 
 	public void showGooglePlayServicesAvailabilityErrorDialog(
 			final int connectionStatusCode) {
-		runOnUiThread(new Runnable() {
-			public void run() {
-				Dialog dialog = GooglePlayServicesUtil.getErrorDialog(
-						connectionStatusCode, MainActivity.this,
-						REQUEST_GOOGLE_PLAY_SERVICES);
-				dialog.show();
-			}
-		});
+        runOnUiThread(new Runnable() {
+            public void run() {
+                Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(
+                        MainActivity.this, connectionStatusCode, REQUEST_GOOGLE_PLAY_SERVICES
+                );
+                dialog.show();
+            }
+        });
 	}
 
 	private void updateMainLayout(boolean updating) {

@@ -20,7 +20,7 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SimpleCursorAdapter;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.util.SparseArray;
 import android.view.Menu;
@@ -36,7 +36,7 @@ import net.xisberto.phonetodesktop.database.DatabaseHelper;
 import net.xisberto.phonetodesktop.database.TableTasks;
 import net.xisberto.phonetodesktop.network.GoogleTasksService;
 
-public class WaitListActivity extends ActionBarActivity implements
+public class WaitListActivity extends AppCompatActivity implements
 		OnItemClickListener {
 	SimpleCursorAdapter adapter;
 	ActionMode actionMode;
@@ -53,7 +53,9 @@ public class WaitListActivity extends ActionBarActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		if (getSupportActionBar() != null) {
+			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		}
 		setContentView(R.layout.activity_link_list);
 		selectedItems = new SparseArray<Long>();
 	}
