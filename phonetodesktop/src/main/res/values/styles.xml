@@ -28,11 +28,10 @@
         <item name="actionModeBackground">@color/phonetodesktop_actionmode</item>
     </style>
 
-    <style name="Theme.PhoneToDesktop.Dialog" parent="Theme.AppCompat.Light.DialogWhenLarge">
+    <style name="Theme.PhoneToDesktop.Dialog" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/phonetodesktop_primary</item>
         <item name="colorPrimaryDark">@color/phonetodesktop_dark</item>
         <item name="colorAccent">@color/phonetodesktop_accent</item>
-        <item name="actionBarTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
     </style>
 
     <style name="Theme.AppCompat.Light.NoActionBar.Translucent">

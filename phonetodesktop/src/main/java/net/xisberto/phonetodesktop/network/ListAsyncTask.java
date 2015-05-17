@@ -45,7 +45,7 @@ public class ListAsyncTask extends AsyncTask<Integer, Void, String> {
 	private List<TaskList> tasklists;
 
 	public ListAsyncTask(MainActivity activity) {
-		if (activity instanceof TaskListTaskListener) {
+		if (activity != null) {
 			listener = (MainActivity) activity;
 		} else {
 			throw new ClassCastException(
@@ -73,6 +73,7 @@ public class ListAsyncTask extends AsyncTask<Integer, Void, String> {
 			case REQUEST_LOAD_LISTS:
 				Utils.log("Loading lists");
 				tasklists = client.tasklists().list().execute().getItems();
+
 				break;
 			case REQUEST_SAVE_LIST:
 				Utils.log("Saving list");
