@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.PhoneToDesktop.Dialog" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorPrimary">@color/phonetodesktop_primary</item>
+        <item name="colorPrimaryDark">@color/phonetodesktop_dark</item>
+        <item name="colorAccent">@color/phonetodesktop_accent</item>
+    </style>
+</resources>

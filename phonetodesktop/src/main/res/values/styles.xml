@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     File created by the Android Action Bar Style Generator
+
+     Copyright (C) 2011 The Android Open Source Project
+     Copyright (C) 2012 readyState Software Ltd
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+  
+          http://www.apache.org/licenses/LICENSE-2.0
+  
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="Theme.PhoneToDesktop" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/phonetodesktop_primary</item>
+        <item name="colorPrimaryDark">@color/phonetodesktop_dark</item>
+        <item name="colorAccent">@color/phonetodesktop_accent</item>
+        <item name="android:textColorLink">@color/phonetodesktop_primary</item>
+        <item name="actionModeBackground">@color/phonetodesktop_actionmode</item>
+    </style>
+
+    <style name="Theme.PhoneToDesktop.Dialog" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/phonetodesktop_primary</item>
+        <item name="colorPrimaryDark">@color/phonetodesktop_dark</item>
+        <item name="colorAccent">@color/phonetodesktop_accent</item>
+    </style>
+
+    <style name="Theme.AppCompat.Light.NoActionBar.Translucent">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation</item>
+    </style>
+
+    <style name="Button_Normal" >
+        <item name="android:background">@drawable/btn_normal</item>
+        <item name="android:textColor">@color/primary_text_default_material_light</item>
+    </style>
+
+    <style name="Button_Primary">
+        <item name="android:background">@drawable/btn_primary</item>
+        <item name="android:textColor">@color/primary_text_default_material_dark</item>
+    </style>
+
+    <style name="Theme.PhoneToDesktop.PreviewText">
+        <item name="android:background">@drawable/background_preview</item>
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+
+</resources>
