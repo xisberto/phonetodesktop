@@ -95,8 +95,8 @@ public class SendTasksActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
 
         UpdateChecker checker = new UpdateChecker(this);
-        //checker.setNotice(Notice.NOTIFICATION);
-        //checker.start();
+        checker.setNotice(Notice.NOTIFICATION);
+        checker.start();
 
         if (getIntent().getAction().equals(Intent.ACTION_SEND)
                 && getIntent().hasExtra(Intent.EXTRA_TEXT)) {
