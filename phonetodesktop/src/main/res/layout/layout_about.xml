@@ -99,27 +99,6 @@
             android:tag="@string/link_google_java_api"
             android:text="@string/btn_share_this" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginBottom="8dp"
-            android:background="#CCCCCC" />
-
-        <TextView
-            android:id="@+id/text_actionbarsherlock"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/txt_actionbarsherlock"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <Button
-            android:id="@+id/btn_share_actionbarsherlock"
-            android:background="@drawable/btn_normal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onClick"
-            android:tag="@string/link_actionbarsherlock"
-            android:text="@string/btn_share_this" />
     </LinearLayout>
 
 </ScrollView>
