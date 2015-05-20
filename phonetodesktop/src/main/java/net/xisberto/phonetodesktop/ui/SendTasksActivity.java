@@ -36,6 +36,10 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.api.services.tasks.model.Task;
+import com.octo.android.robospice.GoogleHttpClientSpiceService;
+import com.octo.android.robospice.SpiceManager;
+import com.octo.android.robospice.persistence.DurationInMillis;
 import com.rampo.updatechecker.UpdateChecker;
 import com.rampo.updatechecker.notice.Notice;
 
@@ -48,6 +52,8 @@ import net.xisberto.phonetodesktop.model.LocalTask;
 import net.xisberto.phonetodesktop.model.LocalTask.Options;
 import net.xisberto.phonetodesktop.model.LocalTask.PersistCallback;
 import net.xisberto.phonetodesktop.network.GoogleTasksService;
+import net.xisberto.phonetodesktop.network.GoogleTasksSpiceService;
+import net.xisberto.phonetodesktop.network.InsertTaskRequest;
 
 public class SendTasksActivity extends AppCompatActivity implements
         android.content.DialogInterface.OnClickListener {
@@ -63,6 +69,8 @@ public class SendTasksActivity extends AppCompatActivity implements
     private DatabaseHelper databaseHelper;
     private Preferences prefs;
     private LocalTask localTask;
+
+    protected SpiceManager spiceManager = new SpiceManager(GoogleTasksSpiceService.class);
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
@@ -151,6 +159,13 @@ public class SendTasksActivity extends AppCompatActivity implements
         super.onStart();
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver,
                 new IntentFilter(Utils.ACTION_RESULT_PROCESS_TASK));
+        spiceManager.start(this);
+    }
+
+    @Override
+    protected void onStop() {
+        spiceManager.shouldStop();
+        super.onStop();
     }
 
     @Override
@@ -232,11 +247,13 @@ public class SendTasksActivity extends AppCompatActivity implements
     }
 
     private void sendText() {
-        Intent service = new Intent(this, GoogleTasksService.class);
-        service.setAction(Utils.ACTION_SEND_TASKS);
-        service.putExtra(Utils.EXTRA_TASKS_IDS,
-                new long[]{localTask.getLocalId()});
-        startService(service);
+//        Intent service = new Intent(this, GoogleTasksService.class);
+//        service.setAction(Utils.ACTION_SEND_TASKS);
+//        service.putExtra(Utils.EXTRA_TASKS_IDS,
+//                new long[]{localTask.getLocalId()});
+//        startService(service);
+        InsertTaskRequest request = new InsertTaskRequest(Task.class, this, localTask.getTitle());
+        spiceManager.execute(request, null, DurationInMillis.ALWAYS_EXPIRED, null);
     }
 
     private void saveCheckBoxes() {

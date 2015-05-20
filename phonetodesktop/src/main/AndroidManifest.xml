@@ -79,6 +79,11 @@
             android:exported="false" >
         </service>
 
+        <service android:name=".network.GoogleTasksSpiceService"
+            android:exported="false">
+
+        </service>
+        
         <activity
             android:name=".ui.WaitListActivity"
             android:label="@string/title_activity_wait_list"
