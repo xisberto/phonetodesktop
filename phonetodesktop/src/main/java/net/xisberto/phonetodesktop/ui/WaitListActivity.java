@@ -38,7 +38,6 @@ import net.xisberto.phonetodesktop.R;
 import net.xisberto.phonetodesktop.Utils;
 import net.xisberto.phonetodesktop.database.DatabaseHelper;
 import net.xisberto.phonetodesktop.database.TableTasks;
-import net.xisberto.phonetodesktop.network.GoogleTasksService;
 import net.xisberto.phonetodesktop.network.GoogleTasksSpiceService;
 import net.xisberto.phonetodesktop.network.InsertMultipleTasksRequest;
 

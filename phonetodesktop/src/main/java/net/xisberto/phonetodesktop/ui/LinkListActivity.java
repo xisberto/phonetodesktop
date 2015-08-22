@@ -12,7 +12,6 @@ package net.xisberto.phonetodesktop.ui;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -37,7 +36,6 @@ import net.xisberto.phonetodesktop.R;
 import net.xisberto.phonetodesktop.Utils;
 import net.xisberto.phonetodesktop.model.TaskList;
 import net.xisberto.phonetodesktop.network.DeleteTasksRequest;
-import net.xisberto.phonetodesktop.network.GoogleTasksService;
 import net.xisberto.phonetodesktop.network.GoogleTasksSpiceService;
 import net.xisberto.phonetodesktop.network.ListTasksRequest;
 

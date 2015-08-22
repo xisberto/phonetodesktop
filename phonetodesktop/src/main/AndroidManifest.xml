@@ -75,10 +75,6 @@
         </activity>
 
         <service
-            android:name=".network.GoogleTasksService"
-            android:exported="false" >
-        </service>
-        <service
             android:name=".network.GoogleTasksSpiceService"
             android:exported="false" >
         </service>

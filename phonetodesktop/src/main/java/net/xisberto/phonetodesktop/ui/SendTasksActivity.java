@@ -14,15 +14,11 @@ package net.xisberto.phonetodesktop.ui;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -37,7 +33,6 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.api.services.tasks.model.Task;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
@@ -55,7 +50,6 @@ import net.xisberto.phonetodesktop.model.LocalTask.Options;
 import net.xisberto.phonetodesktop.model.LocalTask.PersistCallback;
 import net.xisberto.phonetodesktop.network.GoogleTasksSpiceService;
 import net.xisberto.phonetodesktop.network.InsertMultipleTasksRequest;
-import net.xisberto.phonetodesktop.network.InsertTaskRequest;
 import net.xisberto.phonetodesktop.network.TaskOptionsRequest;
 
 public class SendTasksActivity extends AppCompatActivity implements
@@ -73,13 +67,6 @@ public class SendTasksActivity extends AppCompatActivity implements
     private LocalTask localTask;
 
     protected SpiceManager spiceManager = new SpiceManager(GoogleTasksSpiceService.class);
-
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            long taskId = intent.getLongExtra(Utils.EXTRA_TASK_ID, -1);
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,8 +136,6 @@ public class SendTasksActivity extends AppCompatActivity implements
     @Override
     protected void onStart() {
         super.onStart();
-        LocalBroadcastManager.getInstance(this).registerReceiver(receiver,
-                new IntentFilter(Utils.ACTION_RESULT_PROCESS_TASK));
         spiceManager.start(this);
     }
 
@@ -186,12 +171,6 @@ public class SendTasksActivity extends AppCompatActivity implements
         outState.putStringArray(SAVE_CACHE_TITLES, localTask.cache_titles);
         outState.putBoolean(SAVE_IS_WAITING, isWaiting);
         outState.putLong(SAVE_LOCAL_TASK_ID, localTask.getLocalId());
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
     }
 
     @Override
