@@ -19,6 +19,8 @@ import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import com.google.api.services.tasks.model.Task;
+
 import net.xisberto.phonetodesktop.R;
 
 import java.util.ArrayList;
@@ -26,8 +28,7 @@ import java.util.ArrayList;
 public class TasksArrayAdapter extends BaseAdapter {
     private Context context;
     private TaskArraySelectionListener listener;
-    private ArrayList<String> items;
-    private ArrayList<String> keys;
+    private ArrayList<Task> items;
     private ArrayList<Boolean> checked;
 
     public static class TaskViewHolder {
@@ -40,15 +41,14 @@ public class TasksArrayAdapter extends BaseAdapter {
     }
 
     public interface TaskArraySelectionListener {
-        public void onItemChecked(int position, boolean checked);
+        void onItemChecked(int position, boolean checked);
     }
 
-	public TasksArrayAdapter(Context context, ArrayList<String> keys, ArrayList<String> items, TaskArraySelectionListener listener) {
+	public TasksArrayAdapter(Context context, ArrayList<Task> items, TaskArraySelectionListener listener) {
 		super();
         this.context = context;
         this.listener = listener;
         this.items = items;
-        this.keys = keys;
         this.checked = new ArrayList<>(items.size());
         for (int i = 0; i < items.size(); i++) {
             checked.add(false);
@@ -61,7 +61,7 @@ public class TasksArrayAdapter extends BaseAdapter {
 	}
 
 	@Override
-	public Object getItem(int position) {
+	public Task getItem(int position) {
 		return items.get(position);
 	}
 
@@ -98,15 +98,11 @@ public class TasksArrayAdapter extends BaseAdapter {
                 listener.onItemChecked(position, cb.isChecked());
             }
         });
-        holder.textView.setText(items.get(position));
+        holder.textView.setText(items.get(position).getTitle());
         Linkify.addLinks(holder.textView, Linkify.WEB_URLS);
 
 		return convertView;
 	}
-
-    public String getKey(int position) {
-        return keys.get(position);
-    }
 
     public boolean isChecked(int position) {
         try {
@@ -127,8 +123,7 @@ public class TasksArrayAdapter extends BaseAdapter {
         }
     }
 
-    public void updateLists(ArrayList<String> keys, ArrayList<String> items) {
-        this.keys = keys;
+    public void updateLists(ArrayList<Task> items) {
         this.items = items;
         this.checked = new ArrayList<>(items.size());
         for (int i = 0; i < items.size(); i++) {

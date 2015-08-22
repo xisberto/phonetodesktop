@@ -30,11 +30,16 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
+import com.octo.android.robospice.SpiceManager;
+import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.octo.android.robospice.request.listener.RequestListener;
+
 import net.xisberto.phonetodesktop.R;
 import net.xisberto.phonetodesktop.Utils;
 import net.xisberto.phonetodesktop.database.DatabaseHelper;
 import net.xisberto.phonetodesktop.database.TableTasks;
-import net.xisberto.phonetodesktop.network.GoogleTasksService;
+import net.xisberto.phonetodesktop.network.GoogleTasksSpiceService;
+import net.xisberto.phonetodesktop.network.InsertMultipleTasksRequest;
 
 public class WaitListActivity extends AppCompatActivity implements
 		OnItemClickListener {
@@ -49,6 +54,8 @@ public class WaitListActivity extends AppCompatActivity implements
 			new ListLocalTask(ListLocalTask.ACTION_LIST).execute();
 		}
 	};
+
+    protected SpiceManager spiceManager = new SpiceManager(GoogleTasksSpiceService.class);
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -69,13 +76,15 @@ public class WaitListActivity extends AppCompatActivity implements
 
 		new ListLocalTask(ListLocalTask.ACTION_LIST).execute();
 		LocalBroadcastManager.getInstance(this).registerReceiver(receiver,
-				new IntentFilter(Utils.ACTION_LIST_LOCAL_TASKS));
+                new IntentFilter(Utils.ACTION_LIST_LOCAL_TASKS));
+        spiceManager.start(this);
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+        spiceManager.shouldStop();
 	}
 
 	@Override
@@ -181,11 +190,18 @@ public class WaitListActivity extends AppCompatActivity implements
 					result.moveToNext();
 					tasks_ids[i] = result.getLong(0);
 				}
-				Intent service = new Intent(WaitListActivity.this,
-						GoogleTasksService.class);
-				service.setAction(Utils.ACTION_SEND_TASKS);
-				service.putExtra(Utils.EXTRA_TASKS_IDS, tasks_ids);
-				startService(service);
+                InsertMultipleTasksRequest request = new InsertMultipleTasksRequest(WaitListActivity.this, tasks_ids);
+                spiceManager.execute(request, new RequestListener<Void>() {
+                    @Override
+                    public void onRequestFailure(SpiceException spiceException) {
+
+                    }
+
+                    @Override
+                    public void onRequestSuccess(Void aVoid) {
+
+                    }
+                });
 				break;
 			default:
 				break;

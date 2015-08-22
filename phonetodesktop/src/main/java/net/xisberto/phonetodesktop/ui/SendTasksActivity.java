@@ -14,18 +14,15 @@ package net.xisberto.phonetodesktop.ui;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,6 +33,10 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.octo.android.robospice.SpiceManager;
+import com.octo.android.robospice.persistence.DurationInMillis;
+import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.octo.android.robospice.request.listener.RequestListener;
 import com.rampo.updatechecker.UpdateChecker;
 import com.rampo.updatechecker.notice.Notice;
 
@@ -47,13 +48,14 @@ import net.xisberto.phonetodesktop.database.DatabaseHelper;
 import net.xisberto.phonetodesktop.model.LocalTask;
 import net.xisberto.phonetodesktop.model.LocalTask.Options;
 import net.xisberto.phonetodesktop.model.LocalTask.PersistCallback;
-import net.xisberto.phonetodesktop.network.GoogleTasksService;
+import net.xisberto.phonetodesktop.network.GoogleTasksSpiceService;
+import net.xisberto.phonetodesktop.network.InsertMultipleTasksRequest;
+import net.xisberto.phonetodesktop.network.TaskOptionsRequest;
 
 public class SendTasksActivity extends AppCompatActivity implements
         android.content.DialogInterface.OnClickListener {
 
     private String text_from_extra;
-    private String[] cache_unshorten = null, cache_titles = null;
     private SendFragment send_fragment;
     private boolean restoreFromPreferences, isWaiting = false;
     private static final String SAVE_CACHE_UNSHORTEN = "cache_unshorten",
@@ -64,23 +66,7 @@ public class SendTasksActivity extends AppCompatActivity implements
     private Preferences prefs;
     private LocalTask localTask;
 
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            long taskId = intent.getLongExtra(Utils.EXTRA_TASK_ID, -1);
-            if (taskId != -1) {
-                cache_unshorten = intent
-                        .getStringArrayExtra(Utils.EXTRA_CACHE_UNSHORTEN);
-                cache_titles = intent
-                        .getStringArrayExtra(Utils.EXTRA_CACHE_TITLES);
-                localTask = databaseHelper.getTask(taskId);
-                if (send_fragment != null) {
-                    send_fragment.setPreview(localTask.getTitle());
-                }
-                setDone();
-            }
-        }
-    };
+    protected SpiceManager spiceManager = new SpiceManager(GoogleTasksSpiceService.class);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,12 +92,13 @@ public class SendTasksActivity extends AppCompatActivity implements
                     .getInstance(getApplicationContext());
 
             if (savedInstanceState != null) {
-                cache_unshorten = savedInstanceState
-                        .getStringArray(SAVE_CACHE_UNSHORTEN);
-                cache_titles = savedInstanceState
-                        .getStringArray(SAVE_CACHE_TITLES);
                 long local_id = savedInstanceState.getLong(SAVE_LOCAL_TASK_ID);
                 localTask = databaseHelper.getTask(local_id);
+                //The caches aren't saved to the databse
+                localTask.cache_titles = savedInstanceState
+                        .getStringArray(SAVE_CACHE_TITLES);
+                localTask.cache_unshorten = savedInstanceState
+                        .getStringArray(SAVE_CACHE_UNSHORTEN);
                 isWaiting = savedInstanceState.getBoolean(SAVE_IS_WAITING);
                 restoreFromPreferences = false;
             } else {
@@ -149,8 +136,13 @@ public class SendTasksActivity extends AppCompatActivity implements
     @Override
     protected void onStart() {
         super.onStart();
-        LocalBroadcastManager.getInstance(this).registerReceiver(receiver,
-                new IntentFilter(Utils.ACTION_RESULT_PROCESS_TASK));
+        spiceManager.start(this);
+    }
+
+    @Override
+    protected void onStop() {
+        spiceManager.shouldStop();
+        super.onStop();
     }
 
     @Override
@@ -174,16 +166,11 @@ public class SendTasksActivity extends AppCompatActivity implements
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putStringArray(SAVE_CACHE_UNSHORTEN, cache_unshorten);
-        outState.putStringArray(SAVE_CACHE_TITLES, cache_titles);
+        //We save the caches because they don't go to the database
+        outState.putStringArray(SAVE_CACHE_UNSHORTEN, localTask.cache_unshorten);
+        outState.putStringArray(SAVE_CACHE_TITLES, localTask.cache_titles);
         outState.putBoolean(SAVE_IS_WAITING, isWaiting);
         outState.putLong(SAVE_LOCAL_TASK_ID, localTask.getLocalId());
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
     }
 
     @Override
@@ -232,11 +219,13 @@ public class SendTasksActivity extends AppCompatActivity implements
     }
 
     private void sendText() {
-        Intent service = new Intent(this, GoogleTasksService.class);
-        service.setAction(Utils.ACTION_SEND_TASKS);
-        service.putExtra(Utils.EXTRA_TASKS_IDS,
-                new long[]{localTask.getLocalId()});
-        startService(service);
+//        Intent service = new Intent(this, GoogleTasksService.class);
+//        service.setAction(Utils.ACTION_SEND_TASKS);
+//        service.putExtra(Utils.EXTRA_TASKS_IDS,
+//                new long[]{localTask.getLocalId()});
+//        startService(service);
+        InsertMultipleTasksRequest request = new InsertMultipleTasksRequest(this, localTask.getLocalId());
+        spiceManager.execute(request, null, DurationInMillis.ALWAYS_EXPIRED, null);
     }
 
     private void saveCheckBoxes() {
@@ -291,9 +280,9 @@ public class SendTasksActivity extends AppCompatActivity implements
         }
 
         if (unshorten) {
-            if (cache_unshorten != null) {
+            if (localTask.cache_unshorten != null) {
                 localTask.setTitle(Utils.replace(localTask.getTitle(),
-                        cache_unshorten));
+                        localTask.cache_unshorten));
             } else {
                 localTask.addOption(Options.OPTION_UNSHORTEN);
             }
@@ -302,9 +291,9 @@ public class SendTasksActivity extends AppCompatActivity implements
         }
 
         if (get_titles) {
-            if (cache_titles != null) {
+            if (localTask.cache_titles != null) {
                 localTask.setTitle(Utils.appendInBrackets(localTask.getTitle(),
-                        cache_titles));
+                        localTask.cache_titles));
             } else {
                 localTask.addOption(Options.OPTION_GETTITLES);
             }
@@ -320,11 +309,31 @@ public class SendTasksActivity extends AppCompatActivity implements
     }
 
     private void startProcessingTask() {
+        TaskOptionsRequest taskOptionsRequest = new TaskOptionsRequest(localTask);
+        spiceManager.execute(taskOptionsRequest, new RequestListener<LocalTask>() {
+            @Override
+            public void onRequestFailure(SpiceException spiceException) {
+                setDone();
+            }
+
+            @Override
+            public void onRequestSuccess(LocalTask task) {
+                Log.w("TaskOptionsRequest", String.format("localTask %s: %s", localTask.getLocalId(), localTask.getTitle()));
+                Log.w("TaskOptionsRequest", String.format("task %s: %s", task.getLocalId(), task.getTitle()));
+                if (send_fragment != null) {
+                    send_fragment.setPreview(localTask.getTitle());
+                }
+                setDone();
+            }
+        });
+
+        /*
         Intent service = new Intent(SendTasksActivity.this,
                 GoogleTasksService.class);
         service.setAction(Utils.ACTION_PROCESS_TASK);
         service.putExtra(Utils.EXTRA_TASK_ID, localTask.getLocalId());
         startService(service);
+        */
     }
 
     public void setWaiting() {
@@ -415,7 +424,7 @@ public class SendTasksActivity extends AppCompatActivity implements
             if (v != null) {
                 Toolbar toolbar = (Toolbar) v.findViewById(R.id.toolbar);
                 toolbar.setNavigationIcon(R.drawable.abc_ic_clear_mtrl_alpha);
-                ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+                ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
             }
         }
 

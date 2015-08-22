@@ -16,8 +16,14 @@ import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.content.Context;
 import android.util.Log;
 
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.services.tasks.Tasks;
 import com.google.api.services.tasks.TasksScopes;
 
 public class Utils {
@@ -114,5 +120,18 @@ public class Utils {
 		return result;
 	}
 
+    public static Tasks getGoogleTasksClient(Context context) {
+        Preferences preferences = new Preferences(context);
+
+        GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(context, Utils.scopes);
+        credential.setSelectedAccountName(preferences.loadAccountName());
+
+        HttpTransport transport = AndroidHttp.newCompatibleTransport();
+        GsonFactory gsonFactory = new GsonFactory();
+
+        return new Tasks.Builder(transport, gsonFactory, credential)
+                .setApplicationName("PhoneToDesktop")
+                .build();
+    }
 
 }
