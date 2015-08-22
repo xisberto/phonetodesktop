@@ -54,6 +54,7 @@ import net.xisberto.phonetodesktop.model.LocalTask;
 import net.xisberto.phonetodesktop.model.LocalTask.Options;
 import net.xisberto.phonetodesktop.model.LocalTask.PersistCallback;
 import net.xisberto.phonetodesktop.network.GoogleTasksSpiceService;
+import net.xisberto.phonetodesktop.network.InsertMultipleTasksRequest;
 import net.xisberto.phonetodesktop.network.InsertTaskRequest;
 import net.xisberto.phonetodesktop.network.TaskOptionsRequest;
 
@@ -244,7 +245,7 @@ public class SendTasksActivity extends AppCompatActivity implements
 //        service.putExtra(Utils.EXTRA_TASKS_IDS,
 //                new long[]{localTask.getLocalId()});
 //        startService(service);
-        InsertTaskRequest request = new InsertTaskRequest(Task.class, this, localTask.getTitle());
+        InsertMultipleTasksRequest request = new InsertMultipleTasksRequest(this, localTask.getLocalId());
         spiceManager.execute(request, null, DurationInMillis.ALWAYS_EXPIRED, null);
     }
 

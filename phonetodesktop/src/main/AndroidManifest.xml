@@ -15,12 +15,12 @@
     android:versionCode="144"
     android:versionName="1.4.0" >
 
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="false"
@@ -61,10 +61,10 @@
         </activity>
         <activity
             android:name=".ui.SendTasksActivity"
-            android:label="@string/filter_title"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar.Translucent"
             android:excludeFromRecents="true"
-            android:noHistory="true" >
+            android:label="@string/filter_title"
+            android:noHistory="true"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.Translucent" >
             <intent-filter android:label="@string/filter_title" >
                 <action android:name="android.intent.action.SEND" />
 
@@ -75,15 +75,14 @@
         </activity>
 
         <service
-            android:name="net.xisberto.phonetodesktop.network.GoogleTasksService"
+            android:name=".network.GoogleTasksService"
+            android:exported="false" >
+        </service>
+        <service
+            android:name=".network.GoogleTasksSpiceService"
             android:exported="false" >
         </service>
 
-        <service android:name=".network.GoogleTasksSpiceService"
-            android:exported="false">
-
-        </service>
-        
         <activity
             android:name=".ui.WaitListActivity"
             android:label="@string/title_activity_wait_list"
@@ -92,7 +91,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />
         </activity>
-        
         <activity
             android:name=".ui.PreferencesActivity"
             android:label="@string/title_activity_preferences"
