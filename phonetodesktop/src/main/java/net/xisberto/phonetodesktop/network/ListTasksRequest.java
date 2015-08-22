@@ -12,15 +12,14 @@ import com.octo.android.robospice.request.googlehttpclient.GoogleHttpClientSpice
 
 import net.xisberto.phonetodesktop.Preferences;
 import net.xisberto.phonetodesktop.Utils;
+import net.xisberto.phonetodesktop.model.TaskList;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by xisberto on 21/08/15.
  */
-public class ListTasksRequest extends GoogleHttpClientSpiceRequest<ListTasksRequest.TaskList> {
-    public class TaskList extends ArrayList<Task>{}
+public class ListTasksRequest extends GoogleHttpClientSpiceRequest<TaskList> {
 
     private Context mContext;
 
@@ -47,7 +46,7 @@ public class ListTasksRequest extends GoogleHttpClientSpiceRequest<ListTasksRequ
         List<Task> list = client.tasks().list(list_id).execute().getItems();
         TaskList result = new TaskList();
 
-        result.addAll(list);
+        result.items.addAll(list);
 
         return result;
     }

@@ -11,15 +11,11 @@
 package net.xisberto.phonetodesktop.ui;
 
 import android.app.Dialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.NavUtils;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.util.SparseArrayCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
@@ -30,9 +26,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
@@ -40,6 +34,7 @@ import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.xisberto.phonetodesktop.R;
 import net.xisberto.phonetodesktop.Utils;
+import net.xisberto.phonetodesktop.model.TaskList;
 import net.xisberto.phonetodesktop.network.GoogleTasksService;
 import net.xisberto.phonetodesktop.network.GoogleTasksSpiceService;
 import net.xisberto.phonetodesktop.network.ListTasksRequest;
@@ -50,10 +45,10 @@ public class LinkListActivity extends AppCompatActivity implements TasksArrayAda
     private static final String SELECTED_ITEMS = "selected_items";
 
     private boolean updating;
-    private ProgressBar mProgress;
     private TasksArrayAdapter adapter;
     private ListView list_view;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private TaskList taskList;
     private SparseArrayCompat<String> selectedItems;
     private ActionMode actionMode;
 
@@ -76,16 +71,28 @@ public class LinkListActivity extends AppCompatActivity implements TasksArrayAda
 
         if ((savedInstanceState != null)
                 && savedInstanceState.containsKey(Utils.EXTRA_TITLES)) {
+            taskList = savedInstanceState.getParcelable(Utils.EXTRA_TITLES);
             updating = savedInstanceState.getBoolean(Utils.EXTRA_UPDATING);
             ArrayList<Integer> selection = savedInstanceState.getIntegerArrayList(SELECTED_ITEMS);
-            /*
-            if (selection != null) {
-                for (int i = 0; i < selection.size(); i++) {
-                    selectedItems.put(selection.get(i), ids.get(i));
-                }
+
+            if (list_view.getAdapter() == null) {
+                adapter = new TasksArrayAdapter(this, taskList.items, this);
+                list_view.setAdapter(adapter);
+            } else {
+                adapter = (TasksArrayAdapter) list_view.getAdapter();
             }
-            */
+            if (selection != null) {
+                Log.w("LinkList", String.format("Read selection with %s items", selection.size()));
+                for (int i = 0; i < selection.size(); i++) {
+                    selectedItems.put(selection.get(i), adapter.getItem(i).getId());
+                    adapter.setChecked(selectedItems.keyAt(i), true);
+                    onItemChecked(selectedItems.keyAt(i), true);
+                }
+                adapter.notifyDataSetChanged();
+            }
+
         } else {
+            taskList = new TaskList();
             refreshTasks();
         }
     }
@@ -106,10 +113,12 @@ public class LinkListActivity extends AppCompatActivity implements TasksArrayAda
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(Utils.EXTRA_UPDATING, updating);
+        outState.putParcelable(Utils.EXTRA_TITLES, taskList);
         ArrayList<Integer> selection = new ArrayList<>();
         for (int i = 0; i < selectedItems.size(); i++) {
             selection.add(selectedItems.keyAt(i));
         }
+        Log.w("LinkList", String.format("Saving selection with %s items", selection.size()));
         outState.putIntegerArrayList(SELECTED_ITEMS, selection);
     }
 
@@ -156,16 +165,17 @@ public class LinkListActivity extends AppCompatActivity implements TasksArrayAda
         updating = true;
         swipeRefreshLayout.setRefreshing(updating);
         ListTasksRequest listTasksRequest = new ListTasksRequest(this);
-        spiceManager.execute(listTasksRequest, new RequestListener<ListTasksRequest.TaskList>() {
+        spiceManager.execute(listTasksRequest, new RequestListener<TaskList>() {
             @Override
             public void onRequestFailure(SpiceException spiceException) {
 
             }
 
             @Override
-            public void onRequestSuccess(ListTasksRequest.TaskList tasks) {
+            public void onRequestSuccess(TaskList tasks) {
                 updating = false;
-                updateLayout(tasks);
+                taskList = tasks;
+                updateLayout();
             }
         });
         /*
@@ -185,31 +195,25 @@ public class LinkListActivity extends AppCompatActivity implements TasksArrayAda
         swipeRefreshLayout.setRefreshing(updating);
     }
 
-    private void updateLayout(ListTasksRequest.TaskList tasks) {
+    private void updateLayout() {
         swipeRefreshLayout.setRefreshing(updating);
         TextView text_empty = (TextView) findViewById(android.R.id.empty);
+
         if (!updating) {
             if (actionMode != null) {
                 actionMode.finish();
             }
-            if (tasks.isEmpty()) {
+            if (taskList.items.isEmpty()) {
                 text_empty.setText(getText(R.string.txt_empty_list));
                 list_view.setVisibility(View.GONE);
                 text_empty.setVisibility(View.VISIBLE);
             } else {
                 if (adapter == null) {
                     adapter = new TasksArrayAdapter(LinkListActivity.this,
-                            tasks, LinkListActivity.this);
+                            taskList.items, LinkListActivity.this);
                     list_view.setAdapter(adapter);
                 } else {
-                    adapter.updateLists(tasks);
-                }
-                if (selectedItems.size() >= 0) {
-                    for (int i = 0; i < selectedItems.size(); i++) {
-                        adapter.setChecked(selectedItems.keyAt(i), true);
-                        onItemChecked(selectedItems.keyAt(i), true);
-                    }
-                    adapter.notifyDataSetChanged();
+                    adapter.updateLists(taskList.items);
                 }
                 list_view.setVisibility(View.VISIBLE);
                 text_empty.setVisibility(View.GONE);
