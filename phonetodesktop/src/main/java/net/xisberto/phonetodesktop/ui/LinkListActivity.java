@@ -14,6 +14,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.NavUtils;
 import android.support.v4.util.SparseArrayCompat;
@@ -35,6 +36,7 @@ import com.octo.android.robospice.request.listener.RequestListener;
 import net.xisberto.phonetodesktop.R;
 import net.xisberto.phonetodesktop.Utils;
 import net.xisberto.phonetodesktop.model.TaskList;
+import net.xisberto.phonetodesktop.network.DeleteTasksRequest;
 import net.xisberto.phonetodesktop.network.GoogleTasksService;
 import net.xisberto.phonetodesktop.network.GoogleTasksSpiceService;
 import net.xisberto.phonetodesktop.network.ListTasksRequest;
@@ -44,7 +46,6 @@ import java.util.ArrayList;
 public class LinkListActivity extends AppCompatActivity implements TasksArrayAdapter.TaskArraySelectionListener, SwipeRefreshLayout.OnRefreshListener {
     private static final String SELECTED_ITEMS = "selected_items";
 
-    private boolean updating;
     private TasksArrayAdapter adapter;
     private ListView list_view;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -72,7 +73,8 @@ public class LinkListActivity extends AppCompatActivity implements TasksArrayAda
         if ((savedInstanceState != null)
                 && savedInstanceState.containsKey(Utils.EXTRA_TITLES)) {
             taskList = savedInstanceState.getParcelable(Utils.EXTRA_TITLES);
-            updating = savedInstanceState.getBoolean(Utils.EXTRA_UPDATING);
+            boolean updating = savedInstanceState.getBoolean(Utils.EXTRA_UPDATING, false);
+            swipeRefreshLayout.setRefreshing(updating);
             ArrayList<Integer> selection = savedInstanceState.getIntegerArrayList(SELECTED_ITEMS);
 
             if (list_view.getAdapter() == null) {
@@ -112,7 +114,7 @@ public class LinkListActivity extends AppCompatActivity implements TasksArrayAda
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(Utils.EXTRA_UPDATING, updating);
+        outState.putBoolean(Utils.EXTRA_UPDATING, swipeRefreshLayout.isRefreshing());
         outState.putParcelable(Utils.EXTRA_TITLES, taskList);
         ArrayList<Integer> selection = new ArrayList<>();
         for (int i = 0; i < selectedItems.size(); i++) {
@@ -135,7 +137,7 @@ public class LinkListActivity extends AppCompatActivity implements TasksArrayAda
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
             case R.id.item_refresh:
-                if (updating) {
+                if (swipeRefreshLayout.isRefreshing()) {
                     return true;
                 }
                 refreshTasks();
@@ -155,51 +157,47 @@ public class LinkListActivity extends AppCompatActivity implements TasksArrayAda
 
     public static <C> ArrayList<C> asArrayList(SparseArrayCompat<C> sparseArray) {
         if (sparseArray == null) return null;
-        ArrayList<C> arrayList = new ArrayList<C>(sparseArray.size());
+        ArrayList<C> arrayList = new ArrayList<>(sparseArray.size());
         for (int i = 0; i < sparseArray.size(); i++)
             arrayList.add(sparseArray.valueAt(i));
         return arrayList;
     }
 
+    private RequestListener<TaskList> requestListener = new RequestListener<TaskList>() {
+        @Override
+        public void onRequestFailure(SpiceException spiceException) {
+            swipeRefreshLayout.setRefreshing(false);
+        }
+
+        @Override
+        public void onRequestSuccess(TaskList tasks) {
+            swipeRefreshLayout.setRefreshing(false);
+            taskList = tasks;
+            updateLayout();
+        }
+    };
+
     private void refreshTasks() {
-        updating = true;
-        swipeRefreshLayout.setRefreshing(updating);
+        swipeRefreshLayout.setRefreshing(true);
         ListTasksRequest listTasksRequest = new ListTasksRequest(this);
-        spiceManager.execute(listTasksRequest, new RequestListener<TaskList>() {
-            @Override
-            public void onRequestFailure(SpiceException spiceException) {
-
-            }
-
-            @Override
-            public void onRequestSuccess(TaskList tasks) {
-                updating = false;
-                taskList = tasks;
-                updateLayout();
-            }
-        });
-        /*
-        Intent service = new Intent(this, GoogleTasksService.class);
-		service.setAction(Utils.ACTION_LIST_TASKS);
-		startService(service);
-		*/
+        spiceManager.execute(listTasksRequest, requestListener);
     }
 
     private void deleteTasks() {
         Utils.log(String.format("%s items selected", selectedItems.size()));
-        Intent service = new Intent(this, GoogleTasksService.class);
-        service.setAction(Utils.ACTION_REMOVE_TASKS);
-        service.putExtra(Utils.EXTRA_TASKS_IDS, asArrayList(selectedItems));
-        startService(service);
-        updating = true;
-        swipeRefreshLayout.setRefreshing(updating);
+        swipeRefreshLayout.setRefreshing(true);
+        DeleteTasksRequest deleteTasksRequest = new DeleteTasksRequest(this,
+                asArrayList(selectedItems));
+        spiceManager.execute(deleteTasksRequest, requestListener);
     }
 
     private void updateLayout() {
-        swipeRefreshLayout.setRefreshing(updating);
         TextView text_empty = (TextView) findViewById(android.R.id.empty);
 
-        if (!updating) {
+        if (swipeRefreshLayout.isRefreshing()) {
+            text_empty.setVisibility(View.GONE);
+            list_view.setVisibility(View.INVISIBLE);
+        } else {
             if (actionMode != null) {
                 actionMode.finish();
             }
@@ -218,9 +216,6 @@ public class LinkListActivity extends AppCompatActivity implements TasksArrayAda
                 list_view.setVisibility(View.VISIBLE);
                 text_empty.setVisibility(View.GONE);
             }
-        } else {
-            text_empty.setVisibility(View.GONE);
-            list_view.setVisibility(View.INVISIBLE);
         }
 
     }
@@ -270,9 +265,10 @@ public class LinkListActivity extends AppCompatActivity implements TasksArrayAda
             super.onCreate(savedInstanceState);
         }
 
+        @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            AlertDialog dialog = new AlertDialog.Builder(getActivity())
+            return new AlertDialog.Builder(getActivity())
                     .setMessage(R.string.txt_confirm)
                     .setPositiveButton(R.string.btn_delete,
                             new DialogInterface.OnClickListener() {
@@ -284,20 +280,6 @@ public class LinkListActivity extends AppCompatActivity implements TasksArrayAda
                                 }
                             }).setNegativeButton(android.R.string.cancel, null)
                     .create();
-
-            //We will color the dialog's buttons only on Honeycomb+ devices
-            //On older platforms, we use the default dialog themes
-			/*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-				dialog.show();
-				dialog.getButton(DialogInterface.BUTTON_POSITIVE)
-						.setBackgroundResource(
-								R.drawable.borderlessbutton_background_pdttheme);
-				dialog.getButton(DialogInterface.BUTTON_NEGATIVE)
-						.setBackgroundResource(
-								R.drawable.borderlessbutton_background_pdttheme);
-			}*/
-
-            return dialog;
         }
 
     }

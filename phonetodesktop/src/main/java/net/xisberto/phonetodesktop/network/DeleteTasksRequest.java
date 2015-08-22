@@ -2,10 +2,6 @@ package net.xisberto.phonetodesktop.network;
 
 import android.content.Context;
 
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.tasks.Tasks;
 import com.google.api.services.tasks.model.Task;
 import com.octo.android.robospice.request.googlehttpclient.GoogleHttpClientSpiceRequest;
@@ -14,33 +10,38 @@ import net.xisberto.phonetodesktop.Preferences;
 import net.xisberto.phonetodesktop.Utils;
 import net.xisberto.phonetodesktop.model.TaskList;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by xisberto on 21/08/15.
  */
-public class ListTasksRequest extends GoogleHttpClientSpiceRequest<TaskList> {
+public class DeleteTasksRequest extends GoogleHttpClientSpiceRequest<TaskList> {
 
     private Context mContext;
+    private ArrayList<String> tasks_ids;
 
-    public ListTasksRequest(Context context) {
+    public DeleteTasksRequest(Context mContext, ArrayList<String> tasks_ids) {
         super(TaskList.class);
-        mContext = context;
+        this.mContext = mContext;
+        this.tasks_ids = tasks_ids;
     }
 
     @Override
     public TaskList loadDataFromNetwork() throws Exception {
-        Preferences preferences = new Preferences(mContext);
-        String list_id = preferences.loadListId();
+        String list_id = new Preferences(mContext).loadListId();
 
         Tasks client = Utils.getGoogleTasksClient(mContext);
+        for (String task_id : tasks_ids) {
+            client.tasks().delete(list_id, task_id).execute();
+        }
 
         List<Task> list = client.tasks().list(list_id).execute().getItems();
         TaskList result = new TaskList();
 
-        result.items.addAll(list);
-
+        if (list != null) {
+            result.items.addAll(list);
+        }
         return result;
     }
-
 }
