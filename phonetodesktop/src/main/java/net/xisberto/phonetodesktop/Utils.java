@@ -121,7 +121,7 @@ public class Utils {
 	}
 
     public static Tasks getGoogleTasksClient(Context context) {
-        Preferences preferences = new Preferences(context);
+        Preferences preferences = Preferences.getInstance(context);
 
         GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(context, Utils.scopes);
         credential.setSelectedAccountName(preferences.loadAccountName());

@@ -29,7 +29,7 @@ public class DeleteTasksRequest extends GoogleHttpClientSpiceRequest<TaskList> {
 
     @Override
     public TaskList loadDataFromNetwork() throws Exception {
-        String list_id = new Preferences(mContext).loadListId();
+        String list_id = Preferences.getInstance(mContext).loadListId();
 
         Tasks client = Utils.getGoogleTasksClient(mContext);
         for (String task_id : tasks_ids) {

@@ -25,7 +25,7 @@ public class InsertTaskRequest extends GoogleHttpClientSpiceRequest<Task> {
     @Override
     public Task loadDataFromNetwork() throws Exception {
 
-        Preferences preferences = new Preferences(context);
+        Preferences preferences = Preferences.getInstance(context);
         String list_id = preferences.loadListId();
 
         Tasks client = Utils.getGoogleTasksClient(context);

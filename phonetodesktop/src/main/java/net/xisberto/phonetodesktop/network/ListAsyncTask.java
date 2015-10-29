@@ -55,7 +55,7 @@ public class ListAsyncTask extends AsyncTask<Integer, Void, String> {
 		transport = AndroidHttp.newCompatibleTransport();
 		jsonFactory = new GsonFactory();
 
-		Preferences preferences = new Preferences(listener);
+		Preferences preferences = Preferences.getInstance(listener);
 		credential = GoogleAccountCredential
 				.usingOAuth2(listener, Utils.scopes);
 		credential.setSelectedAccountName(preferences.loadAccountName());

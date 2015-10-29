@@ -30,7 +30,7 @@ public class ListTasksRequest extends GoogleHttpClientSpiceRequest<TaskList> {
 
     @Override
     public TaskList loadDataFromNetwork() throws Exception {
-        Preferences preferences = new Preferences(mContext);
+        Preferences preferences = Preferences.getInstance(mContext);
         String list_id = preferences.loadListId();
 
         Tasks client = Utils.getGoogleTasksClient(mContext);

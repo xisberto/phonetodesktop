@@ -138,7 +138,7 @@ public class MainFragment extends Fragment implements OnClickListener {
 		if (mUpdating) {
 			txt_authorize.setText(R.string.txt_waiting_authorization);
 		} else {
-			Preferences prefs = new Preferences(getActivity());
+			Preferences prefs = Preferences.getInstance(getActivity());
 			String account_name = prefs.loadAccountName();
 			if (account_name != null) {
 				txt_authorize.setText(getString(R.string.txt_authorized_to) + " "

@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements
 		supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.activity_main);
 
-		preferences = new Preferences(this);
+		preferences = Preferences.getInstance(this);
 
 		credential = GoogleAccountCredential.usingOAuth2(this, Utils.scopes);
 		credential.setSelectedAccountName(preferences.loadAccountName());
@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements
 						updateMainLayout(true);
 						getSupportFragmentManager().beginTransaction()
 								.replace(R.id.main_frame, mainFragment)
-								.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+								.setTransition(FragmentTransaction.TRANSIT_NONE)
 								.commit();
 					}
 					credential.setSelectedAccountName(accountName);
