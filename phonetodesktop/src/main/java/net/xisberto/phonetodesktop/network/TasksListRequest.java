@@ -79,17 +79,12 @@ public class TasksListRequest extends GoogleHttpClientSpiceRequest<Void> {
         return null;
     }
 
-    private void createNewList(Tasks client) {
+    private void createNewList(Tasks client) throws IOException {
         Utils.log("Creating new list");
         TaskList newList = new TaskList();
         newList.setTitle(Utils.LIST_TITLE);
-        try {
-            TaskList taskList = client.tasklists().insert(newList)
-                    .execute();
-            Log.d("TaskListRequest", String.format("Saving new list with id: %s", taskList.getId()));
-            mPreferences.saveListId(taskList.getId());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        TaskList taskList = client.tasklists().insert(newList).execute();
+        Log.d("TaskListRequest", String.format("Saving new list with id: %s", taskList.getId()));
+        mPreferences.saveListId(taskList.getId());
     }
 }

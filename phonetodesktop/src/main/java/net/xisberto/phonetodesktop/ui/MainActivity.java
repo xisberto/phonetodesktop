@@ -18,6 +18,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -229,7 +230,8 @@ public class MainActivity extends AppCompatActivity implements
         RequestListener<Void> listRequestListener = new RequestListener<Void>() {
             @Override
             public void onRequestFailure(SpiceException spiceException) {
-
+                RetryDialog.newInstance(MainActivity.this)
+                        .show(getSupportFragmentManager(), "retry_dialog");
             }
 
             @Override
@@ -248,6 +250,7 @@ public class MainActivity extends AppCompatActivity implements
 
     public static class RetryDialog extends DialogFragment implements
             DialogInterface.OnClickListener {
+
         private MainActivity activity;
 
         public static RetryDialog newInstance(MainActivity act) {
@@ -256,6 +259,7 @@ public class MainActivity extends AppCompatActivity implements
             return dialog;
         }
 
+        @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity)
@@ -270,11 +274,10 @@ public class MainActivity extends AppCompatActivity implements
             switch (which) {
                 case DialogInterface.BUTTON_POSITIVE:
                     activity.saveListId();
-                    dialog.dismiss();
                 case DialogInterface.BUTTON_NEGATIVE:
                     activity.updateMainLayout(false);
-                    dialog.dismiss();
             }
+            dialog.dismiss();
         }
 
     }
