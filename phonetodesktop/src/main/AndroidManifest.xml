@@ -11,9 +11,7 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="net.xisberto.phonetodesktop"
-    android:installLocation="auto"
-    android:versionCode="144"
-    android:versionName="1.4.0" >
+    android:installLocation="auto" >
 
     <!-- "Normal Protection" permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
