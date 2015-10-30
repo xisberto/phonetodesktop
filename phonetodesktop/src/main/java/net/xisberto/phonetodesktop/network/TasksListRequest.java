@@ -3,7 +3,6 @@ package net.xisberto.phonetodesktop.network;
 import android.content.Context;
 import android.util.Log;
 
-import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.google.api.services.tasks.Tasks;
 import com.google.api.services.tasks.model.TaskList;
 import com.octo.android.robospice.request.SpiceRequest;

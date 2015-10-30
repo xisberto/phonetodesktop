@@ -220,11 +220,6 @@ public class SendTasksActivity extends AppCompatActivity implements
     }
 
     private void sendText() {
-//        Intent service = new Intent(this, GoogleTasksService.class);
-//        service.setAction(Utils.ACTION_SEND_TASKS);
-//        service.putExtra(Utils.EXTRA_TASKS_IDS,
-//                new long[]{localTask.getLocalId()});
-//        startService(service);
         InsertMultipleTasksRequest request = new InsertMultipleTasksRequest(this, localTask.getLocalId());
         spiceManager.execute(request, null, DurationInMillis.ALWAYS_EXPIRED, null);
     }
@@ -328,13 +323,6 @@ public class SendTasksActivity extends AppCompatActivity implements
             }
         });
 
-        /*
-        Intent service = new Intent(SendTasksActivity.this,
-                GoogleTasksService.class);
-        service.setAction(Utils.ACTION_PROCESS_TASK);
-        service.putExtra(Utils.EXTRA_TASK_ID, localTask.getLocalId());
-        startService(service);
-        */
     }
 
     public void setWaiting() {
