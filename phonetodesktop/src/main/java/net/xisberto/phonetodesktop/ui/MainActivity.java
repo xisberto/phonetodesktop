@@ -181,6 +181,7 @@ public class MainActivity extends AppCompatActivity implements
     public void startAuthorization() {
         if (checkGooglePlayServicesAvailable()) {
             // ask user to choose account
+            preferences.saveListId(null);
             startActivityForResult(credential.newChooseAccountIntent(),
                     REQUEST_ACCOUNT_PICKER);
         }
