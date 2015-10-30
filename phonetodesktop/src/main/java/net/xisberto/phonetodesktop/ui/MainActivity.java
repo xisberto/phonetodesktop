@@ -29,20 +29,19 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.google.api.services.tasks.model.TaskList;
+import com.octo.android.robospice.SpiceManager;
+import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.xisberto.phonetodesktop.Preferences;
 import net.xisberto.phonetodesktop.R;
 import net.xisberto.phonetodesktop.Utils;
-import net.xisberto.phonetodesktop.network.ListAsyncTask;
-import net.xisberto.phonetodesktop.network.ListAsyncTask.TaskListTaskListener;
-
-import java.util.List;
+import net.xisberto.phonetodesktop.network.GoogleTasksSpiceService;
+import net.xisberto.phonetodesktop.network.TasksListRequest;
 
 public class MainActivity extends AppCompatActivity implements
-		OnClickListener, TaskListTaskListener, MainFragment.PhoneToDesktopAuthorization {
+		OnClickListener, MainFragment.PhoneToDesktopAuthorization {
 
 	public static final int REQUEST_GOOGLE_PLAY_SERVICES = 0;
 	public static final int REQUEST_AUTHORIZATION = 1;
@@ -53,12 +52,12 @@ public class MainActivity extends AppCompatActivity implements
 	private GoogleAccountCredential credential;
 	public Preferences preferences;
 
-	private ListAsyncTask listManager;
-
 	private MainFragment mainFragment;
 	private Fragment currentFragment;
 
 	private boolean showWelcome;
+
+    private SpiceManager mSpiceManager = new SpiceManager(GoogleTasksSpiceService.class);
 	
 	private BroadcastReceiver receiver = new BroadcastReceiver() {
 		@Override
@@ -108,6 +107,8 @@ public class MainActivity extends AppCompatActivity implements
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
+        mSpiceManager.start(this);
+
 		switch (requestCode) {
 		case REQUEST_ACCOUNT_PICKER:
 			Utils.log("Result from Account Picker");
@@ -131,11 +132,11 @@ public class MainActivity extends AppCompatActivity implements
 					}
 					credential.setSelectedAccountName(accountName);
 					preferences.saveAccountName(accountName);
-					// If PhoneToDesktop has'nt been authorized by the user
+					// If PhoneToDesktop hasn't been authorized by the user
 					// this will lead to an UserRecoverableAuthIOException
 					// that will generate an onActivityResult for
 					// REQUEST_AUTHENTICATION
-					asyncRequestLists();
+                    asyncRequestLists();
 				}
 			} else {
 				// User cancelled, or any other error during authorization
@@ -150,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements
 		case REQUEST_AUTHORIZATION:
 			Utils.log("Result from Authorization");
 			if (resultCode == RESULT_OK) {
-				asyncRequestLists();
+                asyncRequestLists();
 			} else {
 				updateMainLayout(false);
 			}
@@ -172,7 +173,10 @@ public class MainActivity extends AppCompatActivity implements
 	protected void onStop() {
 		super.onStop();
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
-	}
+        if (mSpiceManager.isStarted()) {
+            mSpiceManager.shouldStop();
+        }
+    }
 
 	@Override
 	public void onClick(View v) {
@@ -184,7 +188,7 @@ public class MainActivity extends AppCompatActivity implements
 		if (checkGooglePlayServicesAvailable()) {
 			// ask user to choose account
 			startActivityForResult(credential.newChooseAccountIntent(),
-					REQUEST_ACCOUNT_PICKER);
+                    REQUEST_ACCOUNT_PICKER);
 		}
 	}
 
@@ -223,85 +227,29 @@ public class MainActivity extends AppCompatActivity implements
 	}
 
 	private void asyncRequestLists() {
-		listManager = new ListAsyncTask(this);
-		listManager.execute(ListAsyncTask.REQUEST_LOAD_LISTS);
-	}
+        if (!mSpiceManager.isStarted()) {
+            mSpiceManager.start(this);
+        }
 
-	private void asyncSaveList() {
-		listManager = new ListAsyncTask(this);
-		listManager.execute(ListAsyncTask.REQUEST_SAVE_LIST);
-	}
+        RequestListener<Void> listRequestListener = new RequestListener<Void>() {
+            @Override
+            public void onRequestFailure(SpiceException spiceException) {
 
-	@Override
-	public void selectList(List<TaskList> tasklists) {
-		if (tasklists != null) {
-			if (preferences.loadListId() == null) {
-				// We don't have a list id saved. Search in the server
-				// for a list with the title PhoneToDesktop
-				String serverListId = null;
-				for (TaskList taskList : tasklists) {
-					if (taskList.getTitle().equals(Utils.LIST_TITLE)) {
-						serverListId = taskList.getId();
-						break;
-					}
-				}
-				if (serverListId == null) {
-					// The server doesn't have any list named PhoneToDesktop
-					// We create it and save its id
-					asyncSaveList();
-					// returning at this point to keep the progress
-					return;
-				} else {
-					// The server has a list named PhoneToDesktop
-					// We save its id
-					preferences.saveListId(serverListId);
-				}
-			} else {
-				// We have a saved id. Let's search this id in server
-				boolean serverHasList = false;
-				for (TaskList taskList : tasklists) {
-					if (taskList.getId().equals(preferences.loadListId())) {
-						serverHasList = true;
-						break;
-					}
-				}
-				if (!serverHasList) {
-					// The server has no list with this id
-					// We create a new list and save its id
-					asyncSaveList();
-					// returning at this point to keep the progress
-					return;
-				}
-				// else
-				// We have the list id and found the same id in server
-				// nothing to do here
-			}
-		}
-		if (showWelcome) {
-			startActivity(new Intent(this, TutorialActivity.class));
-			showWelcome = false;
-		}
-		updateMainLayout(false);
-	}
+            }
 
-	@Override
-	public void saveList(String listId) {
-		preferences.saveListId(listId);
-		updateMainLayout(false);
-	}
+            @Override
+            public void onRequestSuccess(Void aVoid) {
+                if (showWelcome) {
+                    startActivity(new Intent(MainActivity.this, TutorialActivity.class));
+                    showWelcome = false;
+                }
+                updateMainLayout(false);
+            }
+        };
 
-	@Override
-	public void showRetryMessage(int request) {
-		switch (request) {
-		case ListAsyncTask.REQUEST_LOAD_LISTS:
-			RetryDialog dialog = RetryDialog.newInstance(this);
-			dialog.show(getSupportFragmentManager(), "retry_dialog");
-			break;
-
-		default:
-			break;
-		}
-	}
+        TasksListRequest request = new TasksListRequest(this);
+        mSpiceManager.execute(request, listRequestListener);
+    }
 
 	public static class RetryDialog extends DialogFragment implements
 			DialogInterface.OnClickListener {

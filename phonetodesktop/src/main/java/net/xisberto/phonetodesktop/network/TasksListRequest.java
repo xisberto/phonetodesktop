@@ -1,6 +1,7 @@
 package net.xisberto.phonetodesktop.network;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.google.api.services.tasks.Tasks;
 import com.google.api.services.tasks.model.TaskList;
@@ -32,9 +33,12 @@ public class TasksListRequest extends GoogleHttpClientSpiceRequest<Void> {
 
         List<TaskList> taskLists = client.tasklists().list().execute().getItems();
         if (taskLists != null) {
-            if (mPreferences.loadListId() == null) {
+            Log.d("TaskListRequest", String.format("server has %s lists", taskLists.size()));
+            String localListId = mPreferences.loadListId();
+            if (localListId == null) {
                 // We don't have a list id saved. Search in the server
                 // for a list with the title PhoneToDesktop
+                Log.d("TaskListRequest", "No saved list");
                 String serverListId = null;
                 for (TaskList taskList : taskLists) {
                     if (taskList.getTitle().equals(Utils.LIST_TITLE)) {
@@ -46,18 +50,18 @@ public class TasksListRequest extends GoogleHttpClientSpiceRequest<Void> {
                     // The server doesn't have any list named PhoneToDesktop
                     // We create it and save its id
                     createNewList(client);
-                    // returning at this point to keep the progress
-                    return null;
                 } else {
                     // The server has a list named PhoneToDesktop
                     // We save its id
+                    Log.d("TaskListRequest", String.format("server has list %s. Saving it.", serverListId));
                     mPreferences.saveListId(serverListId);
                 }
             } else {
                 // We have a saved id. Let's search this id in server
+                Log.d("TaskListRequest", String.format("We have a local list: %s", localListId));
                 boolean serverHasList = false;
                 for (TaskList taskList : taskLists) {
-                    if (taskList.getId().equals(mPreferences.loadListId())) {
+                    if (taskList.getId().equals(localListId)) {
                         serverHasList = true;
                         break;
                     }
@@ -66,8 +70,6 @@ public class TasksListRequest extends GoogleHttpClientSpiceRequest<Void> {
                     // The server has no list with this id
                     // We create a new list and save its id
                     createNewList(client);
-                    // returning at this point to keep the progress
-                    return null;
                 }
                 // else
                 // We have the list id and found the same id in server
@@ -82,8 +84,10 @@ public class TasksListRequest extends GoogleHttpClientSpiceRequest<Void> {
         TaskList newList = new TaskList();
         newList.setTitle(Utils.LIST_TITLE);
         try {
-            TaskList createdList = client.tasklists().insert(newList)
+            TaskList taskList = client.tasklists().insert(newList)
                     .execute();
+            Log.d("TaskListRequest", String.format("Saving new list with id: %s", taskList.getId()));
+            mPreferences.saveListId(taskList.getId());
         } catch (IOException e) {
             e.printStackTrace();
         }
