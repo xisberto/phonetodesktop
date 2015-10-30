@@ -38,8 +38,4 @@ dependencies {
         exclude group: 'org.apache.commons', module: 'commons-lang'
         exclude group: 'org.apache.commons', module: 'commons-io'
     }
-    compile('com.octo.android.robospice:robospice-google-http-client:1.4.14') {
-        exclude group: 'org.apache.commons', module: 'commons-lang'
-        exclude group: 'org.apache.commons', module: 'commons-io'
-    }
 }

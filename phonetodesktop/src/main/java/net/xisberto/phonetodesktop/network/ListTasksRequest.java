@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.google.api.services.tasks.Tasks;
 import com.google.api.services.tasks.model.Task;
-import com.octo.android.robospice.request.googlehttpclient.GoogleHttpClientSpiceRequest;
+import com.octo.android.robospice.request.SpiceRequest;
 
 import net.xisberto.phonetodesktop.Preferences;
 import net.xisberto.phonetodesktop.Utils;
@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Created by xisberto on 21/08/15.
  */
-public class ListTasksRequest extends GoogleHttpClientSpiceRequest<TaskList> {
+public class ListTasksRequest extends SpiceRequest<TaskList> {
 
     private Context mContext;
 

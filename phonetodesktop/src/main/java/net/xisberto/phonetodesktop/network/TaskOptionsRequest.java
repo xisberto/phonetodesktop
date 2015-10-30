@@ -1,6 +1,6 @@
 package net.xisberto.phonetodesktop.network;
 
-import com.octo.android.robospice.request.googlehttpclient.GoogleHttpClientSpiceRequest;
+import com.octo.android.robospice.request.SpiceRequest;
 
 import net.xisberto.phonetodesktop.Utils;
 import net.xisberto.phonetodesktop.model.LocalTask;
@@ -10,7 +10,7 @@ import java.io.IOException;
 /**
  * Created by xisberto on 20/05/15.
  */
-public class TaskOptionsRequest extends GoogleHttpClientSpiceRequest<LocalTask> {
+public class TaskOptionsRequest extends SpiceRequest<LocalTask> {
     private LocalTask localTask;
 
     public TaskOptionsRequest(LocalTask task) {
