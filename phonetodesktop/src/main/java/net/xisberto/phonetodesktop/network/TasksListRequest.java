@@ -3,6 +3,7 @@ package net.xisberto.phonetodesktop.network;
 import android.content.Context;
 import android.util.Log;
 
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.google.api.services.tasks.Tasks;
 import com.google.api.services.tasks.model.TaskList;
 import com.octo.android.robospice.request.SpiceRequest;
@@ -32,6 +33,7 @@ public class TasksListRequest extends SpiceRequest<Void> {
         Tasks client = Utils.getGoogleTasksClient(mContext);
 
         List<TaskList> taskLists = client.tasklists().list().execute().getItems();
+
         if (taskLists != null) {
             Log.d("TaskListRequest", String.format("server has %s lists", taskLists.size()));
             String localListId = mPreferences.loadListId();

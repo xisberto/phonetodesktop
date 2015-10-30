@@ -10,21 +10,23 @@
  ******************************************************************************/
 package net.xisberto.phonetodesktop;
 
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import android.content.Context;
 import android.util.Log;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.http.HttpTransport;
-import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.tasks.Tasks;
 import com.google.api.services.tasks.TasksScopes;
+
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Utils {
 	public static Collection<String> scopes = Arrays.asList(TasksScopes.TASKS);
@@ -123,13 +125,15 @@ public class Utils {
     public static Tasks getGoogleTasksClient(Context context) {
         Preferences preferences = Preferences.getInstance(context);
 
-        GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(context, Utils.scopes);
-        credential.setSelectedAccountName(preferences.loadAccountName());
+        GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(
+                context, Utils.scopes)
+                .setBackOff(new ExponentialBackOff())
+                .setSelectedAccountName(preferences.loadAccountName());
 
         HttpTransport transport = AndroidHttp.newCompatibleTransport();
-        GsonFactory gsonFactory = new GsonFactory();
+        JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
 
-        return new Tasks.Builder(transport, gsonFactory, credential)
+        return new Tasks.Builder(transport, jsonFactory, credential)
                 .setApplicationName("PhoneToDesktop")
                 .build();
     }

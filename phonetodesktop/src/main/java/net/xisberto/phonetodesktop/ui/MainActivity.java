@@ -27,8 +27,9 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 
-import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
@@ -106,7 +107,6 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        mSpiceManager.start(this);
 
         switch (requestCode) {
             case REQUEST_ACCOUNT_PICKER:
@@ -134,10 +134,10 @@ public class MainActivity extends AppCompatActivity implements
                         // If PhoneToDesktop hasn't been authorized by the user
                         // this will lead to an UserRecoverableAuthIOException
                         // that will generate an onActivityResult for
-                        // REQUEST_AUTHENTICATION
+                        // REQUEST_ACCOUNT_PICKER
                         saveListId();
                     }
-                // else
+                    // else
                     // User cancelled, or any other error during authorization
                     // updateMainLayout(false);
                 }
@@ -187,27 +187,22 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    /** Check that Google Play services APK is installed and up to date. */
+    /**
+     * Check that Google Play services APK is installed and up to date.
+     */
     public boolean checkGooglePlayServicesAvailable() {
-        GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
-        final int connectionStatusCode = googleApiAvailability
-                .isGooglePlayServicesAvailable(this);
-        if (googleApiAvailability.isUserResolvableError(connectionStatusCode)) {
+        final int connectionStatusCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        if (GooglePlayServicesUtil.isUserRecoverableError(connectionStatusCode)) {
             showGooglePlayServicesAvailabilityErrorDialog(connectionStatusCode);
             return false;
         }
         return true;
     }
 
-    public void showGooglePlayServicesAvailabilityErrorDialog(final int connectionStatusCode) {
-        runOnUiThread(new Runnable() {
-            public void run() {
-                Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(
-                        MainActivity.this, connectionStatusCode, REQUEST_GOOGLE_PLAY_SERVICES
-                );
-                dialog.show();
-            }
-        });
+    public void showGooglePlayServicesAvailabilityErrorDialog(int connectionStatusCode) {
+        Dialog dialog = GooglePlayServicesUtil.getErrorDialog(
+                connectionStatusCode, this, REQUEST_GOOGLE_PLAY_SERVICES);
+        dialog.show();
     }
 
     private void updateMainLayout(boolean updating) {
@@ -231,8 +226,15 @@ public class MainActivity extends AppCompatActivity implements
         RequestListener<Void> listRequestListener = new RequestListener<Void>() {
             @Override
             public void onRequestFailure(SpiceException spiceException) {
-                RetryDialog.newInstance(MainActivity.this)
-                        .show(getSupportFragmentManager(), "retry_dialog");
+                if (spiceException.getCause() instanceof UserRecoverableAuthIOException) {
+                    UserRecoverableAuthIOException userRecoverableAuthIOException =
+                            (UserRecoverableAuthIOException) spiceException.getCause();
+                    startActivityForResult(userRecoverableAuthIOException.getIntent(),
+                            MainActivity.REQUEST_AUTHORIZATION);
+                } else {
+                    RetryDialog.newInstance(MainActivity.this)
+                            .show(getSupportFragmentManager(), "retry_dialog");
+                }
             }
 
             @Override
