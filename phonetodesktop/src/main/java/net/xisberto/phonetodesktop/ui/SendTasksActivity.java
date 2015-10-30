@@ -72,7 +72,7 @@ public class SendTasksActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         Utils.log("onCreate " + this.toString());
 
-        prefs = new Preferences(this);
+        prefs = Preferences.getInstance(this);
         if (prefs.loadShowPreview()) {
             // If we will show the activity, change the theme
             setTheme(R.style.Theme_PhoneToDesktop_Dialog);
@@ -109,6 +109,7 @@ public class SendTasksActivity extends AppCompatActivity implements
                     // send the task without showing the activity.
                     // processPreferences calls sentText on localTask's persist
                     // callback
+                    spiceManager.start(this);
                     processPreferences();
                     finish();
                     return;
@@ -347,7 +348,9 @@ public class SendTasksActivity extends AppCompatActivity implements
     public void setDone() {
         Utils.log("Done " + this.toString());
         isWaiting = false;
-        send_fragment.setWaiting(false);
+        if (send_fragment != null) {
+            send_fragment.setWaiting(false);
+        }
     }
 
     public static class SendFragment extends DialogFragment implements

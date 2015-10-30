@@ -25,7 +25,16 @@ public class Preferences {
 
 	private SharedPreferences prefs;
 
-	public Preferences(Context context) {
+	private static Preferences sPreferences;
+
+    public static Preferences getInstance(Context context) {
+        if (sPreferences == null) {
+            sPreferences = new Preferences(context);
+        }
+        return sPreferences;
+    }
+
+    private Preferences(Context context) {
 		prefs = PreferenceManager.getDefaultSharedPreferences(context
 				.getApplicationContext());
 		ONLY_LINKS = context.getString(R.string.pref_only_links);

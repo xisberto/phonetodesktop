@@ -30,7 +30,7 @@ public class InsertMultipleTasksRequest extends GoogleHttpClientSpiceRequest<Voi
     @Override
     public Void loadDataFromNetwork() throws Exception {
 
-        String list_id = new Preferences(context).loadListId();
+        String list_id = Preferences.getInstance(context).loadListId();
 
         DatabaseHelper databaseHelper = DatabaseHelper.getInstance(context);
         Tasks client = Utils.getGoogleTasksClient(context);
