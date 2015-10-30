@@ -16,33 +16,27 @@
 -optimizationpasses 5
 -allowaccessmodification
 
--keep class android.support.v4.app.** { *; }
--keep interface android.support.v4.app.** { *; }
--keep class android.support.v7.app.** { *; }
--keep interface android.support.v7.app.** { *; }
-
--keep class com.google.api.** { *; }
--keep interface com.google.api.** { *; }
-
 # The support library contains references to newer platform versions.
 # Don't warn about those in case this app is linking against an older
 # platform version.  We know about them, and they are safe.
 -dontwarn android.support.**
 -dontwarn org.apache.**
 
-#-injars      bin/classes
-#-outjars     bin/classes-processed.jar
-
-#-libraryjars libs/*
-
--keep class * extends java.util.ListResourceBundle {
-    protected Object[][] getContents();
-}
-
--keepattributes *Annotation*,Signature
--keepclasseswithmembernames class com.google.api.client.apache.ApacheHttpTransport {
-    static ** INSTANCE;
-}
+#Warnings to be removed. Otherwise maven plugin stops, but not dangerous
+-dontwarn android.support.**
+-dontwarn com.sun.xml.internal.**
+-dontwarn com.sun.istack.internal.**
+-dontwarn org.codehaus.jackson.**
+-dontwarn org.springframework.**
+-dontwarn java.awt.**
+-dontwarn javax.security.**
+-dontwarn java.beans.**
+-dontwarn javax.xml.**
+-dontwarn java.util.**
+-dontwarn org.w3c.dom.**
+-dontwarn com.google.common.**
+-dontwarn com.octo.android.robospice.persistence.**
+-dontwarn com.octo.android.robospice.SpiceService
 
 # Needed to keep generic types and @Key annotations accessed via reflection
 
@@ -52,11 +46,11 @@
   @com.google.api.client.util.Key <fields>;
 }
 
-# Needed by Guava
-# See https://groups.google.com/forum/#!topic/guava-discuss/YCZzeCiIVoI
-
--dontwarn sun.misc.Unsafe
--dontwarn com.google.common.collect.MinMaxPriorityQueue
+### Jackson SERIALIZER SETTINGS
+-keepclassmembers,allowobfuscation class * {
+    @org.codehaus.jackson.annotate.* <fields>;
+    @org.codehaus.jackson.annotate.* <init>(...);
+}
 
 # Needed by google-http-client-android when linking against an older platform version
 
@@ -65,3 +59,5 @@
 # Needed by google-api-client-android when linking against an older platform version
 
 -dontwarn com.google.api.client.googleapis.extensions.android.**
+
+-dontwarn com.google.api.client.**
