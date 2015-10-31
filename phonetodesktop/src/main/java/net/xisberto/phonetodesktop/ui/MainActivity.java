@@ -10,6 +10,7 @@
  ******************************************************************************/
 package net.xisberto.phonetodesktop.ui;
 
+import android.Manifest;
 import android.accounts.AccountManager;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
@@ -17,8 +18,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -26,6 +29,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
+import android.widget.Toast;
 
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
@@ -46,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements
     public static final int REQUEST_GOOGLE_PLAY_SERVICES = 0;
     public static final int REQUEST_AUTHORIZATION = 1;
     public static final int REQUEST_ACCOUNT_PICKER = 2;
+    private static final int REQUEST_PERMISSION = 3;
 
     private static final String TAG_MAIN = "mainFragment";
 
@@ -76,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements
 
         preferences = Preferences.getInstance(this);
 
-        credential = GoogleAccountCredential.usingOAuth2(this, Utils.scopes);
+        credential = GoogleAccountCredential.usingOAuth2(this, Utils.SCOPES);
         credential.setSelectedAccountName(preferences.loadAccountName());
 
         if (savedInstanceState == null) {
@@ -97,16 +102,24 @@ public class MainActivity extends AppCompatActivity implements
                     TAG_MAIN);
         }
 
-        String action = getIntent().getAction();
+        checkActionAuth(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        checkActionAuth(intent);
+    }
+
+    private void checkActionAuth(Intent intent) {
+        String action = intent.getAction();
         if (action != null && action.equals(Utils.ACTION_AUTHENTICATE)) {
-            updateMainLayout(true);
             startAuthorization();
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
 
         switch (requestCode) {
             case REQUEST_ACCOUNT_PICKER:
@@ -116,30 +129,9 @@ public class MainActivity extends AppCompatActivity implements
                     String accountName = data.getExtras().getString(
                             AccountManager.KEY_ACCOUNT_NAME);
                     Utils.log("Saving account " + accountName);
-                    if (accountName != null) {
-                        if (currentFragment instanceof WelcomeFragment) {
-                            mainFragment = (MainFragment) getSupportFragmentManager()
-                                    .findFragmentByTag(TAG_MAIN);
-                            if (mainFragment == null) {
-                                mainFragment = MainFragment.newInstance();
-                            }
-                            updateMainLayout(true);
-                            getSupportFragmentManager().beginTransaction()
-                                    .replace(R.id.main_frame, mainFragment)
-                                    .setTransition(FragmentTransaction.TRANSIT_NONE)
-                                    .commit();
-                        }
-                        credential.setSelectedAccountName(accountName);
-                        preferences.saveAccountName(accountName);
-                        // If PhoneToDesktop hasn't been authorized by the user
-                        // this will lead to an UserRecoverableAuthIOException
-                        // that will generate an onActivityResult for
-                        // REQUEST_ACCOUNT_PICKER
-                        saveListId();
-                    }
-                    // else
-                    // User cancelled, or any other error during authorization
-                    // updateMainLayout(false);
+                    saveAccountName(accountName);
+                } else {
+                    updateMainLayout(false);
                 }
                 break;
 
@@ -150,14 +142,25 @@ public class MainActivity extends AppCompatActivity implements
             case REQUEST_AUTHORIZATION:
                 Utils.log("Result from Authorization");
                 if (resultCode == RESULT_OK) {
+                    Utils.log("starting saveListId");
+                    updateMainLayout(true);
                     saveListId();
                 } else {
                     updateMainLayout(false);
                 }
                 break;
-
             default:
                 break;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (REQUEST_PERMISSION == requestCode) {
+            if (grantResults.length > 0 &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                saveAccountName(preferences.loadAccountName());
+            }
         }
     }
 
@@ -166,6 +169,19 @@ public class MainActivity extends AppCompatActivity implements
         super.onStart();
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver,
                 new IntentFilter(Utils.ACTION_AUTHENTICATE));
+
+        if (!showWelcome && currentFragment instanceof WelcomeFragment) {
+            mainFragment = (MainFragment) getSupportFragmentManager()
+                    .findFragmentByTag(TAG_MAIN);
+            if (mainFragment == null) {
+                mainFragment = MainFragment.newInstance();
+            }
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.main_frame, mainFragment)
+                    .setTransition(FragmentTransaction.TRANSIT_NONE)
+                    .commit();
+            updateMainLayout(false);
+        }
     }
 
     @Override
@@ -177,10 +193,46 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    private void saveAccountName(String accountName) {
+        if (accountName != null) {
+
+            preferences.saveAccountName(accountName);
+
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.GET_ACCOUNTS)
+                    == PackageManager.PERMISSION_GRANTED) {
+                credential.setSelectedAccountName(accountName);
+            } else {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        Manifest.permission.GET_ACCOUNTS)) {
+                    Toast.makeText(MainActivity.this, "I need your permission to log in",
+                            Toast.LENGTH_LONG).show();
+                }
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.GET_ACCOUNTS},
+                        REQUEST_PERMISSION);
+                Utils.log("asking for permission");
+                updateMainLayout(false);
+                return;
+            }
+
+            // If PhoneToDesktop hasn't been authorized by the user
+            // this will lead to an UserRecoverableAuthIOException
+            // that will generate an onActivityResult for
+            // REQUEST_ACCOUNT_PICKER
+            Utils.log("starting saveListId");
+            saveListId();
+            updateMainLayout(true);
+        }
+        // else
+        // User cancelled, or any other error during authorization
+        // updateMainLayout(false);
+    }
+
     @Override
     public void startAuthorization() {
         if (checkGooglePlayServicesAvailable()) {
             // ask user to choose account
+            updateMainLayout(true);
             preferences.saveListId(null);
             startActivityForResult(credential.newChooseAccountIntent(),
                     REQUEST_ACCOUNT_PICKER);
@@ -239,11 +291,12 @@ public class MainActivity extends AppCompatActivity implements
 
             @Override
             public void onRequestSuccess(Void aVoid) {
+                Utils.log("saveListId success");
+                updateMainLayout(false);
                 if (showWelcome) {
                     startActivity(new Intent(MainActivity.this, TutorialActivity.class));
                     showWelcome = false;
                 }
-                updateMainLayout(false);
             }
         };
 

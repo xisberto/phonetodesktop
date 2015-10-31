@@ -23,13 +23,13 @@ import com.google.api.services.tasks.Tasks;
 import com.google.api.services.tasks.TasksScopes;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Utils {
-    public static Collection<String> scopes = Arrays.asList(TasksScopes.TASKS);
+    public static Collection<String> SCOPES = Collections.singleton(TasksScopes.TASKS);
     public static final String
             ACTION_AUTHENTICATE = "net.xisberto.phonetodesktop.action.AUTHENTICATE";
     public static final String ACTION_LIST_LOCAL_TASKS = "net.xisberto.phonetodesktop.action.LIST_LOCAL_TASKS";
@@ -106,7 +106,7 @@ public class Utils {
         Preferences preferences = Preferences.getInstance(context);
 
         GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(
-                context, Utils.scopes)
+                context, Utils.SCOPES)
                 .setBackOff(new ExponentialBackOff())
                 .setSelectedAccountName(preferences.loadAccountName());
 
