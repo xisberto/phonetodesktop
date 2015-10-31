@@ -26,8 +26,11 @@ public class ListTasksRequest extends SpiceRequest<TaskList> {
 
     @Override
     public TaskList loadDataFromNetwork() throws Exception {
-        Preferences preferences = Preferences.getInstance(mContext);
-        String list_id = preferences.loadListId();
+        String list_id = Preferences.getInstance(mContext).loadListId();
+
+        if (list_id == null) {
+            throw new NullPointerException("tasklist must not be null");
+        }
 
         Tasks client = Utils.getGoogleTasksClient(mContext);
 
