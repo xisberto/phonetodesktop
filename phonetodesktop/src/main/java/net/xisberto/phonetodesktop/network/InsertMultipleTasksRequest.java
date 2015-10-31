@@ -6,7 +6,7 @@ import android.support.v4.content.LocalBroadcastManager;
 
 import com.google.api.services.tasks.Tasks;
 import com.google.api.services.tasks.model.Task;
-import com.octo.android.robospice.request.googlehttpclient.GoogleHttpClientSpiceRequest;
+import com.octo.android.robospice.request.SpiceRequest;
 
 import net.xisberto.phonetodesktop.Preferences;
 import net.xisberto.phonetodesktop.Utils;
@@ -17,7 +17,7 @@ import net.xisberto.phonetodesktop.ui.SendingTaskNotification;
 /**
  * Created by xisberto on 20/05/15.
  */
-public class InsertMultipleTasksRequest extends GoogleHttpClientSpiceRequest<Void> {
+public class InsertMultipleTasksRequest extends SpiceRequest<Void> {
     private Context context;
     private long[] tasks_ids;
 
@@ -30,7 +30,7 @@ public class InsertMultipleTasksRequest extends GoogleHttpClientSpiceRequest<Voi
     @Override
     public Void loadDataFromNetwork() throws Exception {
 
-        String list_id = new Preferences(context).loadListId();
+        String list_id = Preferences.getInstance(context).loadListId();
 
         DatabaseHelper databaseHelper = DatabaseHelper.getInstance(context);
         Tasks client = Utils.getGoogleTasksClient(context);

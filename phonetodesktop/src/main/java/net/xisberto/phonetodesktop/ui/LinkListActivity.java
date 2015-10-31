@@ -12,6 +12,7 @@ package net.xisberto.phonetodesktop.ui;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -165,6 +166,11 @@ public class LinkListActivity extends AppCompatActivity implements TasksArrayAda
         @Override
         public void onRequestFailure(SpiceException spiceException) {
             swipeRefreshLayout.setRefreshing(false);
+            Intent intentAuth = new Intent(getApplicationContext(), MainActivity.class)
+                    .setAction(Utils.ACTION_AUTHENTICATE)
+                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intentAuth);
+            finish();
         }
 
         @Override
