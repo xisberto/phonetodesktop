@@ -11,6 +11,7 @@
 package net.xisberto.phonetodesktop;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
@@ -21,6 +22,8 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.tasks.Tasks;
 import com.google.api.services.tasks.TasksScopes;
+
+import net.xisberto.phonetodesktop.ui.MainActivity;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
@@ -118,4 +121,10 @@ public class Utils {
                 .build();
     }
 
+    public static void startAuthentication(Context context) {
+        Intent intentAuth = new Intent(context, MainActivity.class)
+                .setAction(Utils.ACTION_AUTHENTICATE)
+                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intentAuth);
+    }
 }
