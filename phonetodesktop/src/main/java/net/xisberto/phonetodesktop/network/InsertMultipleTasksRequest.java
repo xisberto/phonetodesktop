@@ -14,9 +14,6 @@ import net.xisberto.phonetodesktop.database.DatabaseHelper;
 import net.xisberto.phonetodesktop.model.LocalTask;
 import net.xisberto.phonetodesktop.ui.SendingTaskNotification;
 
-/**
- * Created by xisberto on 20/05/15.
- */
 public class InsertMultipleTasksRequest extends SpiceRequest<Void> {
     private Context context;
     private long[] tasks_ids;
@@ -31,6 +28,10 @@ public class InsertMultipleTasksRequest extends SpiceRequest<Void> {
     public Void loadDataFromNetwork() throws Exception {
 
         String list_id = Preferences.getInstance(context).loadListId();
+
+        if (list_id == null) {
+            throw new NullPointerException("tasklist must not be null");
+        }
 
         DatabaseHelper databaseHelper = DatabaseHelper.getInstance(context);
         Tasks client = Utils.getGoogleTasksClient(context);

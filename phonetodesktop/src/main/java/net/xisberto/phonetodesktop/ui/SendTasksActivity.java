@@ -34,7 +34,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.octo.android.robospice.SpiceManager;
-import com.octo.android.robospice.persistence.DurationInMillis;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 import com.rampo.updatechecker.UpdateChecker;
@@ -49,7 +48,7 @@ import net.xisberto.phonetodesktop.model.LocalTask;
 import net.xisberto.phonetodesktop.model.LocalTask.Options;
 import net.xisberto.phonetodesktop.model.LocalTask.PersistCallback;
 import net.xisberto.phonetodesktop.network.GoogleTasksSpiceService;
-import net.xisberto.phonetodesktop.network.InsertMultipleTasksRequest;
+import net.xisberto.phonetodesktop.network.SendTasksService;
 import net.xisberto.phonetodesktop.network.TaskOptionsRequest;
 
 public class SendTasksActivity extends AppCompatActivity implements
@@ -220,8 +219,7 @@ public class SendTasksActivity extends AppCompatActivity implements
     }
 
     private void sendText() {
-        InsertMultipleTasksRequest request = new InsertMultipleTasksRequest(this, localTask.getLocalId());
-        spiceManager.execute(request, null, DurationInMillis.ALWAYS_EXPIRED, null);
+        SendTasksService.sendTasks(this, localTask.getLocalId());
     }
 
     private void saveCheckBoxes() {
