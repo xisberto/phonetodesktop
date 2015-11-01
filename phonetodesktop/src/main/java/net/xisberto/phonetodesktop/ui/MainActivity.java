@@ -21,6 +21,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -28,8 +29,10 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.view.Window;
-import android.widget.Toast;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
@@ -53,12 +56,12 @@ public class MainActivity extends AppCompatActivity implements
     private static final int REQUEST_PERMISSION = 3;
 
     private static final String TAG_MAIN = "mainFragment";
-
-    private GoogleAccountCredential credential;
     public Preferences preferences;
-
+    private GoogleAccountCredential credential;
     private MainFragment mainFragment;
     private Fragment currentFragment;
+
+    private View snack;
 
     private boolean showWelcome;
 
@@ -87,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements
         if (savedInstanceState == null) {
             FragmentTransaction transaction = getSupportFragmentManager()
                     .beginTransaction();
+
             if (preferences.loadAccountName() == null) {
                 showWelcome = true;
                 currentFragment = WelcomeFragment.newInstance();
@@ -204,13 +208,11 @@ public class MainActivity extends AppCompatActivity implements
             } else {
                 if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                         Manifest.permission.GET_ACCOUNTS)) {
-                    Toast.makeText(MainActivity.this, "I need your permission to log in",
-                            Toast.LENGTH_LONG).show();
+                    showRationale();
+                } else {
+                    Utils.log("asking for permission");
+                    requestPermission();
                 }
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.GET_ACCOUNTS},
-                        REQUEST_PERMISSION);
-                Utils.log("asking for permission");
                 updateMainLayout(false);
                 return;
             }
@@ -226,6 +228,46 @@ public class MainActivity extends AppCompatActivity implements
         // else
         // User cancelled, or any other error during authorization
         // updateMainLayout(false);
+    }
+
+    private void showRationale() {
+        if (snack == null) {
+            snack = findViewById(R.id.snack_permission_rationale);
+        }
+        Animation slide_in = AnimationUtils.loadAnimation(this, R.anim.abc_slide_in_bottom);
+        snack.setVisibility(View.VISIBLE);
+        snack.startAnimation(slide_in);
+        findViewById(R.id.btn_retry).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requestPermission();
+                Animation slide_out = AnimationUtils.loadAnimation(MainActivity.this,
+                        R.anim.abc_slide_out_bottom);
+                slide_out.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        snack.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+                snack.startAnimation(slide_out);
+            }
+        });
+    }
+
+    private void requestPermission() {
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.GET_ACCOUNTS},
+                REQUEST_PERMISSION);
     }
 
     @Override
@@ -284,8 +326,19 @@ public class MainActivity extends AppCompatActivity implements
                     startActivityForResult(userRecoverableAuthIOException.getIntent(),
                             MainActivity.REQUEST_AUTHORIZATION);
                 } else {
-                    RetryDialog.newInstance(MainActivity.this)
-                            .show(getSupportFragmentManager(), "retry_dialog");
+                    RetryDialog dialog = RetryDialog.newInstance(R.string.txt_retry,
+                            new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which) {
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    saveListId();
+                                case DialogInterface.BUTTON_NEGATIVE:
+                                    updateMainLayout(false);
+                            }
+                        }
+                    });
+                    dialog.show(getSupportFragmentManager(), "retry_dialog");
                 }
             }
 
@@ -304,36 +357,27 @@ public class MainActivity extends AppCompatActivity implements
         mSpiceManager.execute(request, listRequestListener);
     }
 
-    public static class RetryDialog extends DialogFragment implements
-            DialogInterface.OnClickListener {
+    public static class RetryDialog extends DialogFragment {
 
-        private MainActivity activity;
+        private int mMessage;
+        private DialogInterface.OnClickListener mListener;
 
-        public static RetryDialog newInstance(MainActivity act) {
+        public static RetryDialog newInstance(@StringRes int message, DialogInterface.OnClickListener listener) {
             RetryDialog dialog = new RetryDialog();
-            dialog.activity = act;
+            dialog.mMessage = message;
+            dialog.mListener = listener;
             return dialog;
         }
 
         @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity)
-                    .setTitle(R.string.app_name).setMessage(R.string.txt_retry)
-                    .setPositiveButton(android.R.string.yes, this)
-                    .setNegativeButton(android.R.string.no, this);
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext())
+                    .setTitle(R.string.app_name)
+                    .setMessage(mMessage)
+                    .setPositiveButton(R.string.retry, mListener)
+                    .setNegativeButton(android.R.string.cancel, mListener);
             return dialogBuilder.create();
-        }
-
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
-            switch (which) {
-                case DialogInterface.BUTTON_POSITIVE:
-                    activity.saveListId();
-                case DialogInterface.BUTTON_NEGATIVE:
-                    activity.updateMainLayout(false);
-            }
-            dialog.dismiss();
         }
 
     }

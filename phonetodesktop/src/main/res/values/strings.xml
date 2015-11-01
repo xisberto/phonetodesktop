@@ -91,5 +91,7 @@
     <string name="title_get_titles">Add pages titles</string>
     <string name="sum_get_titles_on">Add the page title of each link</string>
     <string name="sum_get_titles_off">Don\'t add pages titles</string>
+    <string name="retry">Retry</string>
+    <string name="permission_rationale_contact">PhoneToDesktop needs access your contact information to log in Google Tasks.</string>
 
 </resources>
