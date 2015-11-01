@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements
             FragmentTransaction transaction = getSupportFragmentManager()
                     .beginTransaction();
 
-            if (preferences.loadAccountName() == null) {
+            if (credential.getSelectedAccountName() == null) {
                 showWelcome = true;
                 currentFragment = WelcomeFragment.newInstance();
                 transaction.replace(R.id.main_frame, currentFragment);
