@@ -101,5 +101,6 @@
     <string name="sum_get_titles_on">Adiciona os títulos das páginas para cada link</string>
     <string name="sum_get_titles_off">Não adiciona os títulos das páginas</string>
     <string name="permission_rationale_contact">PhoneToDesktop precisa acessar suas informações de contato para fazer login no Google Tasks.</string>
+    <string name="retry">Tentar</string>
 
 </resources>
