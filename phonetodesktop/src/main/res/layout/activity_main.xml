@@ -1,8 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/main_frame"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+    >
+
+    <FrameLayout
+        android:id="@+id/main_frame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <LinearLayout
+        android:id="@+id/snack_permission_rationale"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@color/background_material_dark"
+        android:minHeight="?listPreferredItemHeightLarge"
+        android:orientation="horizontal"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark"
+        android:visibility="gone">
+
+        <TextView
+            style="@style/Base.TextAppearance.AppCompat.Menu"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_weight="7"
+            android:gravity="center_vertical"
+            android:text="@string/permission_rationale_contact"/>
+
+        <Button
+            android:id="@+id/btn_retry"
+            style="?attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:text="@string/retry"
+            android:textColor="@color/phonetodesktop_accent"/>
+
+    </LinearLayout>
 
 
 </FrameLayout>

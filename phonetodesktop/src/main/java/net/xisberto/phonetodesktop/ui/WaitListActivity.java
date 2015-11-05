@@ -194,7 +194,7 @@ public class WaitListActivity extends AppCompatActivity implements
                 spiceManager.execute(request, new RequestListener<Void>() {
                     @Override
                     public void onRequestFailure(SpiceException spiceException) {
-
+						Utils.startAuthentication(getApplicationContext());
                     }
 
                     @Override

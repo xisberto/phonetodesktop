@@ -166,10 +166,7 @@ public class LinkListActivity extends AppCompatActivity implements TasksArrayAda
         @Override
         public void onRequestFailure(SpiceException spiceException) {
             swipeRefreshLayout.setRefreshing(false);
-            Intent intentAuth = new Intent(getApplicationContext(), MainActivity.class)
-                    .setAction(Utils.ACTION_AUTHENTICATE)
-                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intentAuth);
+            Utils.startAuthentication(getApplicationContext());
             finish();
         }
 
