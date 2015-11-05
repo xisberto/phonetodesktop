@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
 
-    <string name="pref_only_links">only_links</string>
-    <string name="pref_unshorten">unshorten</string>
-    <string name="pref_get_titles">get_titles</string>
-    <string name="pref_show_preview">show_preview</string>
+    <string name="pref_only_links" translatable="false">only_links</string>
+    <string name="pref_unshorten" translatable="false">unshorten</string>
+    <string name="pref_get_titles" translatable="false">get_titles</string>
+    <string name="pref_show_preview" translatable="false">show_preview</string>
 
 </resources>

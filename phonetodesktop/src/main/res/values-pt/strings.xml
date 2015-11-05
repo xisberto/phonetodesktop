@@ -16,7 +16,7 @@
     
     <string name="txt_authorize">O Phone To Desktop precisa de autorização para acessar suas Tarefas do Google.</string>
     <string name="txt_waiting_authorization">Esperando o processo de autorização. Pode demorar um pouco.</string>
-    <string name="txt_authorized_to">Autorizado para</string>
+    <string name="txt_authorized_to">Autorizado para %s</string>
     <string name="txt_retry">Foi encontrado um erro ao tentar buscar os dados. Tentar novamente?</string>
     <string name="btn_authorize">Autorizar a sua conta Google</string>
     <string name="btn_authorize_other">Autorizar outra conta Google</string>
@@ -100,5 +100,6 @@
     <string name="title_get_titles">Adiciona os títulos das páginas</string>
     <string name="sum_get_titles_on">Adiciona os títulos das páginas para cada link</string>
     <string name="sum_get_titles_off">Não adiciona os títulos das páginas</string>
-    
+    <string name="permission_rationale_contact">PhoneToDesktop precisa acessar suas informações de contato para fazer login no Google Tasks.</string>
+
 </resources>

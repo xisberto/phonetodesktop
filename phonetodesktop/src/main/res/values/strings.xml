@@ -16,7 +16,7 @@
     <string name="txt_authorize">Phone To Desktop needs authorization to access your Google Tasks.</string>
     <string name="txt_waiting_authorization">Waiting authorization process. It may take some time.</string>
     <string name="txt_retry">An error was encountered retrieving data. Retry?</string>
-    <string name="txt_authorized_to">Authorized to</string>
+    <string name="txt_authorized_to">Authorized to %s</string>
     <string name="btn_authorize">Authorize your Google account</string>
     <string name="btn_authorize_other">Authorize other Google account</string>
     <string name="txt_preview">Preview</string>
@@ -91,5 +91,7 @@
     <string name="title_get_titles">Add pages titles</string>
     <string name="sum_get_titles_on">Add the page title of each link</string>
     <string name="sum_get_titles_off">Don\'t add pages titles</string>
+    <string name="retry">Retry</string>
+    <string name="permission_rationale_contact">PhoneToDesktop needs access your contact information to log in Google Tasks.</string>
 
 </resources>
