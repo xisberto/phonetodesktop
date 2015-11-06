@@ -1,12 +1,8 @@
-bin
 libs
-libs-sources
-.idea
 .gradle
-build
-phonetodesktop/build
-gen
-proguard
 *.apk
-*.keystore
-*.zip
+*.iml
+/local.properties
+/.idea
+.DS_Store
+build
