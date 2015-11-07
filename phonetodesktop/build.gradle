@@ -13,7 +13,6 @@ android {
     buildTypes {
         release {
             minifyEnabled true
-            //TODO update proguard file
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
         }
     }
@@ -25,7 +24,7 @@ dependencies {
     compile 'com.github.rampo.updatechecker:library:2.1.8'
     compile 'com.android.support:support-v4:23.1.0'
     compile 'com.android.support:appcompat-v7:23.1.0'
-    compile 'com.google.android.gms:play-services-identity:8.3.0'
+    compile 'com.google.android.gms:play-services-identity:8.1.0'
     compile('com.google.api-client:google-api-client-android:1.20.0') {
         exclude group: 'org.apache.httpcomponents'
     }
