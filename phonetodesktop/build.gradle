@@ -13,7 +13,6 @@ android {
     buildTypes {
         release {
             minifyEnabled true
-            //TODO update proguard file
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
         }
     }
