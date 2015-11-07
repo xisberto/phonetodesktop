@@ -10,7 +10,6 @@
  ******************************************************************************/
 package net.xisberto.phonetodesktop.ui;
 
-import android.Manifest;
 import android.accounts.AccountManager;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
@@ -18,11 +17,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -31,12 +28,10 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Window;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 
+import com.google.android.gms.auth.UserRecoverableAuthException;
+import com.google.android.gms.common.AccountPicker;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
@@ -57,11 +52,8 @@ public class MainActivity extends AppCompatActivity implements
 
     private static final String TAG_MAIN = "mainFragment";
     public Preferences preferences;
-    private GoogleAccountCredential credential;
     private MainFragment mainFragment;
     private Fragment currentFragment;
-
-    private View snack;
 
     private boolean showWelcome;
 
@@ -84,14 +76,11 @@ public class MainActivity extends AppCompatActivity implements
 
         preferences = Preferences.getInstance(this);
 
-        credential = GoogleAccountCredential.usingOAuth2(this, Utils.SCOPES);
-        credential.setSelectedAccountName(preferences.loadAccountName());
-
         if (savedInstanceState == null) {
             FragmentTransaction transaction = getSupportFragmentManager()
                     .beginTransaction();
 
-            if (credential.getSelectedAccountName() == null) {
+            if (preferences.loadAccountName() == null) {
                 showWelcome = true;
                 currentFragment = WelcomeFragment.newInstance();
                 transaction.replace(R.id.main_frame, currentFragment);
@@ -133,7 +122,9 @@ public class MainActivity extends AppCompatActivity implements
                     String accountName = data.getExtras().getString(
                             AccountManager.KEY_ACCOUNT_NAME);
                     Utils.log("Saving account " + accountName);
-                    saveAccountName(accountName);
+                    preferences.saveAccountName(accountName);
+                    saveListId();
+                    updateMainLayout(true);
                 } else {
                     updateMainLayout(false);
                 }
@@ -155,16 +146,6 @@ public class MainActivity extends AppCompatActivity implements
                 break;
             default:
                 break;
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (REQUEST_PERMISSION == requestCode) {
-            if (grantResults.length > 0 &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                saveAccountName(preferences.loadAccountName());
-            }
         }
     }
 
@@ -197,87 +178,15 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    private void saveAccountName(String accountName) {
-        if (accountName != null) {
-
-            preferences.saveAccountName(accountName);
-
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.GET_ACCOUNTS)
-                    == PackageManager.PERMISSION_GRANTED) {
-                credential.setSelectedAccountName(accountName);
-            } else {
-                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                        Manifest.permission.GET_ACCOUNTS)) {
-                    showRationale();
-                } else {
-                    Utils.log("asking for permission");
-                    requestPermission();
-                }
-                updateMainLayout(false);
-                return;
-            }
-
-            // If PhoneToDesktop hasn't been authorized by the user
-            // this will lead to an UserRecoverableAuthIOException
-            // that will generate an onActivityResult for
-            // REQUEST_ACCOUNT_PICKER
-            Utils.log("starting saveListId");
-            saveListId();
-            updateMainLayout(true);
-        }
-        // else
-        // User cancelled, or any other error during authorization
-        // updateMainLayout(false);
-    }
-
-    private void showRationale() {
-        if (snack == null) {
-            snack = findViewById(R.id.snack_permission_rationale);
-        }
-        Animation slide_in = AnimationUtils.loadAnimation(this, R.anim.abc_slide_in_bottom);
-        snack.setVisibility(View.VISIBLE);
-        snack.startAnimation(slide_in);
-        findViewById(R.id.btn_retry).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                requestPermission();
-                Animation slide_out = AnimationUtils.loadAnimation(MainActivity.this,
-                        R.anim.abc_slide_out_bottom);
-                slide_out.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        snack.setVisibility(View.GONE);
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-
-                    }
-                });
-                snack.startAnimation(slide_out);
-            }
-        });
-    }
-
-    private void requestPermission() {
-        ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.GET_ACCOUNTS},
-                REQUEST_PERMISSION);
-    }
-
     @Override
     public void startAuthorization() {
         if (checkGooglePlayServicesAvailable()) {
             // ask user to choose account
             updateMainLayout(true);
             preferences.saveListId(null);
-            startActivityForResult(credential.newChooseAccountIntent(),
-                    REQUEST_ACCOUNT_PICKER);
+            Intent accountPicker = AccountPicker.newChooseAccountIntent(null, null,
+                    new String[] {"com.google"}, true, null, null, null, null);
+            startActivityForResult(accountPicker, REQUEST_ACCOUNT_PICKER);
         }
     }
 
@@ -320,10 +229,10 @@ public class MainActivity extends AppCompatActivity implements
         RequestListener<Void> listRequestListener = new RequestListener<Void>() {
             @Override
             public void onRequestFailure(SpiceException spiceException) {
-                if (spiceException.getCause() instanceof UserRecoverableAuthIOException) {
-                    UserRecoverableAuthIOException userRecoverableAuthIOException =
-                            (UserRecoverableAuthIOException) spiceException.getCause();
-                    startActivityForResult(userRecoverableAuthIOException.getIntent(),
+                if (spiceException.getCause() instanceof UserRecoverableAuthException) {
+                    UserRecoverableAuthException userRecoverableAuthException =
+                            (UserRecoverableAuthException) spiceException.getCause();
+                    startActivityForResult(userRecoverableAuthException.getIntent(),
                             MainActivity.REQUEST_AUTHORIZATION);
                 } else {
                     RetryDialog dialog = RetryDialog.newInstance(R.string.txt_retry,

@@ -12,19 +12,23 @@ package net.xisberto.phonetodesktop;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.WorkerThread;
 import android.util.Log;
 
+import com.google.android.gms.auth.GoogleAuthException;
+import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.tasks.Tasks;
 import com.google.api.services.tasks.TasksScopes;
 
 import net.xisberto.phonetodesktop.ui.MainActivity;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Collections;
@@ -105,13 +109,19 @@ public class Utils {
         return result;
     }
 
-    public static Tasks getGoogleTasksClient(Context context) {
+    @WorkerThread
+    public static Tasks getGoogleTasksClient(Context context) throws GoogleAuthException, IOException {
         Preferences preferences = Preferences.getInstance(context);
 
-        GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(
-                context, Utils.SCOPES)
-                .setBackOff(new ExponentialBackOff())
-                .setSelectedAccountName(preferences.loadAccountName());
+        String token;
+        try {
+            String scope = "oauth2:" + TasksScopes.TASKS;
+            token = GoogleAuthUtil.getToken(context, preferences.loadAccountName(), scope);
+        } catch (UserRecoverableAuthException exception) {
+            throw exception;
+        }
+        GoogleCredential credential = new GoogleCredential();
+        credential.setAccessToken(token);
 
         HttpTransport transport = AndroidHttp.newCompatibleTransport();
         JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
