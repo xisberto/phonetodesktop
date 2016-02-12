@@ -7,20 +7,7 @@ import com.google.api.services.tasks.model.Task;
 
 import java.util.ArrayList;
 
-/**
- * Created by xisberto on 21/08/15.
- */
 public class TaskList implements Parcelable {
-
-    public ArrayList<Task> items;
-
-    public TaskList() {
-        items = new ArrayList<>();
-    }
-
-    protected TaskList(Parcel in) {
-        in.readList(items, null);
-    }
 
     public static final Creator<TaskList> CREATOR = new Creator<TaskList>() {
         @Override
@@ -33,6 +20,16 @@ public class TaskList implements Parcelable {
             return new TaskList[size];
         }
     };
+    public ArrayList<Task> items;
+
+    public TaskList() {
+        items = new ArrayList<>();
+    }
+
+    protected TaskList(Parcel in) {
+        this();
+        in.readList(items, null);
+    }
 
     @Override
     public int describeContents() {

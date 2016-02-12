@@ -1,9 +1,8 @@
 package net.xisberto.phonetodesktop.network;
 
-import android.app.IntentService;
 import android.app.Service;
-import android.content.Intent;
 import android.content.Context;
+import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
@@ -20,14 +19,14 @@ public class SendTasksService extends Service {
 
     private SpiceManager mSpiceManager = new SpiceManager(GoogleTasksSpiceService.class);
 
+    public SendTasksService() {
+//        super("SendTasksService");
+    }
+
     public static void sendTasks(Context context, long... tasks_ids) {
         Intent intent = new Intent(context, SendTasksService.class);
         intent.putExtra(EXTRA_TASKS_IDS, tasks_ids);
         context.startService(intent);
-    }
-
-    public SendTasksService() {
-//        super("SendTasksService");
     }
 
     @Override

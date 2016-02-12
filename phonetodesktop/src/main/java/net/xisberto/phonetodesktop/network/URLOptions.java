@@ -29,6 +29,85 @@ public class URLOptions {
 
     private boolean isCancelled = false;
 
+    /**
+     * @param url the HTML page
+     * @return title text (null if document isn't HTML or lacks a title tag)
+     * @throws IOException
+     */
+    public static String getPageTitle(String url) throws IOException {
+        URL u = new URL(url);
+        URLConnection conn = u.openConnection();
+
+        // ContentType is an inner class defined below
+        ContentType contentType = getContentTypeHeader(conn);
+        if (contentType != null && !contentType.contentType.equals("text/html"))
+            return null; // don't continue if not HTML
+        else {
+            // determine the charset, or use the default
+            Charset charset = getCharset(contentType);
+            if (charset == null)
+                charset = Charset.defaultCharset();
+            Utils.log("charset is " + charset.displayName());
+
+            // read the response body, using BufferedReader for performance
+            InputStream in = conn.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in, charset));
+            int n;
+            int totalRead = 0;
+            char[] buf = new char[1024];
+            StringBuilder content = new StringBuilder();
+
+            // read until EOF or first 8192 characters
+            while (totalRead < 8192 && (n = reader.read(buf, 0, buf.length)) != -1) {
+                content.append(buf, 0, n);
+                totalRead += n;
+            }
+            reader.close();
+
+            // extract the title
+            Matcher matcher = TITLE_TAG.matcher(content);
+            if (matcher.find()) {
+                /* replace any occurrences of whitespace (which may
+                 * include line feeds and other uglies) as well
+                 * as HTML brackets with a space */
+                return matcher.group(1).replaceAll("[\\s\\<>]+", " ").trim();
+            } else
+                return null;
+        }
+    }
+
+    /**
+     * Loops through response headers until Content-Type is found.
+     *
+     * @param conn the connection to be read.
+     * @return ContentType object representing the value of
+     * the Content-Type header
+     */
+    private static ContentType getContentTypeHeader(URLConnection conn) {
+        int i = 0;
+        boolean moreHeaders;
+        do {
+            String headerName = conn.getHeaderFieldKey(i);
+            String headerValue = conn.getHeaderField(i);
+            if (headerName != null && headerName.equals("Content-Type")) {
+                return new ContentType(headerValue);
+            }
+
+            i++;
+            moreHeaders = headerName != null || headerValue != null;
+        }
+        while (moreHeaders);
+
+        return null;
+    }
+
+    private static Charset getCharset(ContentType contentType) {
+        if (contentType != null && contentType.charsetName != null && Charset.isSupported(contentType.charsetName))
+            return Charset.forName(contentType.charsetName);
+        else
+            return null;
+    }
+
     protected void cancel() {
         isCancelled = true;
     }
@@ -72,83 +151,6 @@ public class URLOptions {
             }
         }
         return result;
-    }
-
-    /**
-     * @param url the HTML page
-     * @return title text (null if document isn't HTML or lacks a title tag)
-     * @throws IOException
-     */
-    public static String getPageTitle(String url) throws IOException {
-        URL u = new URL(url);
-        URLConnection conn = u.openConnection();
-
-        // ContentType is an inner class defined below
-        ContentType contentType = getContentTypeHeader(conn);
-        if (!contentType.contentType.equals("text/html"))
-            return null; // don't continue if not HTML
-        else {
-            // determine the charset, or use the default
-            Charset charset = getCharset(contentType);
-            if (charset == null)
-                charset = Charset.defaultCharset();
-            Utils.log("charset is " + charset.displayName());
-
-            // read the response body, using BufferedReader for performance
-            InputStream in = conn.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in, charset));
-            int n = 0, totalRead = 0;
-            char[] buf = new char[1024];
-            StringBuilder content = new StringBuilder();
-
-            // read until EOF or first 8192 characters
-            while (totalRead < 8192 && (n = reader.read(buf, 0, buf.length)) != -1) {
-                content.append(buf, 0, n);
-                totalRead += n;
-            }
-            reader.close();
-
-            // extract the title
-            Matcher matcher = TITLE_TAG.matcher(content);
-            if (matcher.find()) {
-                /* replace any occurrences of whitespace (which may
-                 * include line feeds and other uglies) as well
-                 * as HTML brackets with a space */
-                return matcher.group(1).replaceAll("[\\s\\<>]+", " ").trim();
-            } else
-                return null;
-        }
-    }
-
-    /**
-     * Loops through response headers until Content-Type is found.
-     * @param conn
-     * @return ContentType object representing the value of
-     * the Content-Type header
-     */
-    private static ContentType getContentTypeHeader(URLConnection conn) {
-        int i = 0;
-        boolean moreHeaders = true;
-        do {
-            String headerName = conn.getHeaderFieldKey(i);
-            String headerValue = conn.getHeaderField(i);
-            if (headerName != null && headerName.equals("Content-Type")) {
-                return new ContentType(headerValue);
-            }
-
-            i++;
-            moreHeaders = headerName != null || headerValue != null;
-        }
-        while (moreHeaders);
-
-        return null;
-    }
-
-    private static Charset getCharset(ContentType contentType) {
-        if (contentType != null && contentType.charsetName != null && Charset.isSupported(contentType.charsetName))
-            return Charset.forName(contentType.charsetName);
-        else
-            return null;
     }
 
     /**

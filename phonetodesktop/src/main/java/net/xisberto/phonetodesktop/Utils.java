@@ -10,6 +10,7 @@
  ******************************************************************************/
 package net.xisberto.phonetodesktop;
 
+import android.accounts.Account;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.WorkerThread;
@@ -17,7 +18,6 @@ import android.util.Log;
 
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
-import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.http.HttpTransport;
@@ -36,13 +36,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Utils {
-    public static Collection<String> SCOPES = Collections.singleton(TasksScopes.TASKS);
     public static final String
             ACTION_AUTHENTICATE = "net.xisberto.phonetodesktop.action.AUTHENTICATE";
     public static final String ACTION_LIST_LOCAL_TASKS = "net.xisberto.phonetodesktop.action.LIST_LOCAL_TASKS";
     public static final String EXTRA_UPDATING = "net.xisberto.phonetodesktop.extra.UPDATING";
     public static final String EXTRA_TITLES = "net.xisberto.phonetodesktop.extra.TITLES";
     public static final String LIST_TITLE = "PhoneToDesktop";
+    //	"\\b((?:https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])",
+    public static final Pattern urlPattern = Pattern
+            .compile(
+                    "(https?|ftp)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_()|]*",
+                    Pattern.CASE_INSENSITIVE | Pattern.MULTILINE
+                            | Pattern.DOTALL);
+    public static Collection<String> SCOPES = Collections.singleton(TasksScopes.TASKS);
 
     public static void log(String message) {
         if (BuildConfig.DEBUG) {
@@ -59,14 +65,6 @@ public class Utils {
             return -1;
         }
     }
-
-
-    //	"\\b((?:https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])",
-    public static final Pattern urlPattern = Pattern
-            .compile(
-                    "(https?|ftp)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_()|]*",
-                    Pattern.CASE_INSENSITIVE | Pattern.MULTILINE
-                            | Pattern.DOTALL);
 
     public static String appendInBrackets(String text, String[] parts) {
         int index = 0;
@@ -114,12 +112,9 @@ public class Utils {
         Preferences preferences = Preferences.getInstance(context);
 
         String token;
-        try {
-            String scope = "oauth2:" + TasksScopes.TASKS;
-            token = GoogleAuthUtil.getToken(context, preferences.loadAccountName(), scope);
-        } catch (UserRecoverableAuthException exception) {
-            throw exception;
-        }
+        String scope = "oauth2:" + TasksScopes.TASKS;
+        Account account = new Account(preferences.loadAccountName(), "com.google");
+        token = GoogleAuthUtil.getToken(context, account, scope);
         GoogleCredential credential = new GoogleCredential();
         credential.setAccessToken(token);
 

@@ -26,12 +26,11 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 import android.view.Window;
 
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.AccountPicker;
-import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
@@ -131,8 +130,7 @@ public class MainActivity extends AppCompatActivity implements
                 break;
 
             case REQUEST_GOOGLE_PLAY_SERVICES:
-                Utils.log("Result from Play Services error");
-                startAuthorization();
+                Utils.log("Return from Play Services error");
                 break;
             case REQUEST_AUTHORIZATION:
                 Utils.log("Result from Authorization");
@@ -185,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements
             updateMainLayout(true);
             preferences.saveListId(null);
             Intent accountPicker = AccountPicker.newChooseAccountIntent(null, null,
-                    new String[] {"com.google"}, true, null, null, null, null);
+                    new String[]{"com.google"}, true, null, null, null, null);
             startActivityForResult(accountPicker, REQUEST_ACCOUNT_PICKER);
         }
     }
@@ -194,18 +192,14 @@ public class MainActivity extends AppCompatActivity implements
      * Check that Google Play services APK is installed and up to date.
      */
     public boolean checkGooglePlayServicesAvailable() {
-        final int connectionStatusCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
-        if (GooglePlayServicesUtil.isUserRecoverableError(connectionStatusCode)) {
-            showGooglePlayServicesAvailabilityErrorDialog(connectionStatusCode);
+        GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
+        int connectionStatusCode = googleApiAvailability.isGooglePlayServicesAvailable(this);
+        if (googleApiAvailability.isUserResolvableError(connectionStatusCode)) {
+            googleApiAvailability.showErrorDialogFragment(
+                    this, connectionStatusCode, REQUEST_GOOGLE_PLAY_SERVICES);
             return false;
         }
         return true;
-    }
-
-    public void showGooglePlayServicesAvailabilityErrorDialog(int connectionStatusCode) {
-        Dialog dialog = GooglePlayServicesUtil.getErrorDialog(
-                connectionStatusCode, this, REQUEST_GOOGLE_PLAY_SERVICES);
-        dialog.show();
     }
 
     private void updateMainLayout(boolean updating) {
@@ -237,16 +231,16 @@ public class MainActivity extends AppCompatActivity implements
                 } else {
                     RetryDialog dialog = RetryDialog.newInstance(R.string.txt_retry,
                             new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            switch (which) {
-                                case DialogInterface.BUTTON_POSITIVE:
-                                    saveListId();
-                                case DialogInterface.BUTTON_NEGATIVE:
-                                    updateMainLayout(false);
-                            }
-                        }
-                    });
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    switch (which) {
+                                        case DialogInterface.BUTTON_POSITIVE:
+                                            saveListId();
+                                        case DialogInterface.BUTTON_NEGATIVE:
+                                            updateMainLayout(false);
+                                    }
+                                }
+                            });
                     dialog.show(getSupportFragmentManager(), "retry_dialog");
                 }
             }

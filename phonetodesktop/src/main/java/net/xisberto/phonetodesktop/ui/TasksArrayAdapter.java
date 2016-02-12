@@ -31,27 +31,18 @@ public class TasksArrayAdapter extends BaseAdapter {
     private ArrayList<Task> items;
     private ArrayList<Boolean> checked;
 
-    public static class TaskViewHolder {
-        private CheckBox checkBox;
-        private TextView textView;
-
-        public CheckBox getCheckBox() {
-            return checkBox;
-        }
-    }
-
-    public interface TaskArraySelectionListener {
-        void onItemChecked(int position, boolean checked);
-    }
-
 	public TasksArrayAdapter(Context context, ArrayList<Task> items, TaskArraySelectionListener listener) {
 		super();
         this.context = context;
         this.listener = listener;
         this.items = items;
-        this.checked = new ArrayList<>(items.size());
-        for (int i = 0; i < items.size(); i++) {
-            checked.add(false);
+        if (items != null) {
+            this.checked = new ArrayList<>(items.size());
+            for (int i = 0; i < items.size(); i++) {
+                checked.add(false);
+            }
+        } else {
+            this.checked = new ArrayList<>();
         }
     }
 
@@ -130,6 +121,19 @@ public class TasksArrayAdapter extends BaseAdapter {
             checked.add(false);
         }
         notifyDataSetChanged();
+    }
+
+    public interface TaskArraySelectionListener {
+        void onItemChecked(int position, boolean checked);
+    }
+
+    public static class TaskViewHolder {
+        private CheckBox checkBox;
+        private TextView textView;
+
+        public CheckBox getCheckBox() {
+            return checkBox;
+        }
     }
 	
 }
