@@ -7,8 +7,8 @@ android {
         applicationId "net.xisberto.phonetodesktop"
         minSdkVersion 9
         targetSdkVersion 23
-        versionCode 146
-        versionName '1.5.0'
+        versionCode 147
+        versionName '1.5.1'
     }
     buildTypes {
         release {
