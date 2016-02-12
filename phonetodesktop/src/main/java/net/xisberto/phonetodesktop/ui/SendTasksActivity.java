@@ -54,18 +54,16 @@ import net.xisberto.phonetodesktop.network.TaskOptionsRequest;
 public class SendTasksActivity extends AppCompatActivity implements
         android.content.DialogInterface.OnClickListener {
 
-    private String text_from_extra;
-    private SendFragment send_fragment;
-    private boolean restoreFromPreferences, isWaiting = false;
     private static final String SAVE_CACHE_UNSHORTEN = "cache_unshorten",
             SAVE_CACHE_TITLES = "cache_titles",
             SAVE_LOCAL_TASK_ID = "local_task_id",
             SAVE_IS_WAITING = "is_waiting";
-    private DatabaseHelper databaseHelper;
+    protected SpiceManager spiceManager = new SpiceManager(GoogleTasksSpiceService.class);
+    private String text_from_extra;
+    private SendFragment send_fragment;
+    private boolean restoreFromPreferences, isWaiting = false;
     private Preferences prefs;
     private LocalTask localTask;
-
-    protected SpiceManager spiceManager = new SpiceManager(GoogleTasksSpiceService.class);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +85,7 @@ public class SendTasksActivity extends AppCompatActivity implements
                 && getIntent().hasExtra(Intent.EXTRA_TEXT)) {
             text_from_extra = getIntent().getStringExtra(Intent.EXTRA_TEXT);
 
-            databaseHelper = DatabaseHelper
+            DatabaseHelper databaseHelper = DatabaseHelper
                     .getInstance(getApplicationContext());
 
             if (savedInstanceState != null) {
