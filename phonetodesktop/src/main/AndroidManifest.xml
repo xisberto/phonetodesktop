@@ -9,8 +9,8 @@
   Contributors:
       Humberto Fraga <xisberto@gmail.com> - initial API and implementation
 -->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="net.xisberto.phonetodesktop"
+<manifest package="net.xisberto.phonetodesktop"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:installLocation="auto" >
 
     <!-- "Normal Protection" permissions -->
@@ -58,6 +58,7 @@
             android:name=".ui.SendTasksActivity"
             android:excludeFromRecents="true"
             android:label="@string/filter_title"
+            android:launchMode="singleInstance"
             android:noHistory="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.Translucent" >
             <intent-filter android:label="@string/filter_title" >
