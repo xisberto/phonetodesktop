@@ -217,7 +217,7 @@ public class SendTasksActivity extends AppCompatActivity implements
     }
 
     private void sendText() {
-        SendTasksService.sendTasks(this, localTask.getLocalId());
+        SendTasksService.sendTasks(this);
     }
 
     private void saveCheckBoxes() {

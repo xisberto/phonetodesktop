@@ -45,7 +45,8 @@ public class InsertMultipleTasksRequest extends SpiceRequest<Void> {
             }
         };
 
-        for (int i = 0; i < tasks_ids.length; i++) {
+        int i = 0;
+        while (i < tasks_ids.length) {
             long id = tasks_ids[i];
             SendingTaskNotification.notify(context, i, tasks_ids.length);
             LocalTask task = databaseHelper.getTask(id);
@@ -54,6 +55,7 @@ public class InsertMultipleTasksRequest extends SpiceRequest<Void> {
                     .insert(list_id, new Task().setTitle(task.getTitle()))
                     .execute();
             task.setStatus(LocalTask.Status.SENT).persist(callback);
+            i++;
         }
 
         SendingTaskNotification.cancel(context);
